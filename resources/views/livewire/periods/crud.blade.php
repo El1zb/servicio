@@ -24,7 +24,6 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <x-th-table>ID</x-th-table>
                             <x-th-table>Nombre</x-th-table>
                             <x-th-table>Inicio</x-th-table>
                             <x-th-table>Fin</x-th-table>
@@ -34,7 +33,6 @@
                     <tbody>
                         @forelse ($periods as $period)
                             <tr>
-                                <x-td-table>{{ $period->id }}</x-td-table>
                                 <x-td-table>{{ $period->name }}</x-td-table>
                                 <x-td-table>{{ $period->start_date }}</x-td-table>
                                 <x-td-table>{{ $period->end_date }}</x-td-table>

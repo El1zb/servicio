@@ -26,6 +26,7 @@ class Student extends Model
         'reticular_progress', // decimal
         'semester_id',
         'system',
+        'status',
     ];
 
     // Relaciones

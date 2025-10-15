@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Period;
 use Livewire\WithPagination;
 
+use Illuminate\Validation\Rule;
+
 class Crud extends Component
 {
     use WithPagination;
@@ -56,7 +58,16 @@ class Crud extends Component
 
     public function save()
     {
-        $this->validate();
+        $this->validate([
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                Rule::unique('periods', 'name')->ignore($this->periodId),
+            ],
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
 
         Period::updateOrCreate(
             ['id' => $this->periodId],

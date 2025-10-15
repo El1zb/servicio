@@ -19,4 +19,10 @@ class Period extends Model
     {
         return $this->hasMany(Student::class);
     }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
+
 }

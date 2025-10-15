@@ -11,6 +11,11 @@ use App\Livewire\Campuses\Crud as CampusesCrud;
 use App\Livewire\Careers\Crud as CareersCrud;
 use App\Livewire\Semesters\Crud as SemestersCrud;
 use App\Livewire\Students\Profile as StudentsProfile;
+use App\Livewire\Files\Crud as FilesCrud;
+use App\Livewire\StudentDocuments\Crud as StudentDocumentsCrud;
+use App\Livewire\Students\Index as StudentsIndex;
+use App\Livewire\Students\Details as StudentsDetails;
+use App\Livewire\Admin\StudentsApproval as StudentsApproval;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,10 +37,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('campuses', CampusesCrud::class)->name('campuses.index');
         Route::get('careers', CareersCrud::class)->name('careers.index');    
         Route::get('semesters', SemestersCrud::class)->name('semesters.index');
+        Route::get('files', FilesCrud::class)->name('files.index');
+        Route::get('students/index', StudentsIndex::class)->name('students.index');         
+        Route::get('students/details/{studentId}', StudentsDetails::class)->name('students.details');         
+        Route::get('students/approval', StudentsApproval::class)->name('admin.students-approval'); 
     });
 
-    
-    Route::get('students/profile', StudentsProfile::class)->name('students.profile');
+    Route::group(['middleware' => ['role:student|admin']], function () { 
+        Route::get('students/profile', StudentsProfile::class)->name('students.profile'); 
+        Route::get('students/documents', StudentDocumentsCrud::class)->name('student-documents.index');   
+    });
+ 
 });
 
 require __DIR__.'/auth.php';

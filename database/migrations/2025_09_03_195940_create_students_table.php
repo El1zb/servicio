@@ -18,17 +18,18 @@ return new class extends Migration
             $table->foreignId('period_id')->constrained('periods')->onDelete('cascade'); // <-- agregado
             $table->enum('system', ['Escolarizado', 'Sabatino']);
             $table->foreignId('career_id')->constrained('careers')->onDelete('cascade');
-            $table->string('curp')->unique();
+            $table->string('curp');
             $table->string('rfc')->nullable();
-            $table->string('control_number')->unique();
+            $table->string('control_number');
             $table->string('last_name_paterno');
             $table->string('last_name_materno');
             $table->string('name');
-            $table->string('institutional_email')->unique();
+            $table->string('institutional_email');
             $table->string('personal_email');
             $table->string('phone');
             $table->decimal('reticular_progress', 5, 2)->default(0); 
             $table->foreignId('semester_id')->nullable()->constrained('semesters')->onDelete('set null');
+            $table->enum('status', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
             $table->timestamps();
         });
     }

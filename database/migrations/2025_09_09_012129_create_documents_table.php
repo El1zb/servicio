@@ -13,11 +13,26 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
+            
+            // Relaciones
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('file_path');
+            $table->foreignId('file_id')->nullable()->constrained('files')->onDelete('set null'); // relación con File
+
+            // Información del documento
+            $table->string('name'); // nombre del documento/entrega
+
+            // Archivos subidos por el estudiante
+            $table->string('student_file_path')->nullable();
+            $table->string('student_file_name')->nullable();
+
+            // Fecha límite personalizada (solo para este estudiante)
+            $table->date('custom_limit_date')->nullable();
+
+            // Estado del documento
             $table->enum('status', ['en_revision', 'revisado', 'rechazado'])->default('en_revision');
+            $table->boolean('is_active')->default(true); // nuevo: para manejar documentos activos/inactivos
             $table->text('comments')->nullable();
+
             $table->timestamps();
         });
     }

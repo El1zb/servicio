@@ -22,7 +22,6 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <x-th-table>ID</x-th-table>
                             <x-th-table>Nombre</x-th-table>
                             <x-th-table>Acciones</x-th-table>
                         </tr>
@@ -30,7 +29,6 @@
                     <tbody>
                         @forelse ($careers as $career)
                             <tr>
-                                <x-td-table>{{ $career->id }}</x-td-table>
                                 <x-td-table>{{ $career->name }}</x-td-table>
                                 <x-td-table>
                                     <flux:button size="xs" wire:click="edit({{ $career->id }})" color="emerald" variant="primary">Editar</flux:button>

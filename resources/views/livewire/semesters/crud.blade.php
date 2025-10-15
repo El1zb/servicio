@@ -22,24 +22,25 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <x-th-table>ID</x-th-table>
-                            <x-th-table>Nombre</x-th-table>
-                            <x-th-table>Activo</x-th-table>
+                            <x-th-table>Semestre</x-th-table>
+                            <x-th-table>Visibilidad</x-th-table>
                             <x-th-table>Acciones</x-th-table>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($semesters as $semester)
                             <tr>
-                                <x-td-table>{{ $semester->id }}</x-td-table>
                                 <x-td-table>{{ $semester->name }}</x-td-table>
-                                <x-td-table class="text-center">
-                                    <input 
-                                        type="checkbox" 
-                                        wire:click="toggleActive({{ $semester->id }})"
-                                        {{ $semester->is_active ? 'checked' : '' }}
-                                        class="h-5 w-5"
-                                    />
+                                <!-- Checkbox centrado -->
+                                <x-td-table>
+                                    <div class="flex">
+                                        <input 
+                                            type="checkbox" 
+                                            wire:click="toggleActive({{ $semester->id }})"
+                                            {{ $semester->is_active ? 'checked' : '' }}
+                                            class="h-5 w-5 rounded accent-emerald-600 cursor-pointer"
+                                        />
+                                    </div>
                                 </x-td-table>
                                 <x-td-table>
                                     <flux:button size="xs" wire:click="edit({{ $semester->id }})" color="emerald" variant="primary">Editar</flux:button>

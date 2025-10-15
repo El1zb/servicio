@@ -106,7 +106,7 @@ class Crud extends Component
         $semester->is_active = !$semester->is_active;
         $semester->save();
 
-        session()->flash('message', 'Estado actualizado correctamente.');
+        session()->flash('message', 'Visibilidad actualizado correctamente.');
     }
 
 }
