@@ -31,11 +31,26 @@
         <h2 class="text-xl font-bold mb-2">
             {{ $student->name }} {{ $student->last_name_paterno ?? '' }} {{ $student->last_name_materno }}
         </h2>
-        <p class="text-gray-400">
-            <strong>Carrera:</strong> {{ $student->career->name }} |
-            <strong>Número de control:</strong> {{ $student->control_number }} |
-            <strong>Periodo:</strong> {{ $student->period->name }}
-        </p>
+        <div class="flex flex-wrap items-center gap-3 text-gray-400">
+            <p>
+                <strong>Carrera:</strong> {{ $student->career->name }} |
+                <strong>Número de control:</strong> {{ $student->control_number }} |
+                <strong>Periodo:</strong> {{ $student->period->name }}
+            </p>
+
+            <!-- Botón Imprimir Seguimiento -->
+            <button 
+                wire:click="exportPDF"
+                class="ml-2 px-3 py-1 text-sm bg-emerald-600 text-white font-semibold rounded-md hover:bg-emerald-500 transition-colors duration-200 inline-flex items-center gap-1"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M6 9V2h12v7m-9 13h6m-6-4h6m-7-8h8a2 2 0 012 2v7H5v-7a2 2 0 012-2z" />
+                </svg>
+                Imprimir Seguimiento
+            </button>
+        </div>
+
     </div>
 
     <hr class="my-4 border-gray-300 dark:border-gray-600">
@@ -114,11 +129,12 @@
                                         @if(!$doc->student_file_path)
                                             class="px-3 py-1 text-xs rounded bg-gray-300 text-gray-600 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed"
                                         @else
-                                            wire:click.prevent="updateStatus({{ $doc->id }}, 'rechazado')"
+                                            wire:click.prevent="openRejectModal({{ $doc->id }})"
                                             class="px-3 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600 transition"
                                         @endif>
                                             Rechazado
                                         </a>
+
 
                                     </div>
                                 </x-td-table>
@@ -188,6 +204,34 @@
         </div>
     </flux:modal>
     @endif
+
+    @if($isRejectModalOpen && $rejectingDocument)
+    <flux:modal wire:model="isRejectModalOpen" class="md:w-1/2">
+        <div class="space-y-4">
+            <flux:heading size="lg">Rechazar documento</flux:heading>
+
+            <p class="text-gray-600">
+                Escribe el motivo o comentario para el rechazo de <strong>{{ $rejectingDocument->file->name ?? $rejectingDocument->name }}</strong>.
+            </p>
+
+            <flux:field>
+                <flux:label>Comentario</flux:label>
+                <textarea 
+                    wire:model.defer="editingComments.{{ $rejectingDocument->id }}"
+                    class="w-full border-2 border-gray-300 rounded focus:ring focus:ring-red-200 focus:border-red-500 bg-gray-50 dark:bg-zinc-800 resize-none p-3 placeholder-gray-400"
+                    rows="5"
+                    placeholder="Escribe aquí tus observaciones...">
+                </textarea>
+            </flux:field>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="ghost" wire:click="$set('isRejectModalOpen', false)">Cancelar</flux:button>
+                <flux:button wire:click="saveRejection" variant="danger">Rechazar</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+    @endif
+
 
 
 

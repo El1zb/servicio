@@ -62,7 +62,7 @@
                                 @endif
 
 
-                                @if(!empty($document->comments))
+                                @if(!empty($document->comments) && $document->status === 'rechazado')
                                     <div class="relative group">
                                         <button wire:click="openComments({{ $document->id }})"
                                                 class="px-2 py-1 text-xs bg-gray-200 dark:bg-zinc-600 text-gray-800 dark:text-gray-200 rounded hover:brightness-95 transition flex items-center gap-1">

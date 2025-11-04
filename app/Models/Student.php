@@ -27,6 +27,7 @@ class Student extends Model
         'semester_id',
         'system',
         'status',
+        'rejection_reason',
     ];
 
     // Relaciones

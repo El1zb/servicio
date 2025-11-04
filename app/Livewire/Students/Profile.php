@@ -100,7 +100,7 @@ class Profile extends Component
         // Si es nuevo o estaba rechazado → se vuelve a enviar para revisión
         if (!$this->student->exists || $this->student->status === 'rechazado') {
             $validated['status'] = 'pendiente';
-            session()->flash('info', 'Tu información fue enviada para validación.');
+            //session()->flash('info', 'Tu información fue enviada para validación.');
             $this->showForm = false;
         }
 

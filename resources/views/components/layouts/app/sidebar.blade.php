@@ -103,29 +103,30 @@
 
                 @endif
 
-                <!-- Línea separadora -->
-                <div class="border-t border-zinc-300 dark:border-zinc-700 my-2"></div>
+
+                
 
                 <!-- SECCIÓN DEL ESTUDIANTE -->
-                @if(auth()->user()->hasRole('student'))
-                <flux:navlist.group :heading="__('Mi Perfil')" class="grid">
-                    <flux:navlist.item 
-                        icon="user" 
-                        :href="route('students.profile')" 
-                        :current="request()->routeIs('students.profile')" 
-                        wire:navigate>
-                        {{ __('Perfil') }}
-                    </flux:navlist.item>
+                @if(!auth()->user()->hasRole('admin'))
+                    <flux:navlist.group :heading="__('Mi Perfil')" class="grid">
+                        <flux:navlist.item 
+                            icon="user" 
+                            :href="route('students.profile')" 
+                            :current="request()->routeIs('students.profile')" 
+                            wire:navigate>
+                            {{ __('Perfil') }}
+                        </flux:navlist.item>
 
-                    <flux:navlist.item 
-                        icon="folder" 
-                        :href="route('student-documents.index')" 
-                        :current="request()->routeIs('student-documents.index')" 
-                        wire:navigate>
-                        {{ __('Mis Documentos') }}
-                    </flux:navlist.item>
-                </flux:navlist.group>
+                        <flux:navlist.item 
+                            icon="folder" 
+                            :href="route('student-documents.index')" 
+                            :current="request()->routeIs('student-documents.index')" 
+                            wire:navigate>
+                            {{ __('Mis Documentos') }}
+                        </flux:navlist.item>
+                    </flux:navlist.group>
                 @endif
+
 
             </flux:navlist>
 

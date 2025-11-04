@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Student;
 use App\Models\Document;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class Details extends Component
 {
@@ -14,19 +15,22 @@ class Details extends Component
     public $editingComments = [];
     public $editingDates = [];
 
-    // Modal
+    // Modal PDF
     public $isModalOpen = false;
     public $selectedDocument = null;
     public $previewUrl = null;
     public $previewName = null;
     public $previewExtension = null;
 
+    // Modal Rechazo
+    public $isRejectModalOpen = false;
+    public $rejectingDocument = null;
+
     public function mount($studentId)
     {
         $this->student = Student::with(['career', 'period', 'documents.file'])
             ->findOrFail($studentId);
 
-        // Filtrar documentos por periodo del estudiante si el archivo tiene period_id
         $this->documents = $this->student->documents->filter(function($doc) {
             return $doc->file && $doc->file->period_id == $this->student->period_id;
         });
@@ -95,6 +99,34 @@ class Details extends Component
         }
     }
 
+    public function openRejectModal($documentId)
+    {
+        $this->rejectingDocument = Document::findOrFail($documentId);
+        $this->editingComments[$documentId] = $this->rejectingDocument->comments ?? '';
+        $this->isRejectModalOpen = true;
+    }
+
+    public function saveRejection()
+    {
+        if (!$this->rejectingDocument) return;
+
+        $doc = $this->rejectingDocument;
+
+        $doc->update([
+            'status' => 'rechazado',
+            'comments' => $this->editingComments[$doc->id] ?? $doc->comments,
+        ]);
+
+        $this->isRejectModalOpen = false;
+        $this->rejectingDocument = null;
+
+        $this->documents = $this->student->documents->filter(function($doc) {
+            return $doc->file && $doc->file->period_id == $this->student->period_id;
+        });
+
+        session()->flash('message', "Documento '{$doc->file->name}' marcado como rechazado con comentarios.");
+    }
+
     public function updateStatus($documentId, $status)
     {
         $doc = Document::findOrFail($documentId);
@@ -104,7 +136,6 @@ class Details extends Component
             'comments' => $this->editingComments[$documentId] ?? $doc->comments,
         ]);
 
-        // Reaplicar filtro por periodo
         $this->documents = $this->student->documents->filter(function($doc) {
             return $doc->file && $doc->file->period_id == $this->student->period_id;
         });
@@ -115,5 +146,21 @@ class Details extends Component
     public function render()
     {
         return view('livewire.students.details');
+    }
+
+    public function exportPDF()
+    {
+        $student = $this->student;
+        $documents = $this->documents;
+
+        $pdf = Pdf::loadView('pdf.student-documents', [
+            'student' => $student,
+            'documents' => $documents,
+        ])->setPaper('a4');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "Seguimiento_{$student->control_number}.pdf"
+        );
     }
 }

@@ -23,7 +23,9 @@
         <form method="POST" wire:submit.prevent="save" class="flex flex-col gap-8">
             <!-- DATOS PERSONALES -->
             <div class="p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
-                <h2 class="text-lg font-semibold mb-4 border-b border-gray-300 dark:border-zinc-700 pb-2">Datos Personales</h2>
+                <h2 class="text-lg font-semibold mb-4 border-b border-gray-300 dark:border-zinc-700 pb-2">
+                    Datos Personales
+                </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <flux:input wire:model="last_name_paterno" label="Apellido Paterno *" type="text" required />
@@ -31,15 +33,17 @@
                     <flux:input wire:model="name" label="Nombre(s) *" type="text" required />
                     <flux:input wire:model="curp" label="CURP *" type="text" required />
                     <flux:input wire:model="rfc" label="RFC" type="text" />
-                    <flux:input wire:model="phone" label="Teléfono *" type="text" required/>
-                    <flux:input wire:model="personal_email" style="text-transform: lowercase;" label="Correo Personal *" type="email" required/>
+                    <flux:input wire:model="phone" label="Teléfono *" type="text" required />
+                    <flux:input wire:model="personal_email" style="text-transform: lowercase;" label="Correo Personal *" type="email" required />
                 </div>
             </div>
 
             <!-- DATOS ACADÉMICOS -->
             @if ($this->canEditAcademic() && $student->status !== 'aprobado')
             <div class="p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
-                <h2 class="text-lg font-semibold mb-4 border-b border-gray-300 dark:border-zinc-700 pb-2">Datos Académicos</h2>
+                <h2 class="text-lg font-semibold mb-4 border-b border-gray-300 dark:border-zinc-700 pb-2">
+                    Datos Académicos
+                </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <flux:input wire:model="control_number" label="Número de Control *" type="text" required />
@@ -88,7 +92,7 @@
         </form>
     @else
         {{-- Mensajes según estado del estudiante --}}
-        <div class="text-center p-6">
+        <div class="text-center p-6 space-y-4">
             @if ($student->status === 'pendiente')
                 <div class="bg-blue-50 p-5 rounded-lg border border-blue-200">
                     <p class="text-blue-700 font-medium text-lg">
@@ -109,13 +113,21 @@
                     </div>
                 </div>
             @elseif ($student->status === 'rechazado')
-                <div class="bg-red-50 p-5 rounded-lg border border-red-200">
+                <div class="bg-red-50 p-5 rounded-lg border border-red-200 space-y-3">
                     <p class="text-red-700 font-semibold text-lg">
                         Tu perfil fue rechazado.
                     </p>
-                    <p class="text-gray-600 text-sm mt-1">
+
+                    @if($student->rejection_reason)
+                        <div class="bg-red-100 p-4 rounded-lg border border-red-200 text-sm text-red-800">
+                            <strong>Motivo del rechazo:</strong> <br>{{ $student->rejection_reason }}
+                        </div>
+                    @endif
+
+                    <p class="text-gray-600 text-sm">
                         Revisa los datos y vuelve a enviarlos para validación.
                     </p>
+
                     <div class="mt-4 flex justify-center">
                         <flux:button 
                             wire:click="$set('showForm', true)" 

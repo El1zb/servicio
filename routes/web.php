@@ -43,10 +43,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('students/approval', StudentsApproval::class)->name('admin.students-approval'); 
     });
 
-    Route::group(['middleware' => ['role:student|admin']], function () { 
+    // 🔹 SECCIÓN ESTUDIANTES (accesible para cualquier usuario autenticado)
+    Route::middleware(['auth'])->group(function () { 
         Route::get('students/profile', StudentsProfile::class)->name('students.profile'); 
         Route::get('students/documents', StudentDocumentsCrud::class)->name('student-documents.index');   
     });
+
+
  
 });
 

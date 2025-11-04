@@ -8,6 +8,8 @@ use App\Models\Student;
 use App\Models\Career;
 use App\Models\Period;
 use App\Models\File;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StudentsExport;
 
 class Index extends Component
 {
@@ -22,68 +24,51 @@ class Index extends Component
 
     protected $updatesQueryString = ['search', 'careerId', 'periodId'];
 
-    public $studentsPrepared = [];
-
     public function mount()
     {
         $this->careers = Career::all();
         $this->periods = Period::all();
     }
 
-    // Resetear la paginación cuando cambian filtros o búsqueda
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingCareerId()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingPeriodId()
-    {
-        $this->resetPage();
-    }
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingCareerId() { $this->resetPage(); }
+    public function updatingPeriodId() { $this->resetPage(); }
 
     public function render()
     {
         $query = Student::with('documents');
 
-        // 🔹 Filtrar por carrera
-        if ($this->careerId) {
-            $query->where('career_id', $this->careerId);
-        }
-
-        // 🔹 Filtrar por periodo
-        if ($this->periodId) {
-            $query->where('period_id', $this->periodId);
-        }
-
-        // 🔹 Búsqueda dentro de los resultados filtrados
+        if ($this->careerId) $query->where('career_id', $this->careerId);
+        if ($this->periodId) $query->where('period_id', $this->periodId);
         if ($this->search) {
-            $query->where(function($q) {
+            $query->where(function($q){
                 $q->where('name', 'like', '%'.$this->search.'%')
-                ->orWhere('last_name_paterno', 'like', '%'.$this->search.'%')
-                ->orWhere('last_name_materno', 'like', '%'.$this->search.'%')
-                ->orWhere('control_number', 'like', '%'.$this->search.'%');
+                  ->orWhere('last_name_paterno', 'like', '%'.$this->search.'%')
+                  ->orWhere('last_name_materno', 'like', '%'.$this->search.'%')
+                  ->orWhere('control_number', 'like', '%'.$this->search.'%');
             });
         }
 
-        // 🔹 Ordenar por nombre y paginar
         $students = $query->orderBy('name')->paginate(10);
 
-        // 🔹 Agregar campos dinámicos para la tabla
-        $students->getCollection()->transform(function ($student) {
+        $students->getCollection()->transform(function($student){
             $student->delivered = $student->documents->whereNotNull('student_file_path')->count();
             $student->total = File::where('period_id', $student->period_id)->count();
             return $student;
         });
 
         return view('livewire.students.index', [
-            'students' => $students, // objetos Eloquent con propiedades dinámicas
+            'students' => $students,
             'pagination' => $students,
         ]);
+    }
+
+    // ================= Exportar Excel =================
+    public function exportExcel()
+    {
+        $date = now()->format('Y-m-d'); // fecha y hora actuales
+        $fileName = "estudiantes_{$date}.xlsx"; // nombre dinámico
+        return Excel::download(new StudentsExport($this->careerId, $this->periodId, $this->search), $fileName);
     }
 
 }

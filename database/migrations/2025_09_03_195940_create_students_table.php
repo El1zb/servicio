@@ -30,6 +30,7 @@ return new class extends Migration
             $table->decimal('reticular_progress', 5, 2)->default(0); 
             $table->foreignId('semester_id')->nullable()->constrained('semesters')->onDelete('set null');
             $table->enum('status', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
+            $table->text('rejection_reason')->nullable(); // <-- motivo de rechazo
             $table->timestamps();
         });
     }
