@@ -29,11 +29,14 @@ class Profile extends Component
             $this->fill($this->student->toArray());
         }
 
-        // Asignar último periodo si no tiene
+        // Asignar último periodo más reciente si no tiene
         if (!$this->student->period_id) {
-            $lastPeriod = Period::orderBy('id', 'desc')->first();
-            if ($lastPeriod) $this->period_id = $lastPeriod->id;
+            $lastPeriod = Period::orderBy('start_date', 'desc')->first(); // Ordena por fecha de inicio
+            if ($lastPeriod) {
+                $this->period_id = $lastPeriod->id;
+            }
         }
+
 
         // Mostrar/ocultar formulario según el estado actual
         $this->updateFormVisibility();
@@ -118,13 +121,14 @@ class Profile extends Component
 
     public function render()
     {
-        $lastPeriod = Period::orderBy('id', 'desc')->first();
+        $lastPeriod = Period::orderBy('start_date', 'desc')->first();
 
         if ($this->student->exists && $this->student->period_id) {
             $periods = Period::where('id', $this->student->period_id)->get();
         } else {
             $periods = $lastPeriod ? collect([$lastPeriod]) : collect([]);
         }
+
 
         return view('livewire.students.profile', [
             'campuses' => Campus::all(),

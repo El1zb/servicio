@@ -28,7 +28,12 @@ class Crud extends Component
             return;
         }
 
-        if ($this->student->period_id) {
+        /*if ($this->student->period_id) {
+            $this->assignPendingDocuments();
+        }*/
+
+        // Solo asignar documentos si el estudiante está aprobado
+        if ($this->student->status === 'aprobado' && $this->student->period_id) {
             $this->assignPendingDocuments();
         }
     }
@@ -94,7 +99,7 @@ class Crud extends Component
     {
         $documents = collect();
 
-        if ($this->student) {
+        if ($this->student && $this->student->status === 'aprobado') {
             $documents = Document::where('student_id', $this->student->id)
             ->with('file')
             ->where('is_active', true)

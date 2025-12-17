@@ -31,7 +31,7 @@ class Crud extends Component
     {
         $periods = Period::query()
             ->where('name', 'like', "%{$this->search}%")
-            ->orderBy('id', 'desc')
+            ->orderBy('start_date', 'desc')
             ->paginate(10);
 
         return view('livewire.periods.crud', [

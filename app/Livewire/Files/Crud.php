@@ -36,7 +36,9 @@ class Crud extends Component
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-        $periods = Period::all();
+        //$periods = Period::all();
+        // Ordenar periodos del más reciente al más antiguo según start_date
+        $periods = Period::orderBy('start_date', 'desc')->get();
 
         return view('livewire.files.crud', [
             'files' => $files,

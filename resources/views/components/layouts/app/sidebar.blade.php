@@ -3,8 +3,9 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky stashable class="w-64 min-h-screen border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <body class="min-h-screen bg-[var(--color-section-bg)] text-[var(--text-section-title)]">
+
+        <flux:sidebar sticky stashable class="w-64 min-h-screen border-e border-[var(--sidebar-border)] bg-gradient-to-b from-[var(--sidebar-bg)] to-[var(--sidebar-bg-alt)] dark:border-[var(--sidebar-border)] dark:from-[var(--sidebar-bg)] dark:to-[var(--sidebar-bg-alt)]">
 
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
@@ -21,13 +22,14 @@
                         icon="home" 
                         :href="route('dashboard')" 
                         :current="request()->routeIs('dashboard')" 
-                        wire:navigate>
+                        wire:navigate
+                    >
                         {{ __('Inicio') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
 
                 <!-- Línea separadora -->
-                <div class="border-t border-zinc-300 dark:border-zinc-700 my-2"></div>
+                <div class="border-t border-[var(--color-divider)] my-2"></div>
 
                 <!-- SECCIÓN DE ADMINISTRACIÓN ACADÉMICA -->
                 @if(auth()->user()->hasRole('admin'))
@@ -36,7 +38,9 @@
                         icon="calendar" 
                         :href="route('periods.index')" 
                         :current="request()->routeIs('periods.index')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Periodos') }}
                     </flux:navlist.item>
 
@@ -44,7 +48,9 @@
                         icon="building-library" 
                         :href="route('campuses.index')" 
                         :current="request()->routeIs('campuses.index')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Campus') }}
                     </flux:navlist.item>
 
@@ -52,7 +58,9 @@
                         icon="book-open" 
                         :href="route('careers.index')" 
                         :current="request()->routeIs('careers.index')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Carreras') }}
                     </flux:navlist.item>
 
@@ -60,13 +68,15 @@
                         icon="academic-cap" 
                         :href="route('semesters.index')" 
                         :current="request()->routeIs('semesters.index')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Semestres') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
 
                 <!-- Línea separadora -->
-                <div class="border-t border-zinc-300 dark:border-zinc-700 my-2"></div>
+                <div class="border-t border-[var(--color-divider)] my-2"></div>
 
                 <!-- SECCIÓN DE APROBACIONES -->
                 <flux:navlist.group :heading="__('Aprobación de Estudiantes')" class="grid">
@@ -74,13 +84,15 @@
                         icon="check-circle" 
                         :href="route('admin.students-approval')" 
                         :current="request()->routeIs('admin.students-approval')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Aprobación') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
                 
                 <!-- Línea separadora -->
-                <div class="border-t border-zinc-300 dark:border-zinc-700 my-2"></div>
+                <div class="border-t border-[var(--color-divider)] my-2"></div>
 
                 <!-- SECCIÓN DE DOCUMENTOS -->
                 <flux:navlist.group :heading="__('Gestión de Documentos')" class="grid">
@@ -88,7 +100,9 @@
                         icon="folder" 
                         :href="route('files.index')" 
                         :current="request()->routeIs('files.index')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Archivos Base') }}
                     </flux:navlist.item>
 
@@ -96,15 +110,15 @@
                         icon="folder-open" 
                         :href="route('students.index')" 
                         :current="request()->routeIs('students.index')" 
-                        wire:navigate>
+                        wire:navigate
+                        class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                    >
                         {{ __('Doc. de Estudiantes') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
 
                 @endif
 
-
-                
 
                 <!-- SECCIÓN DEL ESTUDIANTE -->
                 @if(!auth()->user()->hasRole('admin'))
@@ -113,7 +127,9 @@
                             icon="user" 
                             :href="route('students.profile')" 
                             :current="request()->routeIs('students.profile')" 
-                            wire:navigate>
+                            wire:navigate
+                            class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                        >
                             {{ __('Perfil') }}
                         </flux:navlist.item>
 
@@ -121,7 +137,9 @@
                             icon="folder" 
                             :href="route('student-documents.index')" 
                             :current="request()->routeIs('student-documents.index')" 
-                            wire:navigate>
+                            wire:navigate
+                            class="data-[active=true]:bg-[var(--color-primary-light)] data-[active=true]:text-[var(--color-primary)]"
+                        >
                             {{ __('Mis Documentos') }}
                         </flux:navlist.item>
                     </flux:navlist.group>
@@ -151,13 +169,13 @@
                     icon:trailing="chevrons-up-down"
                 />
 
-                <flux:menu class="w-[220px]">
+                <flux:menu class="w-[220px] bg-[var(--color-surface-elevated)] border border-[var(--color-border)] shadow-[var(--shadow-md)]">
                     <flux:menu.radio.group>
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
+                                        class="flex h-full w-full items-center justify-center rounded-lg bg-[var(--color-primary-light)] text-[var(--color-text-inverse)]"
                                     >
                                         {{ auth()->user()->initials() }}
                                     </span>
@@ -171,13 +189,13 @@
                         </div>
                     </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                    <flux:menu.separator class="border-[var(--color-divider)]" />
 
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Configuración') }}</flux:menu.item>
                     </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                    <flux:menu.separator class="border-[var(--color-divider)]" />
 
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
@@ -190,7 +208,7 @@
         </flux:sidebar>
 
         <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
+        <flux:header class="lg:hidden bg-[var(--color-surface)] border-b border-[var(--color-border)]">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
@@ -201,13 +219,13 @@
                     icon-trailing="chevron-down"
                 />
 
-                <flux:menu>
+                <flux:menu class="bg-[var(--color-surface-elevated)] border border-[var(--color-border)] shadow-[var(--shadow-md)]">
                     <flux:menu.radio.group>
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
+                                        class="flex h-full w-full items-center justify-center rounded-lg bg-[var(--color-primary-light)] text-[var(--color-text-inverse)]"
                                     >
                                         {{ auth()->user()->initials() }}
                                     </span>
@@ -221,13 +239,13 @@
                         </div>
                     </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                    <flux:menu.separator class="border-[var(--color-divider)]" />
 
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Configuración') }}</flux:menu.item>
                     </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                    <flux:menu.separator class="border-[var(--color-divider)]" />
 
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf

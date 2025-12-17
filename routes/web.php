@@ -16,6 +16,7 @@ use App\Livewire\StudentDocuments\Crud as StudentDocumentsCrud;
 use App\Livewire\Students\Index as StudentsIndex;
 use App\Livewire\Students\Details as StudentsDetails;
 use App\Livewire\Admin\StudentsApproval as StudentsApproval;
+use App\Livewire\Admin\CreateAdmin as CreateAdmin;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('students/index', StudentsIndex::class)->name('students.index');         
         Route::get('students/details/{studentId}', StudentsDetails::class)->name('students.details');         
         Route::get('students/approval', StudentsApproval::class)->name('admin.students-approval'); 
+        Route::get('admin/create-admin', CreateAdmin::class)->name('admin.create-admin');
     });
 
     // 🔹 SECCIÓN ESTUDIANTES (accesible para cualquier usuario autenticado)
