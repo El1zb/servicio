@@ -1,4 +1,6 @@
-<div class="flex flex-col gap-8 p-6 bg-white dark:bg-zinc-800 rounded-lg">
+<div class="flex flex-col gap-8 p-6 bg-[var(--student-profile-bg)] rounded-2xl
+            shadow-[0_12px_40px_rgba(0,0,0,0.12)]">
+
     <!-- Encabezado -->
     <x-auth-header 
         :title="__('Perfil del estudiante')" 
@@ -13,7 +15,7 @@
     @endif
 
     @if (session()->has('message'))
-        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-800 border border-green-200">
+        <div class="mb-4 p-3 rounded-lg bg-[var(--alert-success-bg)] text-[var(--alert-success-text)] border border-[var(--alert-success-border)]">
             {{ session('message') }}
         </div>
     @endif
@@ -22,32 +24,32 @@
     @if ($showForm)
         <form method="POST" wire:submit.prevent="save" class="flex flex-col gap-8">
             <!-- DATOS PERSONALES -->
-            <div class="p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
-                <h2 class="text-lg font-semibold mb-4 border-b border-gray-300 dark:border-zinc-700 pb-2">
+            <div class="p-4 bg-[var(--student-profile-card-bg)] rounded-xl border border-[var(--student-profile-border)] shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+                <h2 class="text-lg font-semibold mb-4 border-b border-[var(--student-profile-border-card)] pb-2">
                     Datos Personales
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <flux:input wire:model="last_name_paterno" label="Apellido Paterno *" type="text" required />
-                    <flux:input wire:model="last_name_materno" label="Apellido Materno *" type="text" required />
-                    <flux:input wire:model="name" label="Nombre(s) *" type="text" required />
-                    <flux:input wire:model="curp" label="CURP *" type="text" required />
-                    <flux:input wire:model="rfc" label="RFC" type="text" />
-                    <flux:input wire:model="phone" label="Teléfono *" type="text" required />
-                    <flux:input wire:model="personal_email" style="text-transform: lowercase;" label="Correo Personal *" type="email" required />
+                    <flux:input wire:model="last_name_paterno" label="Apellido Paterno *" type="text" inputmode="text" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"/>
+                    <flux:input wire:model="last_name_materno" label="Apellido Materno *" type="text" inputmode="text" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"/>
+                    <flux:input wire:model="name" label="Nombre(s) *" type="text" inputmode="text" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')"/>
+                    <flux:input wire:model="curp" label="CURP *" type="text" required maxlength="18" minlength="18" inputmode="text" style="text-transform: uppercase;" pattern="[A-Z0-9]{18}" title="La CURP debe tener exactamente 18 caracteres." oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')"/>
+                    <flux:input wire:model="rfc" label="RFC" type="text" maxlength="13" minlength="12" inputmode="text" style="text-transform: uppercase;" pattern="[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}" title="RFC válido (12 o 13 caracteres, en mayúsculas)" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9Ñ&]/g, '')"/>
+                    <flux:input wire:model="phone" label="Teléfono *" type="text" placeholder="Ej. 0000000000" required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" title="El teléfono debe contener 10 dígitos numéricos" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+                    <flux:input wire:model="personal_email" label="Correo Personal *" type="email" placeholder="Ej. personal@ejemplo.com" required inputmode="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" title="Ingresa un correo válido" oninput="this.value = this.value.toLowerCase()"/>
                 </div>
             </div>
 
             <!-- DATOS ACADÉMICOS -->
             @if ($this->canEditAcademic() && $student->status !== 'aprobado')
-            <div class="p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
-                <h2 class="text-lg font-semibold mb-4 border-b border-gray-300 dark:border-zinc-700 pb-2">
+            <div class="p-4 bg-[var(--student-profile-card-bg)] rounded-xl border border-[var(--student-profile-border)] shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+                <h2 class="text-lg font-semibold mb-4 border-b border-[var(--student-profile-border-card)] pb-2">
                     Datos Académicos
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <flux:input wire:model="control_number" label="Número de Control *" type="text" required />
-                    <flux:input wire:model="institutional_email" label="Correo Institucional *" type="email" placeholder="Ej. l225q0000@itsco.edu.mx" required />
+                    <flux:input wire:model="control_number" label="Número de Control *" type="text" required inputmode="text" pattern="[A-Za-z0-9]+" title="Solo letras y números" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();"/>
+                    <flux:input wire:model="institutional_email" label="Correo Institucional *" type="email" placeholder="Ej. l225q0000@itsco.edu.mx" required inputmode="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" title="Ingresa un correo válido" oninput="this.value=this.value.toLowerCase();"/>
                     <flux:select wire:model="system" label="Sistema *" required>
                         <option value="">Seleccione</option>
                         @foreach($systems as $s)
@@ -85,55 +87,132 @@
 
             <!-- BOTÓN -->
             <div class="flex justify-end">
-                <flux:button type="submit" variant="primary" class="px-6 py-3 rounded-lg">
+                <flux:button type="submit" variant="primary" 
+                class="
+                    group relative
+                    rounded-[var(--radius-md)]
+                    bg-[var(--settings-btn-primary)]!
+                    text-[var(--settings-btn-primary-text)]!
+                    shadow-lg shadow-[var(--settings-btn-primary-shadow)]
+                    hover:bg-[var(--settings-btn-primary-hover)]!
+                    hover:shadow-xl hover:-translate-y-0.5
+                    transition-all duration-300
+                    disabled:opacity-60 disabled:cursor-not-allowed
+                    px-6 py-3
+                ">
                     Guardar Perfil
                 </flux:button>
             </div>
         </form>
     @else
         {{-- Mensajes según estado del estudiante --}}
-        <div class="text-center p-6 space-y-4">
+        <div class="p-6 space-y-4">
             @if ($student->status === 'pendiente')
-                <div class="bg-blue-50 p-5 rounded-lg border border-blue-200">
-                    <p class="text-blue-700 font-medium text-lg">
-                        🕐 Tu información ha sido enviada y está en revisión.
-                    </p>
-                </div>
-            @elseif ($student->status === 'aprobado')
-                <div class="bg-green-50 p-5 rounded-lg border border-green-200">
-                    <p class="text-green-700 font-semibold text-lg">
-                        Tu perfil ha sido aprobado por el administrador.
-                    </p>
-                    <div class="mt-4 flex justify-center">
-                        <flux:button 
-                            wire:click="$set('showForm', true)" 
-                            class="w-full max-w-xs bg-green-100 text-green-700 font-medium py-2 px-4 rounded-lg border border-green-300 hover:bg-green-200 transition-colors duration-150">
-                            Actualizar datos personales
-                        </flux:button>
+                <div class="bg-[var(--student-profile-card-bg)] p-6 rounded-xl border border-[var(--status-border-pending)] shadow-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-10 h-10 bg-[var(--status-icon-bg-pending)] rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[var(--status-icon-color-pending)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-[var(--student-profile-text-primary)] font-semibold text-lg mb-2">
+                                Información en Revisión
+                            </h3>
+                            <p class="text-[var(--student-profile-text-secondary)] text-sm leading-relaxed">
+                                Tu información ha sido enviada exitosamente y está siendo revisada por el administrador. Te notificaremos cuando el proceso finalice.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            @elseif ($student->status === 'rechazado')
-                <div class="bg-red-50 p-5 rounded-lg border border-red-200 space-y-3">
-                    <p class="text-red-700 font-semibold text-lg">
-                        Tu perfil fue rechazado.
-                    </p>
 
-                    @if($student->rejection_reason)
-                        <div class="bg-red-100 p-4 rounded-lg border border-red-200 text-sm text-red-800">
-                            <strong>Motivo del rechazo:</strong> <br>{{ $student->rejection_reason }}
+            @elseif ($student->status === 'aprobado')
+                <div class="bg-[var(--student-profile-card-bg)] p-6 rounded-xl border border-[var(--status-border-approved)] shadow-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-10 h-10 bg-[var(--status-icon-bg-approved)] rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[var(--status-icon-color-approved)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
                         </div>
-                    @endif
+                        <div class="flex-1">
+                            <h3 class="text-[var(--student-profile-text-primary)] font-semibold text-lg mb-2">
+                                ¡Perfil Aprobado!
+                            </h3>
+                            <p class="text-[var(--student-profile-text-secondary)] text-sm leading-relaxed mb-4">
+                                Tu perfil ha sido aprobado por el administrador. Ya puedes acceder a Mis Documentos.
+                            </p>
+                            <flux:button 
+                                wire:click="$set('showForm', true)" 
+                                class="
+                                    group relative
+                                    rounded-[var(--radius-md)]
+                                    bg-[var(--settings-btn-primary)]!
+                                    text-[var(--settings-btn-primary-text)]!
+                                    shadow-lg shadow-[var(--settings-btn-primary-shadow)]
+                                    hover:bg-[var(--settings-btn-primary-hover)]!
+                                    hover:shadow-xl hover:-translate-y-0.5
+                                    transition-all duration-300
+                                    disabled:opacity-60 disabled:cursor-not-allowed
+                                    px-6 py-3
+                                "
+                            >
+                                Actualizar Datos
+                            </flux:button>
+                        </div>
+                    </div>
+                </div>
 
-                    <p class="text-gray-600 text-sm">
-                        Revisa los datos y vuelve a enviarlos para validación.
-                    </p>
+            @elseif ($student->status === 'rechazado')
+                <div class="bg-[var(--student-profile-card-bg)] p-6 rounded-xl border border-[var(--status-border-rejected)] shadow-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-10 h-10 bg-[var(--status-icon-bg-rejected)] rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[var(--status-icon-color-rejected)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-[var(--student-profile-text-primary)] font-semibold text-lg mb-2">
+                                Perfil Rechazado
+                            </h3>
+                            <p class="text-[var(--student-profile-text-secondary)] text-sm leading-relaxed mb-3">
+                                Tu perfil no ha sido aprobado. Por favor, revisa la información y corrígela para volver a enviarla.
+                            </p>
 
-                    <div class="mt-4 flex justify-center">
-                        <flux:button 
-                            wire:click="$set('showForm', true)" 
-                            class="w-full max-w-xs bg-red-100 text-red-700 font-medium py-2 px-4 rounded-lg border border-red-300 hover:bg-red-200 transition-colors duration-150">
-                            Editar datos
-                        </flux:button>
+                            @if($student->rejection_reason)
+                                <div class="bg-red-500/5 p-4 rounded-lg border border-red-500/20 mb-4">
+                                    <p class="text-xs font-semibold text-red-400 uppercase tracking-wide mb-2">
+                                        Motivo del Rechazo
+                                    </p>
+                                    <p class="text-sm text-[var(--student-profile-text-secondary)] leading-relaxed">
+                                        {{ $student->rejection_reason }}
+                                    </p>
+                                </div>
+                            @endif
+
+                            <flux:button 
+                                wire:click="$set('showForm', true)" 
+                                 class="
+                                    group relative
+                                    rounded-[var(--radius-md)]
+                                    bg-[var(--settings-btn-primary)]!
+                                    text-[var(--settings-btn-primary-text)]!
+                                    shadow-lg shadow-[var(--settings-btn-primary-shadow)]
+                                    hover:bg-[var(--settings-btn-primary-hover)]!
+                                    hover:shadow-xl hover:-translate-y-0.5
+                                    transition-all duration-300
+                                    disabled:opacity-60 disabled:cursor-not-allowed
+                                    px-6 py-3
+                                "
+                            >
+                                Editar Datos
+                            </flux:button>
+                        </div>
                     </div>
                 </div>
             @endif

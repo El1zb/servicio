@@ -8,6 +8,8 @@
    MODO CLARO (DEFAULT)
    ===================================================== */
 @theme {
+
+   --color-bg-all: #f5f6fa;
   /* ===========================
      TIPOGRAFÍAS
      =========================== */
@@ -277,11 +279,119 @@
   /* ===========================
      COLORES SIDEBAR
      =========================== */
-   --sidebar-bg: var(--color-header-bg-1);
-  --sidebar-bg-alt: var(--color-header-bg-2); /* para degradados si quieres */
-  --sidebar-border: var(--color-border-header); /* puedes ajustar */
-  --sidebar-title-text: #F8FAFF;     /* blanco suave para resaltar el título */
---sidebar-subtitle-text: #C5D1E0;  /* gris azulado para un subtítulo más sutil */
+   /* Sidebar colores personalizados sobre fondo azul oscuro */
+   --sidebar-bg: var(--color-header-bg-1);           /* #273c6a */
+   --sidebar-bg-alt: var(--color-header-bg-2);       /* #213561 */
+   --sidebar-border: var(--color-border-header);     /* borde opcional */
+
+   /* Textos */
+   --sidebar-title-text: #F8FAFF;       /* blanco suave para título */
+   --sidebar-subtitle-text: #C5D1E0;    /* gris azulado para subtítulo */
+
+   /* Item activo */
+   --sidebar-item-bg-active: #1c2a49;    /* seleccionado, azul más oscuro */
+   --sidebar-item-text-active: #FFFFFF;  /* texto sobre el item activo */
+
+   /* Hover sobre items */
+   --sidebar-item-bg-hover: #203155;     /* hover azul más brillante */
+   --sidebar-item-text-hover: #FFFFFF;   /* texto sobre hover */
+
+   --sidebar-item-text-muted: #C5D1E0;              /* texto activo suave */
+   --sidebar-item-bg-soft: rgba(255,255,255,0.04); /* fondo activo ligero */
+
+   --sidebar-text-initials: #000000; /* fondo activo ligero */
+
+   /* ===========================
+     COLORES SETTINGS
+     =========================== */
+     --settings-item-text: #23272d;
+     --settings-item-text-hover: #0b0f16;
+     --settings-item-bg-hover:  #e7e7e8;  
+
+   
+   /* ===========================
+     Botones SETTINGS
+     =========================== */
+    --settings-btn-primary: #213561;
+    --settings-btn-primary-hover: #1a2a4d;
+    --settings-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+    --settings-btn-primary-text: #FFFFFF;
+
+    --settings-btn-danger: #DC2626; /* rojo principal */
+   --settings-btn-danger-hover: #B91C1C; /* rojo más oscuro al hover */
+   --settings-btn-danger-shadow: rgba(220, 38, 38, 0.25); /* sombra roja semi-transparente */
+   --settings-btn-danger-text: #FFFFFF; /* texto blanco */
+
+   --settings-btn-cancel: #dfe1e3; /* fondo principal */
+   --settings-btn-cancel-hover: #c6c8ca; /* fondo al hover */
+   --settings-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
+   --settings-btn-cancel-text: #000000; /* color de letra */
+
+   /* ===========================
+     Botones MODAL
+     =========================== */
+     --modal-bg: #FFFFFF;
+    --modal-btn-primary: #213561;
+    --modal-btn-primary-hover: #1a2a4d;
+    --modal-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+    --modal-btn-primary-text: #FFFFFF;
+
+   --modal-btn-cancel: #dfe1e3; /* fondo principal */
+   --modal-btn-cancel-hover: #c6c8ca; /* fondo al hover */
+   --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
+   --modal-btn-cancel-text: #000000; /* color de letra */
+
+   
+   /* ===========================
+    Perfil Estudiante
+     =========================== */
+--student-profile-bg: #ffffff;              
+--student-profile-card-bg: #f6f7fb;         
+--student-profile-border: #d0d7de;           
+--student-profile-border-card: #d0d7de;     
+--student-profile-text-primary: #1f2328;     
+--student-profile-text-secondary: #656d76;   
+
+/* Bordes más marcados y elegantes */
+--status-border-pending: rgba(37, 99, 235, 0.3);     /* Azul elegante */
+--status-border-approved: rgba(5, 150, 105, 0.3);    /* Verde formal */
+--status-border-rejected: rgba(220, 38, 38, 0.3);    /* Rojo intenso */
+
+/* Fondo de íconos más presente pero sutil */
+--status-icon-bg-pending: rgba(37, 99, 235, 0.15);
+--status-icon-bg-approved: rgba(5, 150, 105, 0.15);
+--status-icon-bg-rejected: rgba(220, 38, 38, 0.15);
+
+/* Color de íconos más sólido y elegante */
+--status-icon-color-pending: rgb(30, 64, 175);       /* Azul profundo */
+--status-icon-color-approved: rgb(4, 120, 87);       /* Verde sofisticado */
+--status-icon-color-rejected: rgb(185, 28, 28);      /* Rojo fuerte */
+
+/* ===========================
+    Document Estudiante
+     =========================== */     
+   --student-document-bg: #ffffff;
+   --student-document-bg-expired: #e8ebf3;
+   --student-document-border: #d0d7de;
+   --student-document-border-expired: #d0d7de;
+   --student-document-text-primary: #e6edf3;
+   --student-document-text-secondary: #a5afbd;
+
+
+/* ===========================
+    ALERTS
+     =========================== */
+    --alert-success-bg: rgba(16, 185, 129, 0.16);     /* más suave que status */
+--alert-success-border: rgba(16, 185, 129, 0.42); /* menos presencia */
+--alert-success-text: rgb(20, 83, 45);            /* verde oscuro (legible) */
+
+
+
+
+
+
+
+
 
 
 
@@ -366,6 +476,8 @@
    ===================================================== */
 @layer theme {
   .dark {
+
+   --color-bg-all: #161b22;
 /* ===========================
      TEMA OSCURO ELEGANTE PREMIUM
      =========================== */
@@ -607,14 +719,206 @@
    --color-footer-accent: #6B8BB8;
    --color-footer-accent-hover: #8BA4C7;
 
+   /* ===========================
+     COLORES SIDEBAR
+     =========================== */
+   /* Sidebar colores personalizados sobre fondo azul oscuro */
+   --sidebar-bg: var(--color-header-bg-1);           /* #273c6a */
+   --sidebar-bg-alt: var(--color-header-bg-2);       /* #213561 */
+   --sidebar-border: var(--color-border-header);     /* borde opcional */
+
+   /* Textos */
+   --sidebar-title-text: #F8FAFF;       /* blanco suave para título */
+   --sidebar-subtitle-text: #C5D1E0;    /* gris azulado para subtítulo */
+
+   /* Item activo */
+   --sidebar-item-bg-active: #23272d;    /* seleccionado, azul más oscuro */
+   --sidebar-item-text-active: #FFFFFF;  /* texto sobre el item activo */
+
+   /* Hover sobre items */
+   --sidebar-item-bg-hover: #151a25;     /* hover azul más brillante */
+   --sidebar-item-text-hover: #FFFFFF;   /* texto sobre hover */
+
+   --sidebar-item-text-muted: #C5D1E0;              /* texto activo suave */
+   --sidebar-item-bg-soft: rgba(255,255,255,0.04); /* fondo activo ligero */
+
+   --sidebar-text-initials: #FFFFFF; /* fondo activo ligero */
+
+   /* ===========================
+     COLORES SETTINGS
+     =========================== */
+     --settings-item-text: #F8FAFF;
+     --settings-item-text-hover: #FFFFFF;
+     --settings-item-bg-hover: #151a25;                                                                           
+
+     /* ===========================
+     Botones SETTINGS
+     =========================== */
+    --settings-btn-primary: #F8FAFF;
+    --settings-btn-primary-hover: #FFFFFF;
+    --settings-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+    --settings-btn-primary-text: #000000;
+
+    --settings-btn-danger: #DC2626; /* rojo principal */
+   --settings-btn-danger-hover: #B91C1C; /* rojo más oscuro al hover */
+   --settings-btn-danger-shadow: rgba(220, 38, 38, 0.25); /* sombra roja semi-transparente */
+   --settings-btn-danger-text: #FFFFFF; /* texto blanco */
+
+   --settings-btn-cancel: #dfe1e3; /* fondo principal */
+   --settings-btn-cancel-hover: #c6c8ca; /* fondo al hover */
+   --settings-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
+   --settings-btn-cancel-text: #000000; /* color de letra */
+
+   /* ===========================
+     Botones MODAL
+     =========================== */
+      --modal-bg: #1d2024;
+
+    --modal-btn-primary: #F8FAFF;
+    --modal-btn-primary-hover: #FFFFFF;
+    --modal-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+    --modal-btn-primary-text: #000000;
+
+   --modal-btn-cancel: #6e7074; /* fondo principal */
+   --modal-btn-cancel-hover: #56585d; /* fondo al hover */
+   --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
+   --modal-btn-cancel-text: #ffffff; /* color de letra */
 
 
    /* ===========================
-     COLOR SIDEBAR
+    Perfil Estudiante
      =========================== */
-      --sidebar-bg: var(--color-header-bg-1);
-      --sidebar-bg-alt: var(--color-header-bg-2); /* para degradados si quieres */
-    --sidebar-border: var(--color-border-header); /* puedes ajustar */
+   --student-profile-bg: #161d26;
+   --student-profile-card-bg: #0d1117;
+   --student-profile-border: #10151c ;
+   --student-profile-border-card: #3c3e42;
+   --student-profile-text-primary: #e6edf3;
+   --student-profile-text-secondary: #a5afbd;
+
+   --status-border-pending: rgba(59, 130, 246, 0.4);    /* Azul */
+   --status-border-approved: rgba(16, 185, 129, 0.4);   /* Verde esmeralda */
+   --status-border-rejected: rgba(239, 68, 68, 0.4);    /* Rojo */
+
+   --status-icon-bg-pending: rgba(59, 130, 246, 0.1);
+   --status-icon-bg-approved: rgba(16, 185, 129, 0.1);
+   --status-icon-bg-rejected: rgba(239, 68, 68, 0.1);
+
+   --status-icon-color-pending: rgb(96, 165, 250);      /* Azul claro */
+   --status-icon-color-approved: rgb(52, 211, 153);     /* Verde claro */
+   --status-icon-color-rejected: rgb(248, 113, 113);    /* Rojo claro */
+
+   /* ===========================
+    Document Estudiante
+     =========================== */     
+   --student-document-bg: #161d26;
+   --student-document-text-primary: #e6edf3;
+   --student-document-text-secondary: #a5afbd;
+   --student-document-progress: #8E949E;
+   --student-document-progress-indicador: #3c78c7;
+   
+   --student-document-bg-card: #22262f;
+   --student-document-bg-card-header: #0d1117;
+   --student-document-bg-card-header-2: #121826;
+   --student-document-bg-card-header-approved: #0d1117;
+   --student-document-bg-card-header-approved-2: #121826;
+   --student-document-bg-card-header-expired: #0a0d12;
+   --student-document-bg-card-header-expired-2: #11131c;
+   --student-document-bg-card-indicator: #424550;
+   
+   --student-document-bg-content: #171b21;
+   --student-document-border-content: #1e232b;
+   --student-document-border-content-hover: #a5afbd;
+   --student-document-bg-content-status-approved: rgba(16, 185, 129, 0.1);
+   --student-document-text-content-status-approved-icon: rgb(52, 211, 153); 
+   --student-document-bg-content-status-normal: rgba(59, 130, 246, 0.1);
+   --student-document-text-content-status-normal-icon: rgb(96, 165, 250);  
+   --student-document-bg-content-status-rejected: rgba(239, 68, 68, 0.1);
+   --student-document-text-content-status-rejected-icon: rgb(248, 113, 113); 
+
+   --student-document-text-button: #e6edf3;
+
+   --student-document-bg-button-word: #0048a6; 
+   --student-document-bg-button-word-hover: #003273;
+   --student-document-bg-tooltip-word: var(--student-document-bg-button-word-hover);
+
+   --student-document-bg-button-pdf: #900d0d;
+   --student-document-bg-button-pdf-hover: #6c0909;
+   --student-document-bg-tooltip-pdf: var(--student-document-bg-button-pdf-hover);
+
+   --student-document-bg-button-view: #c6cbd1;
+   --student-document-bg-button-view-hover: #acb6be;
+   --student-document-text-button-view: #2b323d;
+   --student-document-text-tooltip-view: var(--student-document-text-button-view);
+   --student-document-bg-tooltip-view: var(--student-document-bg-button-view-hover);   
+
+   --student-document-bg-button-replace: #5a6b85;
+   --student-document-bg-button-replace-hover: #4c5a72;
+   --student-document-bg-tooltip-replace: var(--student-document-bg-button-replace-hover);
+
+   --student-document-bg-button-upload: #317bd5;   
+   --student-document-bg-button-upload-hover: #266cc1;
+   --student-document-bg-tooltip-upload: var(--student-document-bg-button-upload-hover);
+
+   --student-document-bg-button-expired: #465872;      
+   --student-document-bg-button-icon-expired: #94a5c6; 
+   --student-document-text-tooltip-expired: var(--student-document-bg-button-icon-expired); 
+   --student-document-bg-tooltip-expired: var(--student-document-bg-button-expired);    
+
+   --student-document-size-color: #2277ef;
+
+   --student-document-border-separator: #7f8792;
+   --student-document-text-comment: #f87171;
+   --student-document-text-comment-hover: #ef4444;
+
+   --student-document-control-bg: var(--student-document-bg);
+   --student-document-control-bg-header: #0a0d12;
+   --student-document-control-bg-header-2: #11131c;
+
+   --student-document-calendar-bg: var(--student-document-bg-card);
+   --student-document-calendar-bg-header: #0d1117;
+   --student-document-calendar-bg-header-2: #121826;
+   --student-document-calendar-button-date-hover: #151c2d;
+
+   --student-document-calendar-approved: #34D399;
+   --student-document-calendar-review: #60A5FA;
+   --student-document-calendar-rejected: #F87171;
+   --student-document-calendar-pending: #e7d232;
+   --student-document-calendar-expired: #717171;
+   
+   --student-document-calendar-selected-day-bg: #1f4271b4;
+   --student-document-calendar-selected-day-border: #3c78c7;
+   --student-document-calendar-selected-day-hover: #424550;
+   
+   --student-document-calendar-selected-day-content-bg: #0a0d12;
+   --student-document-calendar-selected-day-content-bg-2: #11131c;
+   --student-document-calendar-selected-day-content-border: #7f8792;
+   --student-document-calendar-selected-day-content-text-hover: #858d98;
+   --student-document-calendar-selected-day-content-card: #171b21;
+
+   --student-document-alert-bg: var(--student-document-calendar-bg);
+   --student-document-alert-button-date-hover: #151c2d;
+   --student-document-alert-approved-border: #21a977;
+   --student-document-alert-review-border: #60A5FA;
+   --student-document-alert-rejected-border: #F87171;
+   --student-document-alert-pending-border: #c4af14;
+   --student-document-alert-expired-border: #717171;
+   
+
+
+   
+
+
+
+   
+
+   /* ===========================
+    ALERTS
+     =========================== */
+    --alert-success-bg: rgba(6, 95, 70, 0.20);
+--alert-success-border: rgba(16, 185, 129, 0.55);
+--alert-success-text: rgb(103, 223, 175);
+    
+
 
 
 
@@ -681,3 +985,5 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
   }
 }
+
+

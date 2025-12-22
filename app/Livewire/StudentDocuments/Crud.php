@@ -24,7 +24,11 @@ class Crud extends Component
         $this->student = Auth::user()->student;
 
         if (!$this->student) {
-            session()->flash('error', 'No tienes perfil de estudiante.');
+            //session()->flash('error', 'No tienes perfil de estudiante.');
+           $this->dispatch('notify',
+                type: 'error',
+                message: 'No tienes perfil de estudiante.'
+            );
             return;
         }
 
@@ -144,13 +148,38 @@ class Crud extends Component
     $uploadedFile = $this->fileUpload[$docId] ?? null;
     if (!$uploadedFile) return;
 
-    // 🔹 Validar tamaño máximo
-    $maxBytes = $file->max_size * 1024;
-    if ($uploadedFile->getSize() > $maxBytes) {
-        session()->flash('error', "El archivo '{$uploadedFile->getClientOriginalName()}' excede el tamaño máximo de {$file->max_size} KB.");
+    // 🔒 VALIDAR QUE SEA PDF (real)
+    if (
+        $uploadedFile->getClientOriginalExtension() !== 'pdf' ||
+        $uploadedFile->getMimeType() !== 'application/pdf'
+    ) {
+        $this->dispatch('notify',
+            type: 'error',
+            message: 'Solo se permiten archivos PDF.'
+        );
+
         unset($this->fileUpload[$docId]);
         return;
     }
+
+
+    // 🔹 Validar tamaño máximo
+    $maxBytes = $file->max_size * 1024;
+    /*if ($uploadedFile->getSize() > $maxBytes) {
+        session()->flash('error', "El archivo '{$uploadedFile->getClientOriginalName()}' excede el tamaño máximo de {$file->max_size} KB.");
+        unset($this->fileUpload[$docId]);
+        return;
+    }*/
+    if ($uploadedFile->getSize() > $maxBytes) {
+        $this->dispatch('notify',
+            type: 'error',
+            message: "El archivo '{$uploadedFile->getClientOriginalName()}' excede el tamaño máximo de {$file->max_size} KB."
+        );
+
+        unset($this->fileUpload[$docId]);
+        return;
+    }
+
 
     $extension = $uploadedFile->getClientOriginalExtension();
 
@@ -177,7 +206,13 @@ class Crud extends Component
     ]);
 
     unset($this->fileUpload[$docId]);
-    session()->flash('message', "Archivo '{$file->name}' subido correctamente.");
+    //session()->flash('message', "Archivo '{$file->name}' subido correctamente.");
+    $this->dispatch('notify',
+        type: 'success',
+        message: "Archivo '{$file->name}' subido correctamente."
+    );
+
+
 }
 
 

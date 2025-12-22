@@ -1,9 +1,26 @@
 @props([
     'title',
-    'description',
+    'description' => null,
+    'center' => true,
 ])
 
-<div class="flex w-full flex-col text-center">
-    <flux:heading size="xl">{{ $title }}</flux:heading>
-    <flux:subheading>{{ $description }}</flux:subheading>
+<div @class([
+    'flex w-full flex-col gap-1',
+    'text-center' => $center,
+    'text-left' => ! $center,
+])>
+    <flux:heading
+        size="xl"
+        class="font-extrabold text-[var(--student-profile-text-primary)]"
+    >
+        {{ $title }}
+    </flux:heading>
+
+    @if($description)
+        <flux:subheading
+            class="text-[var(--student-profile-text-secondary)]"
+        >
+            {{ $description }}
+        </flux:subheading>
+    @endif
 </div>

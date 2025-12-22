@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-[var(--color-section-bg)] text-[var(--text-section-title)]">
+    <body class="min-h-screen bg-[var(--color-bg-all)] text-[var(--text-section-title)]">
 
         <flux:sidebar sticky stashable class="w-64 min-h-screen border-e border-[var(--sidebar-border)] bg-gradient-to-b from-[var(--sidebar-bg)] to-[var(--sidebar-bg-alt)] dark:border-[var(--sidebar-border)] dark:from-[var(--sidebar-bg)] dark:to-[var(--sidebar-bg-alt)]">
 
@@ -175,7 +175,7 @@
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-[var(--color-primary-light)] text-[var(--color-text-inverse)]"
+                                        class="flex h-full w-full items-center justify-center rounded-lg bg-[var(--sidebar-border)] text-[var(--sidebar-text-initials)]"
                                     >
                                         {{ auth()->user()->initials() }}
                                     </span>

@@ -81,9 +81,44 @@
             <div class="flex gap-2">
                 <flux:spacer />
                 <flux:modal.close>
-                    <flux:button variant="ghost" wire:click="closeModal">Cancelar</flux:button>
+                    <flux:button
+                        wire:click="closeModal"
+                        class="
+                            group relative
+                            h-12
+                            px-5
+                            rounded-[var(--radius-md)]
+                            bg-[var(--modal-btn-cancel)]!
+                            text-[var(--modal-btn-cancel-text)]!
+                            shadow-md shadow-[var(--modal-btn-cancel-shadow)]
+                            hover:bg-[var(--modal-btn-cancel-hover)]!
+                            hover:shadow-lg hover:-translate-y-0.5
+                            transition-all duration-300
+                            disabled:opacity-60 disabled:cursor-not-allowed
+                        "
+                    >
+                        Cancelar
+                    </flux:button>
+
                 </flux:modal.close>
-                <flux:button wire:click="save" variant="primary">Guardar</flux:button>
+                <flux:button
+                    wire:click="save"
+                    class="
+                        group relative
+                        h-12
+                        px-6
+                        rounded-[var(--radius-md)]
+                        bg-[var(--modal-btn-primary)]!
+                        text-[var(--modal-btn-primary-text)]!
+                        shadow-lg shadow-[var(--modal-btn-primary-shadow)]
+                        hover:bg-[var(--modal-btn-primary-hover)]!
+                        hover:shadow-xl hover:-translate-y-0.5
+                        transition-all duration-300
+                    "
+                >
+                    Guardar
+                </flux:button>
+
             </div>
         </div>
     </flux:modal>
