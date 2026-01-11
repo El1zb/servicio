@@ -7,7 +7,7 @@
                 class="
                     text-[var(--settings-item-text)]
                     hover:text-[var(--settings-item-text-hover)]
-                    hover:bg-[var(--settings-item-bg-hover)]
+                    hover:bg-[var(--settings-item-bg-hover)]!
                 "
             >
                 {{ __('Perfil') }}
@@ -18,7 +18,7 @@
             class="
                     text-[var(--settings-item-text)]
                     hover:text-[var(--settings-item-text-hover)]
-                    hover:bg-[var(--settings-item-bg-hover)]
+                    hover:bg-[var(--settings-item-bg-hover)]!
                 "
             >
                 {{ __('Contraseña') }}
@@ -28,7 +28,7 @@
             class="
                     text-[var(--settings-item-text)]
                     hover:text-[var(--settings-item-text-hover)]
-                    hover:bg-[var(--settings-item-bg-hover)]
+                    hover:bg-[var(--settings-item-bg-hover)]!
                 "
             >
                 {{ __('Apariencia') }}

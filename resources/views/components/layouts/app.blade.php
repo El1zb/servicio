@@ -9,4 +9,8 @@
             {{ $slot }}
         </flux:main>
     </x-layouts.app.sidebar>
+
+    
+    {{-- 🔔 Toast Notifications (GLOBAL) --}}
+    <x-toast-notifications />
 </div>

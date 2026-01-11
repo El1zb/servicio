@@ -114,9 +114,17 @@ class Profile extends Component
         $this->student = Student::where('user_id', Auth::id())->first();
         $this->updateFormVisibility();
 
-        if ($this->student->status !== 'pendiente') {
+        /*if ($this->student->status !== 'pendiente') {
             session()->flash('message', 'Perfil actualizado correctamente.');
+        }*/
+
+        if ($this->student->status !== 'pendiente') {
+            $this->dispatch('notify',
+                type: 'success',
+                message: 'Perfil actualizado correctamente.'
+            );
         }
+
     }
 
     public function render()

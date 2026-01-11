@@ -328,54 +328,183 @@
    --settings-btn-cancel-text: #000000; /* color de letra */
 
    /* ===========================
-     Botones MODAL
-     =========================== */
-     --modal-bg: #FFFFFF;
-    --modal-btn-primary: #213561;
-    --modal-btn-primary-hover: #1a2a4d;
-    --modal-btn-primary-shadow: rgba(33, 53, 97, 0.25);
-    --modal-btn-primary-text: #FFFFFF;
-
-   --modal-btn-cancel: #dfe1e3; /* fondo principal */
-   --modal-btn-cancel-hover: #c6c8ca; /* fondo al hover */
-   --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
-   --modal-btn-cancel-text: #000000; /* color de letra */
-
-   
-   /* ===========================
     Perfil Estudiante
-     =========================== */
+   =========================== */
 --student-profile-bg: #ffffff;              
 --student-profile-card-bg: #f6f7fb;         
 --student-profile-border: #d0d7de;           
 --student-profile-border-card: #d0d7de;     
 --student-profile-text-primary: #1f2328;     
---student-profile-text-secondary: #656d76;   
+--student-profile-text-secondary: #656d76; 
 
-/* Bordes más marcados y elegantes */
---status-border-pending: rgba(37, 99, 235, 0.3);     /* Azul elegante */
---status-border-approved: rgba(5, 150, 105, 0.3);    /* Verde formal */
---status-border-rejected: rgba(220, 38, 38, 0.3);    /* Rojo intenso */
+--status-border-pending: rgba(37, 99, 235, 0.3);
+--status-border-approved: rgba(5, 150, 105, 0.3);
+--status-border-rejected: rgba(220, 38, 38, 0.3);
 
-/* Fondo de íconos más presente pero sutil */
 --status-icon-bg-pending: rgba(37, 99, 235, 0.15);
 --status-icon-bg-approved: rgba(5, 150, 105, 0.15);
 --status-icon-bg-rejected: rgba(220, 38, 38, 0.15);
 
-/* Color de íconos más sólido y elegante */
---status-icon-color-pending: rgb(30, 64, 175);       /* Azul profundo */
---status-icon-color-approved: rgb(4, 120, 87);       /* Verde sofisticado */
---status-icon-color-rejected: rgb(185, 28, 28);      /* Rojo fuerte */
+--status-icon-color-pending: rgb(30, 64, 175);
+--status-icon-color-approved: rgb(4, 120, 87);
+--status-icon-color-rejected: rgb(185, 28, 28);
 
 /* ===========================
-    Document Estudiante
-     =========================== */     
-   --student-document-bg: #ffffff;
-   --student-document-bg-expired: #e8ebf3;
-   --student-document-border: #d0d7de;
-   --student-document-border-expired: #d0d7de;
-   --student-document-text-primary: #e6edf3;
-   --student-document-text-secondary: #a5afbd;
+    Document Estudiante, de aqui a abajo debo editar modo claro
+   =========================== */     
+--student-document-bg: #ffffff;
+--student-document-text-primary: #1f2328;
+--student-document-text-secondary: #656d76;
+--student-document-progress: #8E949E;
+--student-document-progress-indicador: #2563eb;
+
+--student-document-bg-card: #f8f9fa;
+--student-document-bg-card-header: #f6f7fb;
+--student-document-bg-card-header-2: #edf0f5;
+--student-document-bg-card-header-approved: #f6f7fb;
+--student-document-bg-card-header-approved-2: #edf0f5;
+--student-document-bg-card-header-expired: #f3f4f6;
+--student-document-bg-card-header-expired-2: #e5e7eb;
+--student-document-bg-card-indicator: #d1d5db;
+
+--student-document-bg-content: #ffffff;
+--student-document-border-content: #e5e7eb;
+--student-document-border-content-hover: #656d76;
+--student-document-bg-content-status-approved: rgba(5, 150, 105, 0.1);
+--student-document-text-content-status-approved-icon: rgb(4, 120, 87);
+--student-document-bg-content-status-normal: rgba(37, 99, 235, 0.1);
+--student-document-text-content-status-normal-icon: rgb(30, 64, 175);
+--student-document-bg-content-status-rejected: rgba(220, 38, 38, 0.1);
+--student-document-text-content-status-rejected-icon: rgb(185, 28, 28);
+
+--student-document-text-button: #ffffff;
+
+--student-document-bg-button-word: #2563eb;
+--student-document-bg-button-word-hover: #1d4ed8;
+--student-document-bg-tooltip-word: var(--student-document-bg-button-word-hover);
+
+--student-document-bg-button-pdf: #dc2626;
+--student-document-bg-button-pdf-hover: #b91c1c;
+--student-document-bg-tooltip-pdf: var(--student-document-bg-button-pdf-hover);
+
+--student-document-bg-button-view: #374151;
+--student-document-bg-button-view-hover: #1f2937;
+--student-document-text-button-view: #ffffff;
+--student-document-text-tooltip-view: var(--student-document-text-button-view);
+--student-document-bg-tooltip-view: var(--student-document-bg-button-view-hover);
+
+--student-document-bg-button-replace: #6b7280;
+--student-document-bg-button-replace-hover: #4b5563;
+--student-document-bg-tooltip-replace: var(--student-document-bg-button-replace-hover);
+
+--student-document-bg-button-upload: #2563eb;
+--student-document-bg-button-upload-hover: #1d4ed8;
+--student-document-bg-tooltip-upload: var(--student-document-bg-button-upload-hover);
+
+--student-document-bg-button-expired: #9ca3af;
+--student-document-bg-button-icon-expired: #4b5563;
+--student-document-text-tooltip-expired: var(--student-document-bg-button-icon-expired);
+--student-document-bg-tooltip-expired: var(--student-document-bg-button-expired);
+
+--student-document-size-color: #2563eb;
+
+--student-document-border-separator: #9ca3af;
+--student-document-text-comment: #dc2626;
+--student-document-text-comment-hover: #b91c1c;
+
+--student-document-control-bg: var(--student-document-bg);
+--student-document-control-bg-header: #f3f4f6;
+--student-document-control-bg-header-2: #e5e7eb;
+
+--student-document-calendar-bg: var(--student-document-bg-card);
+--student-document-calendar-bg-header: #f6f7fb;
+--student-document-calendar-bg-header-2: #edf0f5;
+--student-document-calendar-button-date-hover: #e0e7ff;
+
+--student-document-calendar-approved: #059669;
+--student-document-calendar-review: #2563eb;
+--student-document-calendar-rejected: #dc2626;
+--student-document-calendar-pending: #ca8a04;
+--student-document-calendar-expired: #6b7280;
+
+--student-document-calendar-selected-day-bg: rgba(37, 99, 235, 0.1);
+--student-document-calendar-selected-day-border: #2563eb;
+--student-document-calendar-selected-day-hover: #e5e7eb;
+
+--student-document-calendar-selected-day-content-bg: #f3f4f6;
+--student-document-calendar-selected-day-content-bg-2: #e5e7eb;
+--student-document-calendar-selected-day-content-border: #9ca3af;
+--student-document-calendar-selected-day-content-text-hover: #4b5563;
+--student-document-calendar-selected-day-content-card: var(--student-document-bg-content);
+
+--student-document-alert-bg: var(--student-document-calendar-bg);
+--student-document-alert-button-date-hover: #e0e7ff;
+--student-document-alert-approved-border: #059669;
+--student-document-alert-review-border: #2563eb;
+--student-document-alert-rejected-border: #dc2626;
+--student-document-alert-pending-border: #ca8a04;
+--student-document-alert-expired-border: #6b7280;
+
+--student-document-validation-bg: #ffffff;
+--student-document-validation-no-perfil: rgba(5, 150, 105, 0.3);
+--student-document-validation-warning: rgba(37, 99, 235, 0.3);
+--student-document-validation-negative: rgba(220, 38, 38, 0.3);
+--student-document-validation-icon: #1f2328;
+
+/* ===========================
+    Botones MODAL
+   =========================== */
+--modal-bg: #ffffff;
+--modal-text-primary: #1f2328;
+--modal-text-secondary: #656d76;
+
+--modal-btn-primary: #1f2328;
+--modal-btn-primary-hover: #000000;
+--modal-btn-primary-shadow: rgba(0, 0, 0, 0.1);
+--modal-btn-primary-text: #ffffff;
+
+--modal-btn-cancel: #9ca3af;
+--modal-btn-cancel-hover: #6b7280;
+--modal-btn-cancel-shadow: rgba(0, 0, 0, 0.1);
+--modal-btn-cancel-text: #ffffff;
+
+--icon-document-student-modal-dowload-bg: #f6f7fb;
+--icon-document-student-modal-dowload-icon: #f8f9fa;
+
+--icon-document-student-modal-comment-bg: #2563eb;
+--icon-document-student-modal-comment-icon: #ffffff;
+
+--document-student-modal-border: #9ca3af;
+--document-student-modal-bg-comment: #f8f9fa;
+--document-student-modal-border-comment: #d1d5db;
+
+--modal-btn-document-descargar: #2563eb;
+--modal-btn-document-descargar-text: #ffffff;
+--modal-btn-document-descargar-shadow: rgba(0, 0, 0, 0.1);
+--modal-btn-document-descargar-hover: #1d4ed8;
+
+--modal-btn-document-cerrar: #1f2328;
+--modal-btn-document-cerrar-text: #ffffff;
+--modal-btn-document-cerrar-shadow: rgba(0, 0, 0, 0.1);
+--modal-btn-document-cerrar-hover: #000000;
+
+/* ===========================
+    TOAST notifications
+   =========================== */
+--toast-notification-bg: #f8f9fa;
+--toast-notification-success: #059669;
+--toast-notification-error: #dc2626;
+--toast-notification-info: #2563eb;
+--toast-notification-warning: #ca8a04;
+--toast-notification-text-primary: #1f2328;
+--toast-notification-text-secondary: #656d76;
+
+
+
+
+
+
+
 
 
 /* ===========================
@@ -749,7 +878,7 @@
      =========================== */
      --settings-item-text: #F8FAFF;
      --settings-item-text-hover: #FFFFFF;
-     --settings-item-bg-hover: #151a25;                                                                           
+     --settings-item-bg-hover:  rgba(255,255,255,0.06);                                                                          
 
      /* ===========================
      Botones SETTINGS
@@ -770,30 +899,16 @@
    --settings-btn-cancel-text: #000000; /* color de letra */
 
    /* ===========================
-     Botones MODAL
-     =========================== */
-      --modal-bg: #1d2024;
-
-    --modal-btn-primary: #F8FAFF;
-    --modal-btn-primary-hover: #FFFFFF;
-    --modal-btn-primary-shadow: rgba(33, 53, 97, 0.25);
-    --modal-btn-primary-text: #000000;
-
-   --modal-btn-cancel: #6e7074; /* fondo principal */
-   --modal-btn-cancel-hover: #56585d; /* fondo al hover */
-   --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
-   --modal-btn-cancel-text: #ffffff; /* color de letra */
-
-
-   /* ===========================
     Perfil Estudiante
      =========================== */
-   --student-profile-bg: #161d26;
+   --student-profile-bg: #1c2128;
    --student-profile-card-bg: #0d1117;
    --student-profile-border: #10151c ;
    --student-profile-border-card: #3c3e42;
    --student-profile-text-primary: #e6edf3;
    --student-profile-text-secondary: #a5afbd;
+   --student-document-bg-card-header-profile: #06080b;
+   --student-document-bg-card-header-profile-2:#06090c;
 
    --status-border-pending: rgba(59, 130, 246, 0.4);    /* Azul */
    --status-border-approved: rgba(16, 185, 129, 0.4);   /* Verde esmeralda */
@@ -810,13 +925,13 @@
    /* ===========================
     Document Estudiante
      =========================== */     
-   --student-document-bg: #161d26;
+   --student-document-bg: #1c2128;
    --student-document-text-primary: #e6edf3;
    --student-document-text-secondary: #a5afbd;
    --student-document-progress: #8E949E;
    --student-document-progress-indicador: #3c78c7;
    
-   --student-document-bg-card: #22262f;
+   --student-document-bg-card: #242930;
    --student-document-bg-card-header: #0d1117;
    --student-document-bg-card-header-2: #121826;
    --student-document-bg-card-header-approved: #0d1117;
@@ -825,7 +940,7 @@
    --student-document-bg-card-header-expired-2: #11131c;
    --student-document-bg-card-indicator: #424550;
    
-   --student-document-bg-content: #171b21;
+   --student-document-bg-content: #161d25;
    --student-document-border-content: #1e232b;
    --student-document-border-content-hover: #a5afbd;
    --student-document-bg-content-status-approved: rgba(16, 185, 129, 0.1);
@@ -893,7 +1008,7 @@
    --student-document-calendar-selected-day-content-bg-2: #11131c;
    --student-document-calendar-selected-day-content-border: #7f8792;
    --student-document-calendar-selected-day-content-text-hover: #858d98;
-   --student-document-calendar-selected-day-content-card: #171b21;
+   --student-document-calendar-selected-day-content-card: var(--student-document-bg-content);
 
    --student-document-alert-bg: var(--student-document-calendar-bg);
    --student-document-alert-button-date-hover: #151c2d;
@@ -902,21 +1017,77 @@
    --student-document-alert-rejected-border: #F87171;
    --student-document-alert-pending-border: #c4af14;
    --student-document-alert-expired-border: #717171;
-   
+
+   --student-document-validation-bg: #1c2128;
+   --student-document-validation-no-perfil: rgba(16, 185, 129, 0.4);
+   --student-document-validation-warning: rgba(59, 130, 246, 0.4);
+   --student-document-validation-negative: rgba(232, 45, 45, 0.4);  
+   --student-document-validation-icon: #f2f2f2;
+
+   /* ===========================
+     Botones MODAL
+     =========================== */
+      --modal-bg: #1c2128;
+      --modal-text-primary: #e6edf3;
+      --modal-text-secondary: #a5afbd;
+
+      --modal-btn-primary: #F8FAFF;
+      --modal-btn-primary-hover: #FFFFFF;
+      --modal-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+      --modal-btn-primary-text: #000000;
+
+      --modal-btn-cancel: #6e7074; /* fondo principal */
+      --modal-btn-cancel-hover: #56585d; /* fondo al hover */
+      --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
+      --modal-btn-cancel-text: #ffffff; /* color de letra */
+
+      --icon-document-student-modal-dowload-bg: #0d1117;
+      --icon-document-student-modal-dowload-icon: #242930;
+
+      --icon-document-student-modal-comment-bg: #3c78c7;
+      --icon-document-student-modal-comment-icon: #ffffff;
+
+      --document-student-modal-border: #666d77;
+      --document-student-modal-bg-comment: #242930;
+      --document-student-modal-border-comment: #2c323a;
+
+      --modal-btn-document-descargar: #3c78c7; 
+      --modal-btn-document-descargar-text: #ffffff;
+      --modal-btn-document-descargar-shadow: rgba(33, 53, 97, 0.25); 
+      --modal-btn-document-descargar-hover: #295ea2;
+
+      --modal-btn-document-cerrar: #dee2eb; 
+      --modal-btn-document-cerrar-text: #000000;
+      --modal-btn-document-cerrar-shadow: rgba(33, 53, 97, 0.25); 
+      --modal-btn-document-cerrar-hover: #c8cbd3;
+
+      /* ===========================
+    TOAST notifications
+     =========================== */
+   --toast-notification-bg: #262c35;
+   --toast-notification-success: #1f8f5f;
+   --toast-notification-error:   #9e1f1f;
+   --toast-notification-info:    #2f6fed;
+   --toast-notification-warning: #b8871a;
+   --toast-notification-text-primary: #e6edf3;
+   --toast-notification-text-secondary: #a5afbd;
 
 
-   
+
+       
+
+
 
 
 
    
 
    /* ===========================
-    ALERTS
+    ALERTS, checar si se eliminan a futuro
      =========================== */
     --alert-success-bg: rgba(6, 95, 70, 0.20);
---alert-success-border: rgba(16, 185, 129, 0.55);
---alert-success-text: rgb(103, 223, 175);
+   --alert-success-border: rgba(16, 185, 129, 0.55);
+   --alert-success-text: rgb(103, 223, 175);
     
 
 

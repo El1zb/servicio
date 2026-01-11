@@ -506,3 +506,74 @@ html {
 .animate-mouse-bounce {
     animation: mouse-bounce 1.5s ease-in-out infinite;
 }
+
+
+
+/* Estilos para scrollbars personalizados en sidebars*/
+.sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(60, 83, 112, 0.5) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+    width: 8px; 
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.6), rgba(147, 51, 234, 0.6));
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8));
+    background-clip: padding-box;
+}
+.sidebar-scroll {
+    scroll-behavior: smooth;
+}
+
+
+
+
+
+
+/* =====================================================
+   ANIMACIONES ADICIONALES PARA TOAST NOTIFICATIONS
+   Agregar al final de animations.css
+   ===================================================== */
+/* Animación para toast notifications */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+/* Responsive para toast en móviles */
+@media (max-width: 640px) {
+    #toast-container {
+        left: 1rem;
+        right: 1rem;
+        top: 1rem;
+    }
+    
+    #toast-container > div {
+        max-width: 100%;
+    }
+}

@@ -3,109 +3,118 @@
         
         <!-- Mensaje si no tiene perfil de estudiante -->
         @if(!$student)
-            <div class="flex items-center justify-center min-h-[80vh]">
+            <div class="flex items-center justify-center min-h-[80vh] px-4">
                 <div class="max-w-md w-full">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center border-t-4 border-red-500">
-                        <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-user-slash text-4xl text-red-600 dark:text-red-400"></i>
+                    <div class="bg-[var(--student-document-validation-bg)] rounded-2xl shadow-2xl p-8 text-center backdrop-blur-sm">
+                        <!-- Ícono con animación sutil -->
+                        <div class="relative w-20 h-20 bg-[var(--student-document-validation-no-perfil)] rounded-full flex items-center justify-center mx-auto mb-6 
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-full before:bg-[var(--student-document-validation-no-perfil)] 
+                                    before:animate-ping before:opacity-20">
+                            <i class="fas fa-user-slash text-4xl text-[var(--student-document-validation-icon)] relative z-10"></i>
                         </div>
                         
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        <h2 class="text-2xl font-bold text-[var(--student-document-text-primary)] mb-3">
                             Sin Perfil de Estudiante
                         </h2>
                         
-                        <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                            No se encontró un perfil de estudiante asociado a tu cuenta. Por favor, contacta al administrador para que te asigne un perfil.
+                        <p class="text-[var(--student-document-text-secondary)] mb-8 leading-relaxed max-w-sm mx-auto">
+                            Para acceder a los documentos académicos, necesitas tener un perfil de estudiante activo en el sistema.
                         </p>
                         
-                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-                            <div class="flex items-start gap-3">
-                                <i class="fas fa-info-circle text-yellow-600 dark:text-yellow-400 mt-0.5"></i>
-                                <div class="text-left">
-                                    <p class="text-sm font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
-                                        ¿Qué significa esto?
-                                    </p>
-                                    <p class="text-xs text-yellow-700 dark:text-yellow-400">
-                                        Para acceder a los documentos académicos, necesitas tener un perfil de estudiante activo en el sistema.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="{{ route('students.profile') }}"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
-                                    <i class="fas fa-user-graduate"></i>
-                                    Completar perfil de estudiante
-                                </a>
-                        </div>
+                        <a href="{{ route('students.profile') }}"
+                        class="inline-flex items-center gap-2
+                                rounded-[var(--radius-md)]
+                                bg-[var(--settings-btn-primary)]!
+                                text-[var(--settings-btn-primary-text)]!
+                                shadow-lg shadow-[var(--settings-btn-primary-shadow)]
+                                hover:bg-[var(--settings-btn-primary-hover)]!
+                                hover:shadow-xl hover:-translate-y-0.5
+                                active:translate-y-0
+                                transition-all duration-300
+                                px-6 py-3
+                                font-medium">    
+                            <span>Completar perfil</span>
+                            <i class="fas fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
         @elseif($student->status === 'pendiente')
             {{-- ⏳ PERFIL PENDIENTE --}}
-            <div class="flex items-center justify-center min-h-[80vh]">
+            <div class="flex items-center justify-center min-h-[80vh] px-4">
                 <div class="max-w-md w-full">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center border-t-4 border-yellow-500">
+                    <div class="bg-[var(--student-document-validation-bg)] rounded-2xl shadow-2xl p-8 text-center backdrop-blur-sm">
                         
-                        <div class="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-clock text-4xl text-yellow-600 dark:text-yellow-400"></i>
+                        <!-- Ícono con animación sutil -->
+                        <div class="relative w-20 h-20 
+                                    bg-[var(--student-document-validation-warning)] 
+                                    rounded-full flex items-center justify-center mx-auto mb-6
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-full
+                                    before:bg-[var(--student-document-validation-warning)]
+                                    before:animate-ping before:opacity-20">
+                            <i class="fas fa-clock text-4xl text-[var(--student-document-validation-icon)] relative z-10"></i>
                         </div>
 
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        <h2 class="text-2xl font-bold text-[var(--student-document-text-primary)] mb-3">
                             Perfil en revisión
                         </h2>
 
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Tu perfil fue enviado y está siendo revisado por un administrador.
+                        <p class="text-[var(--student-document-text-secondary)] mb-8 leading-relaxed max-w-sm mx-auto">
+                            Tu perfil fue enviado correctamente y está siendo revisado por un administrador.
+                            Te notificaremos cuando el proceso haya finalizado.
                         </p>
 
-                        <a href="{{ route('students.profile') }}"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
-                            <i class="fas fa-user-graduate"></i>
-                            Ver mi perfil
-                        </a>
                     </div>
                 </div>
             </div>
 
-        @elseif($student->status === 'rechazado')
 
+        @elseif($student->status === 'rechazado')
             {{-- ❌ PERFIL RECHAZADO --}}
-            <div class="flex items-center justify-center min-h-[80vh]">
+            <div class="flex items-center justify-center min-h-[80vh] px-4">
                 <div class="max-w-md w-full">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center border-t-4 border-red-500">
-                        
-                        <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-times-circle text-4xl text-red-600 dark:text-red-400"></i>
+                    <div class="bg-[var(--student-document-validation-bg)] rounded-2xl shadow-2xl p-8 text-center backdrop-blur-sm">
+
+                        <!-- Ícono con animación sutil -->
+                        <div class="relative w-20 h-20
+                                    bg-[var(--student-document-validation-negative)]
+                                    rounded-full flex items-center justify-center mx-auto mb-6
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-full
+                                    before:bg-[var(--student-document-validation-negative)]
+                                    before:animate-ping before:opacity-20">
+                            <i class="fas fa-times-circle text-4xl text-[var(--student-document-validation-icon)] relative z-10"></i>
                         </div>
 
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        <h2 class="text-2xl font-bold text-[var(--student-document-text-primary)] mb-3">
                             Perfil rechazado
                         </h2>
 
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Tu perfil fue revisado y requiere correcciones antes de ser aprobado.
+                        <p class="text-[var(--student-document-text-secondary)] mb-6 leading-relaxed max-w-sm mx-auto">
+                            Por favor, actualiza la información necesaria y vuelve a enviarlo para su revisión.
                         </p>
 
-                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6 text-left text-sm text-red-700 dark:text-red-300">
-                            Revisa cuidadosamente tu información y vuelve a enviarla.
-                        </div>
-
                         <a href="{{ route('students.profile') }}"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
-                            <i class="fas fa-edit"></i>
-                            Corregir perfil
+                        class="inline-flex items-center gap-2
+                                rounded-[var(--radius-md)]
+                                bg-[var(--settings-btn-primary)]!
+                                text-[var(--settings-btn-primary-text)]!
+                                shadow-lg shadow-[var(--settings-btn-primary-shadow)]
+                                hover:bg-[var(--settings-btn-primary-hover)]!
+                                hover:shadow-xl hover:-translate-y-0.5
+                                active:translate-y-0
+                                transition-all duration-300
+                                px-6 py-3
+                                font-medium">
+                            <span>Corregir perfil</span>
+                            <i class="fas fa-edit text-sm group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        
         @else
         
        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
             <!-- COLUMNA PRINCIPAL - Documentos -->
             <div class="lg:col-span-8 space-y-6">
                 
@@ -190,10 +199,15 @@
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-3">
                                                 <div class="text-left">
-                                                    <p class="text-white/90 text-xs font-medium">Fecha límite</p>
-                                                    <h3 class="text-white text-lg font-bold">
-                                                        {{ $limitDate !== 'Sin fecha' ? Carbon\Carbon::parse($limitDate)->format('d M Y') : 'Sin fecha' }}
+                                                    <p class="text-[var(--student-document-text-primary)] text-xs font-medium">Fecha límite</p>
+                                                    <h3 class="text-[var(--student-document-text-secondary)] text-lg font-bold">
+                                                    {{ 
+                                                        $limitDate !== 'Sin fecha'
+                                                            ? \Carbon\Carbon::parse($limitDate)->locale('es')->isoFormat('DD MMM YYYY')
+                                                            : 'Sin fecha'
+                                                    }}
                                                     </h3>
+
                                                 </div>
                                             </div>
                                             
@@ -407,8 +421,8 @@
                                     <p class="text-gray-500 dark:text-gray-400 text-sm">Cuando se te asignen documentos aparecerán aquí</p>
                                 </div>
                             @endforelse
-                        </div>
                     </div>
+                </div>
             </div>
 
             <!-- SIDEBAR - Calendario y Alertas con Scroll Personalizado -->
@@ -462,7 +476,7 @@
                         <div class="p-6 space-y-6">
                             
                             <!-- CALENDARIO INTERACTIVO -->
-                            <div class="bg-[var(--student-document-calendar-bg)] rounded-xl shadow-lg overflow-hidden"
+                            <div class="bg-[var(--student-document-calendar-bg)] rounded-xl shadow-lg  relative"
                                 x-data="{
                                     currentDate: new Date(),
                                     selectedDate: null,
@@ -537,7 +551,7 @@
                                 }">
                                 
                                 <!-- Header del calendario -->
-                                <div class="bg-gradient-to-r from-[var(--student-document-calendar-bg-header)] to-[var(--student-document-calendar-bg-header-2)] p-4">
+                                <div class="bg-gradient-to-r from-[var(--student-document-calendar-bg-header)] to-[var(--student-document-calendar-bg-header-2)] p-4 rounded-t-xl">
                                     <div class="flex items-center justify-between mb-3">
                                         <button @click="prevMonth()"
                                                 class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--student-document-text-primary)] transition-transform duration-200 hover:scale-125">
@@ -625,7 +639,7 @@
                                 <!-- Eventos del día seleccionado -->
                                 <div x-show="selectedEvents.length > 0" 
                                      x-transition
-                                     class="border-t border-[var(--student-document-calendar-selected-day-content-border)] p-4 bg-gradient-to-br from-[var(--student-document-calendar-selected-day-content-bg)] to-[var(--student-document-calendar-selected-day-content-bg-2)]">
+                                     class="border-t border-[var(--student-document-calendar-selected-day-content-border)] p-4 bg-gradient-to-br from-[var(--student-document-calendar-selected-day-content-bg)] to-[var(--student-document-calendar-selected-day-content-bg-2)] rounded-b-xl">
                                     <div class="flex items-center justify-between mb-3">
                                         <h4 class="font-bold text-[var(--student-document-text-primary)] text-sm">
                                             Documentos del día 
@@ -652,14 +666,7 @@
                                             <div class="p-3 rounded-lg transition-all hover:shadow-md bg-[var(--student-document-calendar-selected-day-content-card)]">
                                                 <p class="text-xs font-semibold text-[var(--student-document-text-primary)]" x-text="event.doc.name"></p>
                                                 <div class="flex items-center justify-between mt-1">
-                                                    <span class="text-[10px] font-bold"
-                                                        :class="{
-                                                            'text-[var(--student-document-calendar-approved)]': event.status === 'revisado',
-                                                            'text-[var(--student-document-calendar-rejected)]': event.status === 'rechazado',
-                                                            'text-[var(--student-document-calendar-expired)]': event.isExpired && !event.hasFile && event.status !== 'revisado',
-                                                            'text-[var(--student-document-calendar-review)]': event.status === 'en_revision' && event.hasFile,
-                                                            'text-[var(--student-document-calendar-pending)]': event.status === 'en_revision' && !event.hasFile && !event.isExpired
-                                                        }"
+                                                    <span class="text-[var(--student-document-text-secondary)] text-[10px] font-bold"
                                                         x-text="(
                                                             () => {
                                                                 if (event.status === 'revisado') return 'APROBADO';
@@ -774,196 +781,17 @@
                     </div>
                 </div>
             </div>
-
         </div>
-        @endif
-        
+        @endif 
     </div>
-
-    <!-- Toast Notifications Container -->
-    <div class="fixed top-4 right-4 z-50 space-y-3" 
-         x-data="{ 
-             notifications: [],
-             addNotification(type, message) {
-                 const id = Date.now();
-                 this.notifications.push({ id, type, message });
-                 setTimeout(() => {
-                     this.removeNotification(id);
-                 }, 5000);
-             },
-             removeNotification(id) {
-                 this.notifications = this.notifications.filter(n => n.id !== id);
-             }
-         }"
-         @notify.window="addNotification($event.detail.type, $event.detail.message)"
-         id="toast-container">
-        
-        <!-- Notificación inicial de sesión (si existe) -->
-        @if (session()->has('message'))
-            <div x-data="{ show: true }" 
-                 x-show="show"
-                 x-init="setTimeout(() => show = false, 5000)"
-                 x-transition:enter="transform transition ease-out duration-300"
-                 x-transition:enter-start="translate-x-full opacity-0"
-                 x-transition:enter-end="translate-x-0 opacity-100"
-                 x-transition:leave="transform transition ease-in duration-200"
-                 x-transition:leave-start="translate-x-0 opacity-100"
-                 x-transition:leave-end="translate-x-full opacity-0"
-                 class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-l-4 border-green-500 p-4 max-w-md flex items-start gap-3 backdrop-blur-sm">
-                <div class="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1">¡Éxito!</h4>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">{{ session('message') }}</p>
-                </div>
-                <button @click="show = false" class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-        @endif
-
-        @if (session()->has('error'))
-            <div x-data="{ show: true }" 
-                 x-show="show"
-                 x-init="setTimeout(() => show = false, 5000)"
-                 x-transition:enter="transform transition ease-out duration-300"
-                 x-transition:enter-start="translate-x-full opacity-0"
-                 x-transition:enter-end="translate-x-0 opacity-100"
-                 x-transition:leave="transform transition ease-in duration-200"
-                 x-transition:leave-start="translate-x-0 opacity-100"
-                 x-transition:leave-end="translate-x-full opacity-0"
-                 class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-l-4 border-red-500 p-4 max-w-md flex items-start gap-3 backdrop-blur-sm">
-                <div class="flex-shrink-0 w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-times-circle text-red-600 dark:text-red-400 text-xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1">Error</h4>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">{{ session('error') }}</p>
-                </div>
-                <button @click="show = false" class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-        @endif
-
-        <!-- Notificaciones dinámicas -->
-        <template x-for="notification in notifications" :key="notification.id">
-            <div x-show="true"
-                 x-transition:enter="transform transition ease-out duration-300"
-                 x-transition:enter-start="translate-x-full opacity-0"
-                 x-transition:enter-end="translate-x-0 opacity-100"
-                 x-transition:leave="transform transition ease-in duration-200"
-                 x-transition:leave-start="translate-x-0 opacity-100"
-                 x-transition:leave-end="translate-x-full opacity-0"
-                 :class="{
-                     'border-green-500': notification.type === 'success',
-                     'border-red-500': notification.type === 'error',
-                     'border-blue-500': notification.type === 'info',
-                     'border-yellow-500': notification.type === 'warning'
-                 }"
-                 class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-l-4 p-4 max-w-md flex items-start gap-3 backdrop-blur-sm">
-                <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
-                     :class="{
-                         'bg-green-100 dark:bg-green-900/30': notification.type === 'success',
-                         'bg-red-100 dark:bg-red-900/30': notification.type === 'error',
-                         'bg-blue-100 dark:bg-blue-900/30': notification.type === 'info',
-                         'bg-yellow-100 dark:bg-yellow-900/30': notification.type === 'warning'
-                     }">
-                    <i class="text-xl"
-                       :class="{
-                           'fas fa-check-circle text-green-600 dark:text-green-400': notification.type === 'success',
-                           'fas fa-times-circle text-red-600 dark:text-red-400': notification.type === 'error',
-                           'fas fa-info-circle text-blue-600 dark:text-blue-400': notification.type === 'info',
-                           'fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400': notification.type === 'warning'
-                       }"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-gray-900 dark:text-white text-sm mb-1"
-                        x-text="notification.type === 'success' ? '¡Éxito!' : (notification.type === 'error' ? 'Error' : (notification.type === 'warning' ? 'Advertencia' : 'Información'))"></h4>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="notification.message"></p>
-                </div>
-                <button @click="removeNotification(notification.id)" 
-                        class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-        </template>
-    </div>
-
-    <style>
-        /* Scroll personalizado */
-        .sidebar-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(60, 120, 199, 0.5) transparent;
-        }
-
-        .sidebar-scroll::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .sidebar-scroll::-webkit-scrollbar-track {
-            background: transparent;
-            border-radius: 10px;
-        }
-
-        .sidebar-scroll::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(59, 130, 246, 0.6), rgba(147, 51, 234, 0.6));
-            border-radius: 10px;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-
-        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8));
-            background-clip: padding-box;
-        }
-
-        .sidebar-scroll {
-            scroll-behavior: smooth;
-        }
-
-        /* Animación para toast notifications */
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-
-        /* Responsive para toast en móviles */
-        @media (max-width: 640px) {
-            #toast-container {
-                left: 1rem;
-                right: 1rem;
-                top: 1rem;
-            }
-            
-            #toast-container > div {
-                max-width: 100%;
-            }
-        }
-    </style>
 
     <!-- Modales -->
     @if($previewPath)
-    <flux:modal wire:model="previewPath" class="md:w-4/5 lg:w-3/4">
-        <div class="flex flex-col space-y-6">
+        <flux:modal
+            :dismissible="false"
+            wire:model="previewPath"
+            class="w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[1100px] h-[90vh] sm:h-[85vh] max-w-[1400px]"
+        >
             @php
                 $cleanName = $previewName;
                 $pos = strpos($cleanName, '_');
@@ -973,96 +801,178 @@
                 $ext = strtolower(pathinfo($previewPath, PATHINFO_EXTENSION));
             @endphp
 
-            <div class="flex items-center justify-between pb-4 border-b dark:border-gray-700">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-file-pdf text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <flux:heading size="lg" class="text-gray-900 dark:text-white">{{ $cleanName }}</flux:heading>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Vista previa del documento</p>
+            <div class="flex flex-col h-full">
+
+                {{-- HEADER --}}
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 sm:pb-4 border-b dark:border-gray-700 shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <flux:heading size="lg" class="text-[var(--modal-text-primary)] truncate">
+                            {{ $cleanName }}
+                        </flux:heading>
+                        <p class="text-xs sm:text-sm text-[var(--modal-text-secondary)] mt-1">
+                            Vista previa del documento
+                        </p>
                     </div>
                 </div>
-                <button wire:click="$set('previewPath', null)" class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
 
-            @if($ext === 'pdf')
-                <iframe src="{{ asset('storage/'.$previewPath) }}" class="w-full h-[70vh] rounded-xl border-2 border-gray-200 dark:border-gray-700"></iframe>
-            @else
-                <div class="text-center py-16">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-4">
-                        <i class="fas fa-file-download text-4xl text-gray-400"></i>
-                    </div>
-                    <p class="text-gray-700 dark:text-gray-300 mb-6 text-lg">Este archivo no se puede previsualizar</p>
-                    <a href="{{ asset('storage/'.$previewPath) }}" target="_blank" 
-                       class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition font-bold shadow-lg">
+                {{-- BODY (SCROLL CONTROLADO) --}}
+                <div class="flex-1 overflow-hidden py-3 sm:py-4 min-h-0">
+                    @if($ext === 'pdf')
+                        <iframe
+                            src="{{ asset('storage/'.$previewPath) }}"
+                            class="w-full h-full rounded-lg sm:rounded-xl border dark:border-gray-700"
+                        ></iframe>
+                    @else
+                        <div class="h-full flex flex-col items-center justify-center text-center px-4">
+                            <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-[var(--icon-document-student-modal-dowload-bg)] rounded-xl sm:rounded-2xl mb-3 sm:mb-4">
+                                <i class="fas fa-file-download text-3xl sm:text-4xl text-[var(--icon-document-student-modal-dowload-icon)]"></i>
+                            </div>
+                            <p class="text-[var(--modal-text-primary)] text-base sm:text-lg">
+                                Este archivo no se puede previsualizar
+                            </p>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- FOOTER --}}
+                <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t dark:border-gray-700 shrink-0">
+                    <a href="{{ asset('storage/'.$previewPath) }}" download 
+                    class="
+                        group relative
+                        inline-flex items-center justify-center
+                        px-4 py-2
+                        rounded-[var(--radius-md)]
+                        bg-[var(--modal-btn-document-descargar)]!
+                        text-[var(--modal-btn-document-descargar-text)]!
+                        shadow-lg shadow-[var(--modal-btn-document-descargar-shadow)]
+                        hover:bg-[var(--modal-btn-document-descargar-hover)]!
+                        hover:shadow-xl hover:-translate-y-0.5
+                        transition-all duration-300
+                        disabled:opacity-60 disabled:cursor-not-allowed
+                        gap-2
+                    ">
                         <i class="fas fa-download"></i>
-                        Descargar {{ $cleanName }}
+                        Descargar
                     </a>
-                </div>
-            @endif
 
-            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
-                <a href="{{ asset('storage/'.$previewPath) }}" download 
-                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition font-medium">
-                    <i class="fas fa-download"></i>
-                    Descargar
-                </a>
-                <flux:button variant="primary" wire:click="$set('previewPath', null)">
-                    Cerrar
-                </flux:button>
+                    <flux:button 
+                        variant="primary" 
+                        wire:click="$set('previewPath', null)" 
+                        class="
+                            group relative
+                            inline-flex items-center justify-center
+                            px-4 py-2
+                            rounded-[var(--radius-md)]
+                            bg-[var(--modal-btn-document-cerrar)]!
+                            text-[var(--modal-btn-document-cerrar-text)]!
+                            shadow-lg shadow-[var(--modal-btn-document-cerrar-shadow)]
+                            hover:bg-[var(--modal-btn-document-cerrar-hover)]!
+                            hover:shadow-xl hover:-translate-y-0.5
+                            transition-all duration-300
+                            disabled:opacity-60 disabled:cursor-not-allowed
+                            gap-2
+                        ">
+                        Cerrar
+                    </flux:button>
+                </div>
             </div>
-        </div>
-    </flux:modal>
+        </flux:modal>
     @endif
 
     @if($isCommentsModalOpen && $selectedDocument)
-    <flux:modal wire:model="isCommentsModalOpen" class="md:w-2/3 lg:w-1/2">
-        <div class="flex flex-col space-y-6">
-            <div class="flex items-center gap-4 pb-4 border-b dark:border-gray-700">
-                <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-comment-dots text-white text-2xl"></i>
-                </div>
-                <div>
-                    <flux:heading size="lg" class="text-gray-900 dark:text-white">
-                        Observaciones del Revisor
-                    </flux:heading>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Comentarios sobre tu documento
-                    </p>
-                </div>
-            </div>
+        <flux:modal
+            :dismissible="false"
+            wire:model="isCommentsModalOpen"
+            class="w-[95vw] sm:w-[85vw] md:w-[600px] lg:w-[650px] max-w-[700px]"
+        >
+            <div class="flex flex-col h-[75vh] sm:h-[70vh] max-h-[600px]">
 
-            <div class="max-h-96 overflow-y-auto sidebar-scroll">
-                @if($selectedDocument->comments)
-                    <div class="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl p-6">
-                        <div class="whitespace-pre-line text-gray-800 dark:text-gray-200 leading-relaxed">
-                            {{ $selectedDocument->comments }}
-                        </div>
-                    </div>
-                @else
-                    <div class="text-center py-12">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-4">
-                            <i class="fas fa-inbox text-3xl text-gray-400"></i>
-                        </div>
-                        <p class="text-gray-500 dark:text-gray-400">
-                            No hay comentarios para este documento
+                {{-- HEADER --}}
+                <div class="flex items-start gap-3 pb-4  shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <flux:heading size="lg" class="text-[var(--modal-text-primary)] mb-1">
+                            Observaciones del Revisor
+                        </flux:heading>
+                        <p class="text-xs sm:text-sm text-[var(--modal-text-secondary)]">
+                            Comentarios y sugerencias sobre tu documento
                         </p>
                     </div>
-                @endif
-            </div>
+                </div>
 
-            <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
-                <flux:button
-                    variant="ghost"
-                    wire:click="$set('isCommentsModalOpen', false)">
-                    Cerrar
-                </flux:button>
+                {{-- BODY --}}
+                <div class="flex-1 overflow-y-auto overflow-x-hidden py-4 sidebar-scroll min-h-0">
+                    @if($selectedDocument->comments)
+                        <div class="relative">
+                            
+                            <div class="pl-2 pr-2">
+                                <div class="bg-[var(--document-student-modal-bg-comment)] rounded-2xl p-5 sm:p-6 shadow-sm border border-[var(--document-student-modal-border-comment)]">
+                                    <div class="flex items-center gap-2 mb-3 pb-3 border-b border-[var(--document-student-modal-border)]">
+                                        <i class="fas fa-user-circle text-lg text-[var(--icon-document-student-modal-comment-bg)]"></i>
+                                        <span class="text-sm font-medium text-[var(--modal-text-primary)]">
+                                            Revisor
+                                        </span>
+                                    </div>
+                                    
+                                    <div
+                                        class="
+                                            whitespace-pre-line
+                                            break-words
+                                            overflow-wrap-anywhere
+                                            text-[var(--modal-text-secondary)]
+                                            leading-relaxed
+                                            text-sm sm:text-base
+                                        "
+                                    >
+                                        {{ $selectedDocument->comments }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="h-full flex flex-col items-center justify-center text-center px-4 py-12">
+                            <div class="relative mb-6">
+                                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg">
+                                    <i class="fas fa-inbox text-4xl text-gray-400 dark:text-gray-500"></i>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                            </div>
+                            <p class="text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Sin observaciones
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+                                No hay comentarios del revisor para este documento
+                            </p>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- FOOTER --}}
+                <div class="flex justify-end gap-3 pt-4 border-t dark:border-gray-700 shrink-0">
+                    <flux:button
+                        wire:click="$set('isCommentsModalOpen', false)"
+                        class="
+                            group relative
+                            inline-flex items-center justify-center
+                            px-4 py-2
+                            rounded-[var(--radius-md)]
+                            bg-[var(--modal-btn-document-cerrar)]!
+                            text-[var(--modal-btn-document-cerrar-text)]!
+                            shadow-lg shadow-[var(--modal-btn-document-cerrar-shadow)]
+                            hover:bg-[var(--modal-btn-document-cerrar-hover)]!
+                            hover:shadow-xl hover:-translate-y-0.5
+                            transition-all duration-300
+                            disabled:opacity-60 disabled:cursor-not-allowed
+                            gap-2
+                        ">
+                        Cerrar
+                    </flux:button>
+                </div>
+
             </div>
-        </div>
-    </flux:modal>
+        </flux:modal>
     @endif
+
 
 </div>
