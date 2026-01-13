@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('periods', function (Blueprint $table) {
+        Schema::create('period_semester', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->boolean('is_active')->default(true); // <-- baja lógica
+            $table->foreignId('period_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('semester_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
+
     }
 
     /**
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('periods');
+        Schema::dropIfExists('period_semester');
     }
 };

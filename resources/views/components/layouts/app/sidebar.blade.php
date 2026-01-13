@@ -14,6 +14,8 @@
             </a>
 
             <flux:navlist variant="outline">
+                <!-- SECCIÓN DE ADMINISTRACIÓN ACADÉMICA -->
+                @if(auth()->user()->hasRole('admin'))
 
                 <!-- SECCIÓN PRINCIPAL -->
                 <flux:navlist.group :heading="__('Plataforma')" class="grid">
@@ -31,8 +33,6 @@
                 <!-- Línea separadora -->
                 <div class="border-t border-[var(--color-divider)] my-2"></div>
 
-                <!-- SECCIÓN DE ADMINISTRACIÓN ACADÉMICA -->
-                @if(auth()->user()->hasRole('admin'))
                 <flux:navlist.group :heading="__('Administración')" class="grid">
                     <flux:navlist.item 
                         icon="calendar" 

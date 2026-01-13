@@ -61,19 +61,37 @@
                         <nav class="flex items-center gap-2 animate-fade-in delay-250">
 
                             @auth
-                                <a href="{{ url('/dashboard') }}"
-                                class="px-4 py-2
-                                        rounded-[var(--radius-md)]
-                                        bg-[var(--color-header-bg)]
-                                        text-[var(--text-header)]
-                                        font-[var(--font-medium)]
-                                        hover:bg-[var(--color-header-bg-hover)]
-                                        transition-colors duration-200
-                                        transition-transform duration-300 hover:scale-105 hover-glow
-                                        animate-fade-in-up delay-300">
-                                    Dashboard
-                                </a>
+                                @if(auth()->user()->hasRole('admin'))
+                                    {{-- Admin → Dashboard --}}
+                                    <a href="{{ route('dashboard') }}"
+                                    class="px-4 py-2
+                                            rounded-[var(--radius-md)]
+                                            bg-[var(--color-header-bg)]
+                                            text-[var(--text-header)]
+                                            font-[var(--font-medium)]
+                                            hover:bg-[var(--color-header-bg-hover)]
+                                            transition-colors duration-200
+                                            transition-transform duration-300 hover:scale-105 hover-glow
+                                            animate-fade-in-up delay-300">
+                                        Dashboard
+                                    </a>
+                                @else
+                                    {{-- Usuario normal / Estudiante → Perfil --}}
+                                    <a href="{{ route('students.profile') }}"
+                                    class="px-4 py-2
+                                            rounded-[var(--radius-md)]
+                                            bg-[var(--color-header-bg)]
+                                            text-[var(--text-header)]
+                                            font-[var(--font-medium)]
+                                            hover:bg-[var(--color-header-bg-hover)]
+                                            transition-colors duration-200
+                                            transition-transform duration-300 hover:scale-105 hover-glow
+                                            animate-fade-in-up delay-300">
+                                        Mi perfil
+                                    </a>
+                                @endif
                             @else
+                                {{-- Invitado --}}
                                 <a href="{{ route('login') }}"
                                 class="px-3 py-2
                                         rounded-[var(--radius-md)]
@@ -87,15 +105,15 @@
 
                                 @if (Route::has('register'))
                                     <a href="{{ route('register') }}"
-                                        class="px-4 py-2
-                                                rounded-[var(--radius-md)]
-                                                bg-[var(--color-header-bg)]
-                                                text-[var(--text-header)]
-                                                font-[var(--font-medium)]
-                                                hover:bg-[var(--color-header-bg-hover)]
-                                                transition-colors duration-200
-                                                transition-transform duration-300 hover:scale-105 hover-glow
-                                                animate-fade-in-up delay-300">
+                                    class="px-4 py-2
+                                            rounded-[var(--radius-md)]
+                                            bg-[var(--color-header-bg)]
+                                            text-[var(--text-header)]
+                                            font-[var(--font-medium)]
+                                            hover:bg-[var(--color-header-bg-hover)]
+                                            transition-colors duration-200
+                                            transition-transform duration-300 hover:scale-105 hover-glow
+                                            animate-fade-in-up delay-300">
                                         Registrarse
                                     </a>
                                 @endif
@@ -103,6 +121,7 @@
 
                         </nav>
                     @endif
+
 
                 </div>
             </div>

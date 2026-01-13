@@ -129,12 +129,26 @@ class Profile extends Component
 
     public function render()
     {
-        $lastPeriod = Period::orderBy('start_date', 'desc')->first();
+        $lastPeriod = Period::where('is_active', true)->orderBy('start_date', 'desc')->first();
 
         if ($this->student->exists && $this->student->period_id) {
-            $periods = Period::where('id', $this->student->period_id)->get();
+            // Solo mostrar el periodo si está activo
+            $periods = Period::where('id', $this->student->period_id)
+                            ->where('is_active', true)
+                            ->get();
+
+            // Traer semestres activos relacionados con el periodo seleccionado
+            $semesters = Period::find($this->student->period_id)
+                                ->semesters()
+                                ->where('is_active', true)
+                                ->get();
         } else {
             $periods = $lastPeriod ? collect([$lastPeriod]) : collect([]);
+
+            // Si no hay periodo asignado, usar el último periodo y sus semestres activos
+            $semesters = $lastPeriod 
+                            ? $lastPeriod->semesters()->where('is_active', true)->get() 
+                            : collect([]);
         }
 
 
@@ -142,7 +156,7 @@ class Profile extends Component
             'campuses' => Campus::all(),
             'careers' => Career::all(),
             'periods' => $periods,
-            'semesters' => Semester::where('is_active', true)->get(),
+            'semesters' => $semesters,
         ]);
     }
 

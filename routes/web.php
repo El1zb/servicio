@@ -18,13 +18,12 @@ use App\Livewire\Students\Details as StudentsDetails;
 use App\Livewire\Admin\StudentsApproval as StudentsApproval;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
 
+use App\Livewire\Dashboard\Index as DashboardIndex;
+use App\Livewire\Dashboard\PeriodDetail;
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -34,6 +33,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 
     Route::group(['middleware' => ['role:admin']], function () { 
+
+        Route::get('dashboard', DashboardIndex::class)->name('dashboard');
+
         Route::get('periods', PeriodsCrud::class)->name('periods.index');
         Route::get('campuses', CampusesCrud::class)->name('campuses.index');
         Route::get('careers', CareersCrud::class)->name('careers.index');    
@@ -43,6 +45,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('students/details/{studentId}', StudentsDetails::class)->name('students.details');         
         Route::get('students/approval', StudentsApproval::class)->name('admin.students-approval'); 
         Route::get('admin/create-admin', CreateAdmin::class)->name('admin.create-admin');
+
+        Route::get('periods/{id}', PeriodDetail::class)->name('periods.detail');
     });
 
     // 🔹 SECCIÓN ESTUDIANTES (accesible para cualquier usuario autenticado)

@@ -1064,13 +1064,17 @@
       /* ===========================
     TOAST notifications
      =========================== */
-   --toast-notification-bg: #262c35;
-   --toast-notification-success: #1f8f5f;
-   --toast-notification-error:   #9e1f1f;
-   --toast-notification-info:    #2f6fed;
-   --toast-notification-warning: #b8871a;
-   --toast-notification-text-primary: #e6edf3;
-   --toast-notification-text-secondary: #a5afbd;
+      --toast-notification-bg: #262c35;
+      --toast-notification-success: #1f8f5f;
+      --toast-notification-error:   #9e1f1f;
+      --toast-notification-info:    #2f6fed;
+      --toast-notification-warning: #b8871a;
+      --toast-notification-text-primary: #e6edf3;
+      --toast-notification-text-secondary: #a5afbd;
+
+      /* ===========================
+    index periods
+     =========================== */
 
 
 
