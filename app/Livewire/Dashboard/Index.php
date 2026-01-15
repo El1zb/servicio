@@ -138,9 +138,10 @@ class Index extends Component
     {
         if (!$this->periodToDelete) return;
 
-        $period = Period::find($this->periodToDelete);
+        $period = Period::with(['students.documents', 'files'])->find($this->periodToDelete);
         if (!$period) return;
 
+        // No permitir eliminar un periodo activo
         if ($period->is_active) {
             $this->dispatch('notify', type: 'error', message: 'No puedes eliminar un periodo activo');
             $this->periodToDelete = null;
@@ -148,6 +149,26 @@ class Index extends Component
             return;
         }
 
+        // 🔹 Eliminar archivos físicos de los documentos de los estudiantes
+        foreach ($period->students as $student) {
+            foreach ($student->documents as $doc) {
+                if ($doc->student_file_path && \Storage::disk('public')->exists($doc->student_file_path)) {
+                    \Storage::disk('public')->delete($doc->student_file_path);
+                }
+            }
+        }
+
+        // 🔹 Eliminar archivos físicos de los archivos base del periodo
+        foreach ($period->files as $file) {
+            if ($file->file_path && \Storage::disk('public')->exists($file->file_path)) {
+                \Storage::disk('public')->delete($file->file_path);
+            }
+            if ($file->example_path && \Storage::disk('public')->exists($file->example_path)) {
+                \Storage::disk('public')->delete($file->example_path);
+            }
+        }
+
+        // 🔹 Eliminar el periodo (DB en cascada se encarga de estudiantes, documentos y files)
         $period->delete();
 
         $this->dispatch('notify', type: 'success', message: 'Periodo eliminado exitosamente');
@@ -155,6 +176,7 @@ class Index extends Component
         $this->periodToDelete = null;
         $this->isDeleteModalOpen = false;
     }
+
 
     // Reset de campos
     private function resetFields($closeModal = true)

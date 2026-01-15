@@ -67,6 +67,22 @@ class PeriodDetail extends Component
     public $editingComments = [];
     public $editingDates = [];
 
+
+    public $searchDocuments = '';
+
+
+    public $statusFilterStudents = null;
+
+
+    public function updatedSearchDocuments()
+    {
+        $this->resetPage('paginatedFiles'); // resetea la paginación de archivos cuando busque
+    }
+
+
+    public $showQuickReviewModal = false;
+
+
     protected $updatesQueryString = ['search', 'searchRevision'];
 
     public function mount($id)
@@ -76,15 +92,15 @@ class PeriodDetail extends Component
         $this->tabs = [
             'estudiantes' => [
                 'label' => 'Gestión de Estudiantes',
-                'icon'  => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z',
+                'icon'  => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
             ],
             'documentos' => [
                 'label' => 'Documentos Base',
-                'icon'  => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5',
+                'icon'  => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
             ],
             'revision' => [
                 'label' => 'Revisión de Documentos',
-                'icon'  => 'M9 5H7a2 2 0 00-2 2v12',
+                'icon'  => 'M12 8v4m0 4h.01M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h7l7 7v9a2 2 0 01-2 2z',
             ],
         ];
 
@@ -116,6 +132,17 @@ class PeriodDetail extends Component
         $this->resetPage('revisionPage');
     }
 
+
+
+
+
+
+
+
+
+
+
+
     /** ========================= NUEVOS MÉTODOS - Estadísticas ========================= */
     
     public function getStatsProperty()
@@ -146,6 +173,10 @@ class PeriodDetail extends Component
     
     public function quickReviewDocument($docId)
     {
+         // 🔥 limpiar errores y validaciones previas
+        $this->resetValidation();
+        $this->resetErrorBag();
+
         $this->quickReviewDoc = Document::with(['student.career', 'file'])->find($docId);
         
         if (!$this->quickReviewDoc || !$this->quickReviewDoc->student_file_path) {
@@ -155,9 +186,18 @@ class PeriodDetail extends Component
 
         $this->quickReviewComments = $this->quickReviewDoc->comments ?? '';
         $this->quickReviewPreviewUrl = Storage::url($this->quickReviewDoc->student_file_path);
+
+        // ✅ Inicializar fecha para el input
+        $this->editingDates[$docId] = $this->quickReviewDoc->custom_limit_date
+            ? \Carbon\Carbon::parse($this->quickReviewDoc->custom_limit_date)->format('Y-m-d')
+            : ($this->quickReviewDoc->file?->limit_date
+                ? \Carbon\Carbon::parse($this->quickReviewDoc->file->limit_date)->format('Y-m-d')
+                : null);
         
         // Encontrar documentos siguiente y anterior pendientes
         $this->findNavigationDocs();
+
+        $this->showQuickReviewModal = true;
     }
 
     protected function findNavigationDocs()
@@ -226,10 +266,12 @@ class PeriodDetail extends Component
     {
         if (!$this->quickReviewDoc) return;
 
-        if (empty(trim($this->quickReviewComments))) {
-            session()->flash('error', 'Debes agregar un comentario al rechazar el documento');
-            return;
-        }
+        $this->validate([
+            'quickReviewComments' => 'required|min:3',
+        ], [
+            'quickReviewComments.required' => 'Debes agregar un comentario para rechazar el documento.',
+            'quickReviewComments.min' => 'El comentario es muy corto.',
+        ]);
 
         $this->quickReviewDoc->update([
             'status' => 'rechazado',
@@ -238,20 +280,26 @@ class PeriodDetail extends Component
         ]);
 
         session()->flash('message', 'Documento rechazado correctamente');
-        
-        // Intentar navegar al siguiente, si no hay, cerrar modal
+
         if (!$this->navigateToNextDoc()) {
             $this->closeQuickReview();
         }
     }
 
+
     public function closeQuickReview()
     {
+         // 🔥 limpiar errores y validaciones previas
+        $this->resetValidation();
+        $this->resetErrorBag();
+
         $this->quickReviewDoc = null;
         $this->quickReviewComments = '';
         $this->quickReviewPreviewUrl = null;
         $this->nextPendingDoc = null;
         $this->previousPendingDoc = null;
+
+        $this->showQuickReviewModal = false; 
     }
 
     /** ========================= MÉTODOS ANTERIORES - Mantener para compatibilidad ========================= */
@@ -349,7 +397,37 @@ class PeriodDetail extends Component
             'studentData.campus_id'           => 'required|exists:campuses,id',
             'studentData.career_id'           => 'required|exists:careers,id',
             'studentData.reticular_progress'  => 'required|numeric|min:0|max:100',
+        ], [
+            'studentData.name.required'                => 'El nombre es obligatorio',
+            'studentData.name.max'                     => 'El nombre no puede exceder 255 caracteres',
+            'studentData.last_name_paterno.required'  => 'El apellido paterno es obligatorio',
+            'studentData.last_name_paterno.max'       => 'El apellido paterno no puede exceder 255 caracteres',
+            'studentData.last_name_materno.required'  => 'El apellido materno es obligatorio',
+            'studentData.last_name_materno.max'       => 'El apellido materno no puede exceder 255 caracteres',
+            'studentData.curp.required'               => 'La CURP es obligatoria',
+            'studentData.curp.max'                    => 'La CURP no puede exceder 18 caracteres',
+            'studentData.phone.required'              => 'El teléfono es obligatorio',
+            'studentData.phone.max'                   => 'El teléfono no puede exceder 10 caracteres',
+            'studentData.personal_email.required'     => 'El correo personal es obligatorio',
+            'studentData.personal_email.email'        => 'El correo personal debe ser válido',
+            'studentData.institutional_email.required'=> 'El correo institucional es obligatorio',
+            'studentData.institutional_email.email'   => 'El correo institucional debe ser válido',
+            'studentData.institutional_email.regex'   => 'El correo institucional debe terminar con @itsco.edu.mx',
+            'studentData.control_number.required'     => 'El número de control es obligatorio',
+            'studentData.control_number.max'          => 'El número de control no puede exceder 10 caracteres',
+            'studentData.system.required'             => 'El sistema es obligatorio',
+            'studentData.semester_id.required'        => 'El semestre es obligatorio',
+            'studentData.semester_id.exists'          => 'El semestre seleccionado no es válido',
+            'studentData.campus_id.required'          => 'El campus es obligatorio',
+            'studentData.campus_id.exists'            => 'El campus seleccionado no es válido',
+            'studentData.career_id.required'          => 'La carrera es obligatoria',
+            'studentData.career_id.exists'            => 'La carrera seleccionada no es válida',
+            'studentData.reticular_progress.required' => 'El avance reticular es obligatorio',
+            'studentData.reticular_progress.numeric'  => 'El avance reticular debe ser un número',
+            'studentData.reticular_progress.min'      => 'El avance reticular no puede ser menor a 0',
+            'studentData.reticular_progress.max'      => 'El avance reticular no puede ser mayor a 100',
         ]);
+
 
         $this->selectedStudent->update($this->studentData);
         session()->flash('message', "Información actualizada correctamente");
@@ -363,6 +441,8 @@ class PeriodDetail extends Component
             $student->update(['status' => 'aprobado']);
             session()->flash('message', "Perfil aprobado");
         }
+
+        $this->closeModal();
     }
 
     public function reject($studentId)
@@ -374,6 +454,13 @@ class PeriodDetail extends Component
 
     public function confirmReject()
     {
+        $this->validate([
+        'rejectionReason' => 'required|min:3', // obligatorio y al menos 3 caracteres
+        ], [
+            'rejectionReason.required' => 'Debes agregar un motivo para rechazar el documento.',
+            'rejectionReason.min' => 'El motivo debe tener al menos 3 caracteres.',
+        ]);
+
         if (!$this->selectedStudent) return;
 
         $this->selectedStudent->update([
@@ -389,13 +476,27 @@ class PeriodDetail extends Component
     
     public function createDocument()
     {
-        $this->validate([
-            'documentName' => ['required', 'string', Rule::unique('files', 'name')->where(fn ($q) => $q->where('period_id', $this->periodId))],
-            'documentDeadline' => 'nullable|date',
-            'documentFile'     => 'required|file|max:' . $this->maxSize . '|mimes:pdf,doc,docx',
-            'documentExample'  => 'nullable|file|max:' . $this->maxSize . '|mimes:pdf,doc,docx',
-            'maxSize'          => 'required|integer|min:1|max:10240',
-        ]);
+        $this->validate(
+            [
+                'documentName'     => ['required', 'string', Rule::unique('files', 'name')->where(fn ($q) => $q->where('period_id', $this->periodId))],
+                'documentDeadline' => 'required|date',
+                'documentFile'     => 'required|file|mimes:doc,docx',
+                'documentExample'  => 'nullable|file|mimes:pdf',
+                'maxSize'          => 'required|integer|min:1',
+            ],
+            [
+                'documentName.required'     => 'Debes escribir el nombre del documento',
+                'documentName.unique'       => 'Ya existe un documento con este nombre en el periodo',
+
+                'documentDeadline.required' => 'Debes seleccionar una fecha límite',
+
+                'documentFile.required'     => 'Debes subir el archivo del documento base',
+                'documentFile.mimes'        => 'El archivo debe ser Word',
+
+                'maxSize.required'          => 'Debes indicar el tamaño máximo permitido para los estudiantes',
+                'maxSize.min' => 'El tamaño máximo debe ser mayor a 0',
+            ]
+        );
 
         $filePath = $this->documentFile->store('files', 'public');
         $examplePath = $this->documentExample ? $this->documentExample->store('files/examples', 'public') : null;
@@ -486,28 +587,75 @@ class PeriodDetail extends Component
         $this->previewName = $name;
     }
 
+
+
+
+
+
     /** ========================= Render ========================= */
     
     public function render()
     {
         $students = Student::with(['campus', 'career', 'semester'])
-            ->where('period_id', $this->periodId)
-            ->where(fn ($q) =>
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('last_name_paterno', 'like', "%{$this->search}%")
-                  ->orWhere('last_name_materno', 'like', "%{$this->search}%")
+        ->where('period_id', $this->periodId)
+        ->when($this->statusFilterStudents, function($q) {
+            switch($this->statusFilterStudents) {
+                case 'pending':
+                    $q->where('status', 'pendiente'); // Pendientes
+                    break;
+                case 'approved':
+                    $q->where('status', 'aprobado');
+                    break;
+                case 'rejected':
+                    $q->where('status', 'rechazado');
+                    break;
+            }
+        })
+        ->where(function ($q) {
+            $q->where('name', 'like', "%{$this->search}%")
+            ->orWhere('last_name_paterno', 'like', "%{$this->search}%")
+            ->orWhere('last_name_materno', 'like', "%{$this->search}%")
+            ->orWhere('control_number', 'like', "%{$this->search}%");
+        })
+        ->orderBy('name')
+        ->paginate(1); // ajusta la paginación
+
+
+
+        // Aquí agregamos el filtro por búsqueda de documentos
+        $paginatedFiles = $this->period->files()
+            ->when($this->searchDocuments, fn($q) => 
+                $q->where('name', 'like', '%' . $this->searchDocuments . '%')
             )
-            ->orderBy('name')
-            ->paginate(10);
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'filesPage'); // usamos nombre de página custom para evitar conflicto con otros paginadores
+
+
+
+
+        
 
         $students->getCollection()->transform(function ($student) {
             match ($student->status) {
-                'aprobado' => ($student->status_label = 'Aprobado') && ($student->status_class = 'bg-emerald-500/20 text-emerald-300'),
-                'rechazado' => ($student->status_label = 'Rechazado') && ($student->status_class = 'bg-red-500/20 text-red-300'),
-                default => ($student->status_label = 'Pendiente') && ($student->status_class = 'bg-amber-500/20 text-amber-300'),
+                'aprobado' => (
+                    $student->status_label = 'Aprobado'
+                ) && (
+                    $student->status_style = 'background-color: var(--status-icon-bg-approved); color: var(--status-icon-color-approved); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
+                ),
+                'rechazado' => (
+                    $student->status_label = 'Rechazado'
+                ) && (
+                    $student->status_style = 'background-color: var(--status-icon-bg-rejected); color: var(--status-icon-color-rejected); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
+                ),
+                default => (
+                    $student->status_label = 'Pendiente'
+                ) && (
+                    $student->status_style = 'background-color: var(--status-icon-bg-pending); color: var(--status-icon-color-pending); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
+                ),
             };
             return $student;
         });
+
 
         // MEJORADO: Para revisión de documentos con estadísticas
         $studentsRevision = Student::with(['career', 'documents' => function($q) {
@@ -550,7 +698,7 @@ class PeriodDetail extends Component
         });
     })
     ->orderBy('name')
-    ->paginate(10, ['*'], 'revisionPage');
+    ->paginate(20, ['*'], 'revisionPage');
 
 
         // MEJORADO: Agregar contadores por estudiante
@@ -572,6 +720,7 @@ class PeriodDetail extends Component
 
         return view('livewire.dashboard.period-detail', [
             'students'  => $students,
+            'paginatedFiles' => $paginatedFiles,
             'campuses'  => Campus::all(),
             'careers'   => Career::all(),
             'semesters' => $this->period->semesters,

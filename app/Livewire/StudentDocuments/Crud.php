@@ -19,6 +19,9 @@ class Crud extends Component
     public $previewName = null;
     public $student;
 
+    // 🔹 Añadir esta propiedad para los eventos del calendario
+    public $calendarEvents = [];
+
     public function mount()
     {
         $this->student = Auth::user()->student;
@@ -35,6 +38,10 @@ class Crud extends Component
         /*if ($this->student->period_id) {
             $this->assignPendingDocuments();
         }*/
+
+            // 🔹 Cargar eventos del calendario
+        $this->loadCalendarEvents();
+
 
         // Solo asignar documentos si el estudiante está aprobado
         if ($this->student->status === 'aprobado' && $this->student->period_id) {
@@ -99,6 +106,43 @@ class Crud extends Component
 
     }
 
+    // 🔹 Método para cargar eventos del calendario
+    public function loadCalendarEvents()
+    {
+        if (!$this->student) {
+            $this->calendarEvents = [];
+            return;
+        }
+
+        $documents = Document::where('student_id', $this->student->id)
+            ->with('file')
+            ->where('is_active', true)
+            ->get();
+
+        $this->calendarEvents = $documents->map(function ($doc) {
+            $generalDate = $doc->file?->limit_date ? Carbon::parse($doc->file->limit_date) : null;
+            $customDate = $doc->custom_limit_date ? Carbon::parse($doc->custom_limit_date) : null;
+
+            $effectiveDate = ($generalDate && $customDate && $customDate->greaterThan($generalDate)) 
+                ? $customDate 
+                : $generalDate;
+
+            $isExpired = $effectiveDate && $effectiveDate->isPast();
+            $hasFile = !empty($doc->student_file_name);
+
+            return [
+                'date' => $effectiveDate?->format('Y-m-d') ?? null,
+                'doc' => [
+                    'id' => $doc->id,
+                    'name' => $doc->name,
+                ],
+                'status' => $doc->status,
+                'isExpired' => $isExpired,
+                'hasFile' => $hasFile,
+            ];
+        })->filter(fn($event) => $event['date'] !== null)->values()->toArray();
+    }
+
     public function render()
     {
         $documents = collect();
@@ -158,6 +202,8 @@ class Crud extends Component
             message: 'Solo se permiten archivos PDF.'
         );
 
+
+
         unset($this->fileUpload[$docId]);
         return;
     }
@@ -206,12 +252,20 @@ class Crud extends Component
     ]);
 
     unset($this->fileUpload[$docId]);
+
+// 🔹 ACTUALIZAR CALENDARIO DESPUÉS DE SUBIR EL ARCHIVO
+        $this->loadCalendarEvents();
+
+        // 🔹 ENVIAR EVENTO JAVASCRIPT PARA ACTUALIZAR ALPINE
+        $this->dispatch('calendar-updated', calendarEvents: $this->calendarEvents);
+
+
+
     //session()->flash('message', "Archivo '{$file->name}' subido correctamente.");
     $this->dispatch('notify',
         type: 'success',
         message: "Archivo '{$file->name}' subido correctamente."
     );
-
 
 }
 

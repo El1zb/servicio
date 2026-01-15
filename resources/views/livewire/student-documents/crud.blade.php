@@ -482,6 +482,12 @@
                                     selectedDate: null,
                                     selectedEvents: [],
                                     calendarEvents: {{ json_encode($calendarEvents) }},
+
+                                    init() {
+                                        Livewire.on('calendar-updated', (data) => {
+                                            this.calendarEvents = data.calendarEvents;
+                                        });
+                                    },
                                     
                                     get currentMonth() {
                                         return this.currentDate.toLocaleString('es-MX', { month: 'long' });
@@ -548,7 +554,9 @@
                                         if (events.some(e => e.status === 'revisado')) return 'bg-[var(--student-document-calendar-approved)]';
                                         return 'bg-[var(--student-document-calendar-pending)]'; // default pendiente
                                     }
-                                }">
+                                }" >
+
+                                
                                 
                                 <!-- Header del calendario -->
                                 <div class="bg-gradient-to-r from-[var(--student-document-calendar-bg-header)] to-[var(--student-document-calendar-bg-header-2)] p-4 rounded-t-xl">

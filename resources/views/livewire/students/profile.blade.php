@@ -14,14 +14,16 @@
         <form method="POST" wire:submit.prevent="save" class="flex flex-col gap-6">
             
             <!-- DATOS PERSONALES -->
-            <div class="bg-[var(--student-profile-card-bg)] rounded-xl border border-[var(--student-profile-border)] 
+            <div class="bg-[var(--student-document-bg-card)] rounded-xl border border-[var(--student-document-bg-card)] 
                         shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
                 
-                <div class="bg-gradient-to-r from-[var(--settings-btn-primary)]/5 to-transparent px-6 py-4 border-b border-[var(--student-profile-border-card)]">
+                <div class="p-6 pb-4" 
+                    style="background: linear-gradient(135deg, var(--student-document-bg-card-header-approved) 0%, var(--student-document-bg-card-header-approved-2) 100%);">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-[var(--settings-btn-primary)]/10 flex items-center justify-center">
                             <svg class="w-5 h-5 text-[var(--settings-btn-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
                         <h2 class="text-lg font-semibold text-[var(--student-profile-text-primary)]">
@@ -29,6 +31,7 @@
                         </h2>
                     </div>
                 </div>
+
 
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -45,14 +48,16 @@
 
             <!-- DATOS ACADÉMICOS -->
             @if ($this->canEditAcademic() && $student->status !== 'aprobado')
-            <div class="bg-[var(--student-profile-card-bg)] rounded-xl border border-[var(--student-profile-border)] 
+            <div class="bg-[var(--student-document-bg-card)] rounded-xl border border-[var(--student-document-bg-card)] 
                         shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
                 
-                <div class="bg-gradient-to-r from-[var(--settings-btn-primary)]/5 to-transparent px-6 py-4 border-b border-[var(--student-profile-border-card)]">
+                <div class="p-6 pb-4" 
+                        style="background: linear-gradient(135deg, var(--student-document-bg-card-header-approved) 0%, var(--student-document-bg-card-header-approved-2) 100%);">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-[var(--settings-btn-primary)]/10 flex items-center justify-center">
                             <svg class="w-5 h-5 text-[var(--settings-btn-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                         </div>
                         <h2 class="text-lg font-semibold text-[var(--student-profile-text-primary)]">
@@ -60,6 +65,7 @@
                         </h2>
                     </div>
                 </div>
+
 
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

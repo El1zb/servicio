@@ -638,8 +638,8 @@
    --color-border-hero: rgba(120, 140, 170, 0.12); /* borde plateado-azulado */
 
    /* Acentos institucionales - azul slate elegante */
-   --color-hero-accent-primary: #5A7BA5; /* azul slate medio */
-   --color-hero-accent-secondary: #6B8BB8; /* azul acero claro */
+   --color-hero-accent-primary: #4d76ac; /* azul slate medio */
+   --color-hero-accent-secondary: #5078b0; /* azul acero claro */
    --color-hero-accent-light: #8BA4C7; /* azul suave luminoso */
 
    /* Badge institucional premium */
@@ -852,7 +852,8 @@
      COLORES SIDEBAR
      =========================== */
    /* Sidebar colores personalizados sobre fondo azul oscuro */
-   --sidebar-bg: var(--color-header-bg-1);           /* #273c6a */
+   /*--sidebar-bg: var(--color-header-bg-1);           /* #273c6a */
+   --sidebar-bg: var(--color-header-bg-1);  
    --sidebar-bg-alt: var(--color-header-bg-2);       /* #213561 */
    --sidebar-border: var(--color-border-header);     /* borde opcional */
 
@@ -1073,12 +1074,27 @@
       --toast-notification-text-secondary: #a5afbd;
 
       /* ===========================
-    index periods
-     =========================== */
+      Botón Aprobar / Rechazar / Cerrar (Elegante)
+      =========================== */
+
+   /* Botón Aprobar - Verde Elegante Intenso */
+   --modal-btn-approve: #059669;             /* Verde más oscuro y fuerte */
+   --modal-btn-approve-hover: #047857;       /* Hover un poco más profundo */
+   --modal-btn-approve-text: #FFFFFF;        /* Texto blanco */
+
+   /* Botón Rechazar - Rojo Elegante Intenso */
+   --modal-btn-reject: #DC2626;              /* Rojo intenso, más visible */
+   --modal-btn-reject-hover: #B91C1C;        /* Hover más oscuro */
+   --modal-btn-reject-text: #FFFFFF;         /* Texto blanco */
+
+   /* Botón Cerrar - Gris Neutro Elegante */
+   --modal-btn-close: #475569;                /* gris slate medio */
+   --modal-btn-close-hover: #334155;          /* gris más oscuro en hover */
+   --modal-btn-close-text: #F1F5F9;           /* texto gris muy claro */
+   
 
 
 
-       
 
 
 

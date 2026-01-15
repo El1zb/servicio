@@ -32,7 +32,7 @@
     {{-- Tarjetas de estadísticas --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {{-- Total Periodos --}}
-        <div class="rounded-xl p-6 shadow-lg" 
+        <div class="rounded-xl p-6 shadow-lg transition-transform duration-200 hover:scale-[1.02]" 
              style="background-color: var(--student-document-bg);">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-lg flex items-center justify-center" 
@@ -50,7 +50,7 @@
         </div>
 
         {{-- Periodos Activos --}}
-        <div class="rounded-xl p-6 shadow-lg" 
+        <div class="rounded-xl p-6 shadow-lg transition-transform duration-200 hover:scale-[1.02]" 
              style="background-color: var(--student-document-bg); border: 1px solid var(--student-document-border-content);">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-lg flex items-center justify-center" 
@@ -68,7 +68,7 @@
         </div>
 
         {{-- Total Estudiantes --}}
-        <div class="rounded-xl p-6 shadow-lg" 
+        <div class="rounded-xl p-6 shadow-lg transition-transform duration-200 hover:scale-[1.02]" 
              style="background-color: var(--student-document-bg); border: 1px solid var(--student-document-border-content);">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-lg flex items-center justify-center" 
@@ -86,7 +86,7 @@
         </div>
 
         {{-- Aprobaciones Pendientes --}}
-        <div class="rounded-xl p-6 shadow-lg" 
+        <div class="rounded-xl p-6 shadow-lg transition-transform duration-200 hover:scale-[1.02]" 
              style="background-color: var(--student-document-bg); border: 1px solid var(--student-document-border-content);">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-lg flex items-center justify-center" 
@@ -384,127 +384,326 @@
     </div>
 
     {{-- Modal creación/edición --}}
-    <flux:modal wire:model="isOpen" class="md:w-96">
-        <div class="space-y-6" style="background-color: var(--modal-bg);">
-            <div class="pb-5" style="border-bottom: 1px solid var(--document-student-modal-border);">
-                <flux:heading size="lg" class="font-bold" style="color: var(--modal-text-primary);">
-                    {{ $periodId ? 'Editar Periodo Académico' : 'Nuevo Periodo Académico' }}
-                </flux:heading>
-                <p class="text-sm mt-2" style="color: var(--modal-text-secondary);">
-                    {{ $periodId ? 'Modifique los datos del periodo académico seleccionado' : 'Complete la información requerida para crear un nuevo periodo' }}
-                </p>
-            </div>
+    {{-- ================== MODAL CREACIÓN/EDICIÓN PERIODO ACADÉMICO ================== --}}
+    <flux:modal 
+        wire:model="isOpen" 
+        :dismissible="false"
+        class="w-[95vw] sm:w-[85vw] md:w-[650px] lg:w-[700px] max-w-[95vw]">
+        <div class="flex flex-col max-h-[85vh]">
 
-            <flux:field>
-                <flux:label class="text-sm font-semibold" style="color: var(--modal-text-primary);">Nombre del Periodo *</flux:label>
-                <flux:input wire:model.defer="name" type="text" placeholder="Ejemplo: Semestre Enero-Junio 2025" 
-                    style="background-color: var(--student-document-bg-content); 
-                           border-color: var(--document-student-modal-border); 
-                           color: var(--modal-text-primary);"/>
-                <flux:error name="name" />
-            </flux:field>
-
-            <div class="grid grid-cols-2 gap-4">
-                <flux:field>
-                    <flux:label class="text-sm font-semibold" style="color: var(--modal-text-primary);">Fecha de Inicio *</flux:label>
-                    <flux:input wire:model.defer="start_date" type="date" 
-                        style="background-color: var(--student-document-bg-content); 
-                               border-color: var(--document-student-modal-border); 
-                               color: var(--modal-text-primary);"/>
-                    <flux:error name="start_date" />
-                </flux:field>
-
-                <flux:field>
-                    <flux:label class="text-sm font-semibold" style="color: var(--modal-text-primary);">Fecha de Término *</flux:label>
-                    <flux:input wire:model.defer="end_date" type="date" 
-                        style="background-color: var(--student-document-bg-content); 
-                               border-color: var(--document-student-modal-border); 
-                               color: var(--modal-text-primary);"/>
-                    <flux:error name="end_date" />
-                </flux:field>
-            </div>
-
-            <flux:field>
-                <flux:label class="text-sm font-semibold" style="color: var(--modal-text-primary);">Semestres Incluidos</flux:label>
-                <div class="space-y-2 max-h-52 overflow-y-auto p-4 rounded-lg" 
-                     style="border: 1px solid var(--document-student-modal-border); 
-                            background-color: var(--student-document-bg-content);">
-                    @forelse($semesters as $semester)
-                        <flux:checkbox 
-                            wire:model.defer="selectedSemesters" 
-                            value="{{ $semester->id }}" 
-                            label="{{ $semester->name }}" 
-                            style="color: var(--modal-text-primary);"
-                        />
-                    @empty
-                        <div class="text-center py-6">
-                            <p class="text-sm font-medium" style="color: var(--modal-text-secondary);">No hay semestres disponibles</p>
-                            <p class="text-xs mt-1" style="color: var(--student-document-text-secondary);">Debe crear semestres antes de asignarlos</p>
-                                                </div>
-                    @endforelse
+            {{-- Header --}}
+            <div 
+                class="relative px-6 py-5 flex items-center gap-4 overflow-hidden flex-shrink-0 rounded-t-xl border-b"
+                style="
+                    background: linear-gradient(
+                        135deg,
+                        var(--student-document-bg-card-header) 0%,
+                        var(--student-document-bg-card-header-2) 100%
+                    );
+                    border-bottom: 1px solid var(--student-document-border-content);
+                ">
+                {{-- Icono --}}
+                <div 
+                    class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg"
+                    style="background: linear-gradient(135deg, var(--color-hero-accent-primary), var(--color-hero-accent-secondary));">
+                    @if($periodId)
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    @else
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    @endif
                 </div>
-                <flux:error name="selectedSemesters" />
-            </flux:field>
 
-           {{-- Estado activo --}}
-            <flux:field>
-                <flux:switch
-                    wire:model="is_active"
-                    label="Periodo activo"
-                    description="Este periodo estará disponible para los estudiantes"
-                />
-            </flux:field>
+                {{-- Título y descripción --}}
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-bold" style="color: var(--student-document-text-primary);">
+                        {{ $periodId ? 'Editar Periodo Académico' : 'Nuevo Periodo Académico' }}
+                    </h3>
+                    <p class="text-sm truncate" style="color: var(--student-document-text-secondary);">
+                        {{ $periodId ? 'Modifique los datos del periodo seleccionado' : 'Complete la información requerida' }}
+                    </p>
+                </div>
+            </div>
 
+            {{-- Contenido --}}
+            <div class="flex-1 overflow-y-auto p-6 space-y-5" style="background-color: var(--student-document-bg-card);">
 
-            {{-- Acciones --}}
-            <div class="flex items-center justify-end gap-3 pt-6"
-                 style="border-top: 1px solid var(--document-student-modal-border);">
+                {{-- Nombre del Periodo --}}
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="
+                        background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);
+                    ">
+                    <label class="block text-sm font-semibold mb-2" style="color: var(--student-document-text-primary);">
+                        Nombre del Periodo 
+                        <span style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                    </label>
+                    <flux:input 
+                        wire:model.defer="name" 
+                        type="text" 
+                        placeholder="Ejemplo: Enero-Junio 2025"
+                        class="w-full"
+                        style="
+                            background-color: var(--student-document-bg-card); 
+                            border-color: var(--student-document-border-content); 
+                            color: var(--modal-text-primary);
+                        "/>
+                    <flux:error name="name" />
+                </div>
 
-                <flux:button 
-                    variant="ghost"
-                    wire:click="$set('isOpen', false)">
+                {{-- Fechas --}}
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="
+                        background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);
+                    ">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="p-2 rounded-lg" style="background-color: var(--student-document-bg-card);">
+                            <svg class="w-5 h-5" style="color: var(--student-document-progress-indicador);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-base font-semibold" style="color: var(--student-document-text-primary);">
+                            Periodo de Vigencia
+                        </h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1.5" style="color: var(--student-document-text-secondary);">
+                                Fecha de Inicio <span style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                            </label>
+                            <flux:input 
+                                wire:model.defer="start_date" 
+                                type="date"
+                                class="w-full"
+                                style="
+                                    background-color: var(--student-document-bg-card); 
+                                    border-color: var(--student-document-border-content); 
+                                    color: var(--modal-text-primary);
+                                "/>
+                            <flux:error name="start_date" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold mb-1.5" style="color: var(--student-document-text-secondary);">
+                                Fecha de Término <span style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                            </label>
+                            <flux:input 
+                                wire:model.defer="end_date" 
+                                type="date"
+                                class="w-full"
+                                style="
+                                    background-color: var(--student-document-bg-card); 
+                                    border-color: var(--student-document-border-content); 
+                                    color: var(--modal-text-primary);
+                                "/>
+                            <flux:error name="end_date" />
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Semestres Incluidos --}}
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="
+                        background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);
+                    ">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="p-2 rounded-lg" style="background-color: var(--student-document-bg-card);">
+                            <svg class="w-5 h-5" style="color: var(--student-document-progress-indicador);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-base font-semibold" style="color: var(--student-document-text-primary);">
+                            Semestres Incluidos <span style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                        </h4>
+                    </div>
+
+                    <div 
+                        class="space-y-2 max-h-52 overflow-y-auto p-4 rounded-lg" 
+                        style="
+                            border: 1px solid var(--student-document-border-content); 
+                            background-color: var(--student-document-bg-card);
+                        ">
+                        @forelse($semesters as $semester)
+                            <label class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all hover:bg-opacity-50"
+                                style="background-color: transparent;"
+                                onmouseover="this.style.backgroundColor='var(--student-document-bg-content)'"
+                                onmouseout="this.style.backgroundColor='transparent'">
+                                <flux:checkbox 
+                                    wire:model.defer="selectedSemesters" 
+                                    value="{{ $semester->id }}"
+                                />
+                                <span class="text-sm font-medium" style="color: var(--modal-text-primary);">
+                                    {{ $semester->name }}
+                                </span>
+                            </label>
+                        @empty
+                            <div class="text-center py-8">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
+                                    style="background-color: var(--student-document-bg-content);">
+                                    <svg class="w-8 h-8" style="color: var(--student-document-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-medium mb-1" style="color: var(--modal-text-primary);">
+                                    No hay semestres disponibles
+                                </p>
+                                <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                    Debe crear semestres antes de asignarlos a un periodo
+                                </p>
+                            </div>
+                        @endforelse
+                    </div>
+                    <flux:error name="selectedSemesters" />
+                </div>
+
+                {{-- Estado activo --}}
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="
+                        background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);
+                    ">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg" style="background-color: var(--student-document-bg-card);">
+                                <svg class="w-5 h-5" style="color: var(--student-document-progress-indicador);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold" style="color: var(--student-document-text-primary);">
+                                    Periodo activo
+                                </p>
+                                <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                    Este periodo estará disponible para los estudiantes
+                                </p>
+                            </div>
+                        </div>
+                        <flux:switch wire:model="is_active" />
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Footer con botones --}}
+            <div 
+                class="px-6 py-4 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t flex-shrink-0 rounded-b-xl"
+                style="
+                    background-color: var(--student-document-bg-card);
+                    border-color: var(--student-document-border-content);
+                ">
+                {{-- Botón Cancelar --}}
+                <button
+                    wire:click="$set('isOpen', false)"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium transition-all duration-200"
+                    style="
+                        background-color: var(--modal-btn-close);
+                                    color: var(--modal-btn-close-text);
+                    "
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.05)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
                     Cancelar
-                </flux:button>
+                </button>
 
-                <flux:button 
-                    variant="primary"
+                {{-- Botón Guardar/Crear --}}
+                <button
                     wire:click="save"
-                    icon="check">
-                    {{ $periodId ? 'Guardar Cambios' : 'Crear Periodo' }}
-                </flux:button>
+                    class="w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg text-white"
+                    style="background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.05)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
+                    <span class="flex items-center justify-center gap-2">
+                        
+                        {{ $periodId ? 'Guardar Cambios' : 'Crear' }}
+                    </span>
+                </button>
             </div>
+
         </div>
     </flux:modal>
 
-    {{-- Modal de confirmación de eliminación --}}
-    <flux:modal wire:model="isDeleteModalOpen" class="md:w-96">
-        <div class="space-y-5" style="background-color: var(--modal-bg);">
-            <flux:heading size="lg" class="font-bold" style="color: var(--modal-text-primary);">
-                Eliminar Periodo
-            </flux:heading>
+    {{-- ================== MODAL CONFIRMACIÓN ELIMINACIÓN PERIODO ACADÉMICO ================== --}}
+    <flux:modal 
+        wire:model="isDeleteModalOpen" 
+        :dismissible="false"
+        class="w-[95vw] sm:w-[450px] max-w-[95vw]">
+        <div class="flex flex-col">
 
-            <p class="text-sm" style="color: var(--modal-text-secondary);">
-                ¿Está seguro de que desea eliminar este periodo académico?  
-                Esta acción no se puede deshacer.
-            </p>
+            
 
-            <div class="flex justify-end gap-3 pt-4"
-                style="border-top: 1px solid var(--document-student-modal-border);">
+            {{-- Contenido --}}
+            <div class="px-6 py-6" style="background-color: var(--student-document-bg-card);">
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="
+                        background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);
+                    ">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 p-2 rounded-lg" style="background-color: var(--student-document-bg-card);">
+                            <svg class="w-5 h-5" style="color: var(--student-document-text-content-status-rejected-icon);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium mb-1" style="color: var(--student-document-text-primary);">
+                                ¿Está seguro de que desea eliminar este periodo académico?
+                            </p>
+                            <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                Se eliminarán todos los datos asociados y esta acción es irreversible.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <flux:button variant="ghost"
-                    wire:click="$set('isDeleteModalOpen', false)">
+            {{-- Footer con botones --}}
+            <div 
+                class="px-6 py-4 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t flex-shrink-0 rounded-b-xl"
+                style="
+                    background-color: var(--student-document-bg-card);
+                    border-color: var(--student-document-border-content);
+                ">
+                {{-- Botón Cancelar --}}
+                <button
+                    wire:click="$set('isDeleteModalOpen', false)"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium transition-all duration-200"
+                    style="
+                        background-color: var(--modal-btn-close);
+                        color: var(--modal-btn-close-text);
+                    "
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.05)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
                     Cancelar
-                </flux:button>
+                </button>
 
-                <flux:button 
-                    variant="danger"
+                {{-- Botón Eliminar --}}
+                <button
                     wire:click="deletePeriod"
-                    icon="trash">
-                    Eliminar
-                </flux:button>
+                    class="w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg text-white"
+                    style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.05)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
+                    <span class="flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Eliminar
+                    </span>
+                </button>
             </div>
+
         </div>
     </flux:modal>
 
 
-</div>
+    </div>

@@ -5,7 +5,6 @@ namespace App\Livewire\Semesters;
 use Livewire\Component;
 use App\Models\Semester;
 use Livewire\WithPagination;
-use Illuminate\Validation\Rule;
 
 class Crud extends Component
 {
@@ -14,22 +13,13 @@ class Crud extends Component
     public $search = '';
     public $name, $semesterId, $is_active = true;
     public $isOpen = false;
+    public $isDeleteModalOpen = false; // Modal de confirmación
+    public $semesterToDelete = null;    // Semestre a eliminar
 
-    /**
-     * Reglas de validación dinámicas
-     */
-    protected function rules()
-    {
-        return [
-            'name' => [
-                'required',
-                'string',
-                'min:1',
-                Rule::unique('semesters', 'name')->ignore($this->semesterId),
-            ],
-            'is_active' => 'boolean',
-        ];
-    }
+    protected $rules = [
+        'name' => 'required|string|min:1',
+        'is_active' => 'boolean',
+    ];
 
     public function updatingSearch()
     {
@@ -48,12 +38,14 @@ class Crud extends Component
         ]);
     }
 
+    // Abrir modal de creación
     public function create()
     {
         $this->resetInput();
         $this->isOpen = true;
     }
 
+    // Abrir modal de edición
     public function edit(Semester $semester)
     {
         $this->semesterId = $semester->id;
@@ -62,9 +54,29 @@ class Crud extends Component
         $this->isOpen = true;
     }
 
+    // Guardar o actualizar
     public function save()
     {
-        $this->validate();
+        $rules = [
+            'name' => 'required|string|min:1',
+            'is_active' => 'boolean',
+        ];
+
+        if ($this->semesterId) {
+            $rules['name'] .= '|unique:semesters,name,' . $this->semesterId . ',id';
+        } else {
+            $rules['name'] .= '|unique:semesters,name';
+        }
+
+        // Mensajes personalizados
+        $messages = [
+            'name.required' => 'El nombre del semestre es obligatorio.',
+            'name.string'   => 'El nombre debe ser un texto válido.',
+            'name.min'      => 'El nombre del semestre debe tener al menos 1 carácter.',
+            'name.unique'   => 'Ya existe un semestre con este nombre. Por favor elige otro.',
+        ];
+
+        $this->validate($rules, $messages);
 
         Semester::updateOrCreate(
             ['id' => $this->semesterId],
@@ -74,7 +86,7 @@ class Crud extends Component
             ]
         );
 
-        session()->flash('message', 
+        session()->flash('message',
             $this->semesterId ? 'Semestre actualizado correctamente.' : 'Semestre creado correctamente.'
         );
 
@@ -82,10 +94,27 @@ class Crud extends Component
         $this->resetInput();
     }
 
-    public function delete(Semester $semester)
+    // Guardar el ID del semestre a eliminar y abrir modal
+    public function confirmDelete($id)
     {
+        $this->semesterToDelete = $id;
+        $this->isDeleteModalOpen = true;
+    }
+
+    // Eliminar semestre
+    public function deleteSemester()
+    {
+        if (!$this->semesterToDelete) return;
+
+        $semester = Semester::find($this->semesterToDelete);
+        if (!$semester) return;
+
         $semester->delete();
+
         session()->flash('message', 'Semestre eliminado correctamente.');
+
+        $this->semesterToDelete = null;
+        $this->isDeleteModalOpen = false;
     }
 
     private function resetInput()
@@ -93,20 +122,22 @@ class Crud extends Component
         $this->semesterId = null;
         $this->name = '';
         $this->is_active = true;
+        $this->resetValidation();
     }
 
     public function closeModal()
     {
         $this->isOpen = false;
+        $this->resetInput();
     }
 
+    // Activar/desactivar semestre
     public function toggleActive($id)
     {
         $semester = Semester::findOrFail($id);
         $semester->is_active = !$semester->is_active;
         $semester->save();
 
-        session()->flash('message', 'Visibilidad actualizado correctamente.');
+        session()->flash('message', 'Visibilidad actualizada correctamente.');
     }
-
 }
