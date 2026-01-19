@@ -5,8 +5,8 @@
          style="background-color: var(--student-document-bg);">
         <div>
             <x-auth-header
-                title="Campus"
-                description="Administración y gestión de campus institucionales."
+                title="Campus" {{-- O "Carreras" --}}
+                description="Administración y gestión de campus institucionales." 
                 :center="false"
             />
         </div>
@@ -28,7 +28,7 @@
                 disabled:opacity-60 disabled:cursor-not-allowed
                 gap-2
             ">
-            Nuevo Campus
+            Nuevo Campus {{-- O "Nueva Carrera" --}}
         </flux:button>
     </div>
 
@@ -65,7 +65,7 @@
 
                 <input 
                     type="text"
-                    placeholder="Buscar campus por nombre..."
+                    placeholder="Buscar campus..."
                     wire:model.live="search"
                     class="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm transition-all"
                     style="
@@ -77,51 +77,65 @@
             </div>
         </div>
 
-        {{-- Lista de campus - Diseño compacto --}}
-        
-        @if($campuses->count())
-            <div class="space-y-3 rounded-xl p-4">
+        {{-- Grid Universal - Funciona para Campus, Carreras, etc. --}}
+        @if($campuses->count()) {{-- Cambiar a $careers, $items, etc según el caso --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
 
-                @foreach($campuses as $campus)
-                    <div class="group relative rounded-xl p-4 transition-all duration-200 hover:shadow-lg border"
+                @foreach($campuses as $campus) {{-- Cambiar variable según el caso --}}
+                    <div class="group relative rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border"
                         style="background-color: var(--student-document-bg-card); 
                                 border-color: var(--student-document-border-content);">
                         
-                        <div class="flex items-center gap-4">
-                            {{-- Contenido --}}
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-base font-bold truncate" 
+                        {{-- Contenido --}}
+                        <div class="p-5">
+                            {{-- Icono + Nombre --}}
+                            <div class="flex items-center gap-3 mb-4">
+                                
+                                {{-- Icono --}}
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-lg flex-shrink-0"
+                                    style="background-color: var(--student-document-bg-content);">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        style="color: var(--student-document-text-primary);">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                </div>
+
+                                {{-- Nombre --}}
+                                <h3 class="text-base font-bold leading-tight line-clamp-2"
                                     style="color: var(--student-document-text-primary);">
                                     {{ $campus->name }}
                                 </h3>
+
                             </div>
 
+
                             {{-- Acciones --}}
-                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div class="flex items-center gap-2">
                                 <button 
                                     wire:click="edit({{ $campus->id }})"
-                                    class="inline-flex items-center justify-center w-9 h-9 rounded-lg transition-all hover:scale-110"
+                                    class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 font-medium text-sm"
                                     style="color: var(--student-document-text-primary); 
-                                        background-color: var(--student-document-bg-content); 
-                                        border: 1px solid var(--student-document-border-content);"
-                                    title="Editar campus">
+                                           background-color: var(--student-document-bg-content); 
+                                           border: 1px solid var(--student-document-border-content);"
+                                    title="Editar">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
+                                    Editar
                                 </button>
 
                                 <button 
                                     wire:click="confirmDelete({{ $campus->id }})"
-                                    class="inline-flex items-center justify-center w-9 h-9 rounded-lg transition-all hover:scale-110"
+                                    class="inline-flex items-center justify-center px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105"
                                     style="color: var(--student-document-text-content-status-rejected-icon); 
-                                        background-color: var(--student-document-bg-content-status-rejected); 
-                                        border: 1px solid var(--status-border-rejected);"
-                                    title="Eliminar campus">
+                                           background-color: var(--student-document-bg-content-status-rejected); 
+                                           border: 1px solid var(--status-border-rejected);"
+                                    title="Eliminar">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
                                 </button>
-
                             </div>
                         </div>
                     </div>
@@ -146,14 +160,14 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-bold mb-2" style="color: var(--student-document-text-primary);">
-                    {{ $search ? 'Sin resultados' : 'No hay campus registrados' }}
+                    {{ $search ? 'Sin resultados' : 'No hay registros' }}
                 </h3>
                 <p class="mb-6 max-w-sm mx-auto text-sm" style="color: var(--student-document-text-secondary);">
-                    {{ $search ? 'No se encontraron campus con esos términos.' : 'Crea el primer campus para comenzar.' }}
+                    {{ $search ? 'No se encontraron resultados con esos términos.' : 'Crea el primer registro para comenzar.' }}
                 </p>
                 @if(!$search)
                     <flux:button variant="primary" wire:click="create" icon="plus">
-                        Crear Campus
+                        Crear Registro
                     </flux:button>
                 @endif
             </div>
@@ -180,7 +194,6 @@
                     border-bottom: 1px solid var(--student-document-border-content);
                 ">
                 
-                {{-- Título y descripción --}}
                 <div class="flex-1 min-w-0">
                     <h3 class="text-lg font-bold" style="color: var(--student-document-text-primary);">
                         {{ $campusId ? 'Editar Campus' : 'Nuevo Campus' }}
@@ -213,7 +226,15 @@
                             border-color: var(--student-document-border-content); 
                             color: var(--modal-text-primary);
                         "/>
-                    <flux:error name="name" />
+                    
+                    @error('name')
+                        <p class="mt-2 text-sm flex items-center gap-2" style="color: #ee6e6c;">
+                            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
                 </div>
 
             </div>
@@ -225,7 +246,6 @@
                     background-color: var(--student-document-bg-card);
                     border-color: var(--student-document-border-content);
                 ">
-                {{-- Botón Cancelar --}}
                 <flux:modal.close>
                     <button
                         wire:click="closeModal"
@@ -240,7 +260,6 @@
                     </button>
                 </flux:modal.close>
 
-                {{-- Botón Guardar/Crear --}}
                 <button
                     wire:click="save"
                     class="w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg text-white"
@@ -257,15 +276,13 @@
     </flux:modal>
     @endif
 
-    {{-- ================== MODAL DE CONFIRMACIÓN DE ELIMINACIÓN DE CAMPUS ================== --}}
+    {{-- Modal de confirmación de eliminación --}}
     @if($isDeleteModalOpen && $campusToDelete)
         <flux:modal 
             wire:model="isDeleteModalOpen" 
             :dismissible="false"
             class="w-[95vw] sm:w-[85vw] md:w-[500px] lg:w-[550px] max-w-[95vw]">
             <div class="flex flex-col max-h-[85vh]">
-
-                
 
                 {{-- Contenido --}}
                 <div class="flex-1 overflow-y-auto p-6" style="background-color: var(--student-document-bg-card);">
@@ -277,21 +294,9 @@
                             <p class="text-sm truncate" style="color: var(--student-document-text-secondary);">
                                 {{ optional(App\Models\Campus::find($campusToDelete))->name }}
                             </p>
-
-                            {{-- Mensaje de error --}}
-                            @error('name')
-                                <p class="mt-2 text-sm flex items-center gap-2" style="color: #ee6e6c;">
-                                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $message }}
-                                </p>
-                            @enderror
-
                         </div>
                     </div>
                 </div>
-
 
                 {{-- Footer --}}
                 <div 
@@ -300,7 +305,6 @@
                         background-color: var(--student-document-bg-card);
                         border-color: var(--student-document-border-content);
                     ">
-                    {{-- Cancelar --}}
                     <button
                         wire:click="$set('isDeleteModalOpen', false)"
                         class="w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium transition-all duration-200"
@@ -313,7 +317,6 @@
                         Cancelar
                     </button>
 
-                    {{-- Confirmar eliminación --}}
                     <button
                         wire:click="deleteCampus"
                         class="w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg"

@@ -12,27 +12,26 @@ class Index extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $statusFilter = 'all'; // all, active, inactive
-    public $sortBy = 'recent'; // recent, oldest, name
+    public $search = '';                 // Texto de búsqueda por nombre
+    public $statusFilter = 'all';        // Filtro de estado (all, active, inactive)
+    public $sortBy = 'recent';           // Orden (recent, oldest, name)
 
-    public $isOpen = false; // modal de creación/edición
-    public $isDeleteModalOpen = false; // modal de eliminación
+    public $isOpen = false;              // Modal crear/editar abierto
+    public $isDeleteModalOpen = false;   // Modal eliminar abierto
 
-    public $periodId = null;
-    public $name = '';
-    public $start_date = '';
-    public $end_date = '';
-    public $selectedSemesters = [];
+    public $periodId = null;             // ID del periodo en edición
+    public $name = '';                   // Nombre del periodo
+    public $start_date = '';             // Fecha de inicio
+    public $end_date = '';               // Fecha de fin
+    public $selectedSemesters = [];      // Semestres seleccionados
 
-    public $periodToDelete = null; // ID del periodo a eliminar
+    public $periodToDelete = null;       // ID del periodo a eliminar
 
-    public $is_active = false;
-
+    public $is_active = false;           // Estado del periodo activo/inactivo
 
     protected $paginationTheme = 'tailwind';
 
-    // Reset page when filters/search change
+    // Resetea la pagina cuando la busqueda cambie
     public function updatingSearch() { $this->resetPage(); }
     public function updatingStatusFilter() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
@@ -41,6 +40,7 @@ class Index extends Component
     public function createPeriod()
     {
         $this->resetFields(false);
+        $this->is_active = true;
         $this->isOpen = true;
     }
 
@@ -56,8 +56,6 @@ class Index extends Component
         $this->selectedSemesters = $period->semesters->pluck('id')->toArray();
 
         $this->is_active = (bool) $period->is_active;
-
-
 
         $this->isOpen = true;
     }
@@ -95,6 +93,7 @@ class Index extends Component
                 'is_active' => $this->is_active,
             ]);
 
+            $toastType = 'info';
             $message = 'Periodo actualizado exitosamente';
         } else {
             $period = Period::create([
@@ -103,7 +102,8 @@ class Index extends Component
                 'end_date' => $this->end_date,
                 'is_active' => $this->is_active,
             ]);
-
+            
+            $toastType = 'success';
             $message = 'Periodo creado exitosamente';
         }
 
@@ -112,18 +112,14 @@ class Index extends Component
         $this->isOpen = false;
         $this->resetFields(false);
 
-        $this->dispatch('notify', type: 'success', message: $message);
+        $this->dispatch('notify', type: $toastType, message: $message);
     }
-
 
     // Activar / desactivar periodo
     public function toggleActive($id)
     {
         $period = Period::findOrFail($id);
         $period->update(['is_active' => !$period->is_active]);
-        $message = $period->is_active ? 'Periodo activado' : 'Periodo desactivado';
-
-        $this->dispatch('notify', type: 'success', message: $message);
     }
 
     // Guardar el ID del periodo a eliminar y abrir modal
@@ -171,12 +167,11 @@ class Index extends Component
         // 🔹 Eliminar el periodo (DB en cascada se encarga de estudiantes, documentos y files)
         $period->delete();
 
-        $this->dispatch('notify', type: 'success', message: 'Periodo eliminado exitosamente');
+        $this->dispatch('notify', type: 'error', message: 'Periodo eliminado exitosamente');
 
         $this->periodToDelete = null;
         $this->isDeleteModalOpen = false;
     }
-
 
     // Reset de campos
     private function resetFields($closeModal = true)
@@ -229,7 +224,6 @@ class Index extends Component
             default:
                 $query->orderBy('start_date', 'desc'); // de la más reciente a la más antigua
         }
-
 
         $periods = $query->paginate(12);
 

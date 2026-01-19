@@ -81,9 +81,10 @@ class Crud extends Component
             ['name' => $this->name]
         );
 
-        session()->flash('message',
-            $this->campusId ? 'Campus actualizado correctamente.' : 'Campus creado correctamente.'
-        );
+        $action = $this->campusId ? 'actualizado' : 'creado';
+        $type   = $this->campusId ? 'info' : 'success';
+        $this->dispatch('notify', type: $type, message: "Campus {$action} correctamente");
+
 
         $this->closeModal();
         $this->resetInput();
@@ -107,7 +108,8 @@ class Crud extends Component
 
         $campus->delete();
 
-        session()->flash('message', 'Campus eliminado correctamente.');
+        $this->dispatch('notify', type: 'error', message: "Campus eliminado correctamente");
+
 
         $this->campusToDelete = null;
         $this->isDeleteModalOpen = false;

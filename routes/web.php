@@ -17,13 +17,14 @@ use App\Livewire\Students\Index as StudentsIndex;
 use App\Livewire\Students\Details as StudentsDetails;
 use App\Livewire\Admin\StudentsApproval as StudentsApproval;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
+use App\Livewire\Admin\WelcomeSection as WelcomeSection;
 
 use App\Livewire\Dashboard\Index as DashboardIndex;
 use App\Livewire\Dashboard\PeriodDetail;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+use App\Http\Controllers\WelcomeController;
+
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -45,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('students/details/{studentId}', StudentsDetails::class)->name('students.details');         
         Route::get('students/approval', StudentsApproval::class)->name('admin.students-approval'); 
         Route::get('admin/create-admin', CreateAdmin::class)->name('admin.create-admin');
+
+        Route::get('admin/welcome-section', WelcomeSection::class)->name('admin.welcome-section');
 
         Route::get('periods/{id}', PeriodDetail::class)->name('periods.detail');
     });

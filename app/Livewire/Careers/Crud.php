@@ -80,9 +80,11 @@ class Crud extends Component
             ['name' => $this->name]
         );
 
-        session()->flash('message',
-            $this->careerId ? 'Carrera actualizada correctamente.' : 'Carrera creada correctamente.'
-        );
+        $action = $this->careerId ? 'actualizada' : 'creada';
+        $type   = $this->careerId ? 'info' : 'success';
+
+        $this->dispatch('notify', type: $type, message: "Carrera {$action} correctamente");
+
 
         $this->closeModal();
         $this->resetInput();
@@ -105,7 +107,7 @@ class Crud extends Component
 
         $career->delete();
 
-        session()->flash('message', 'Carrera eliminada correctamente.');
+        $this->dispatch('notify', type: 'error', message: "Carrera eliminada correctamente");
 
         $this->careerToDelete = null;
         $this->isDeleteModalOpen = false;

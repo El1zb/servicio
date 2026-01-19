@@ -5,30 +5,32 @@
         <style>
             :root {
                 --sidebar-width: 280px;
-                --sidebar-collapsed-width: 80px;
                 --transition-speed: 300ms;
+            }
+
+            body {
+                background-color: var(--color-bg-all);
+                color: var(--text-section-title);
             }
 
             .sidebar-container {
                 width: var(--sidebar-width);
-                transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
                 position: fixed;
                 left: 0;
                 top: 0;
                 height: 100vh;
                 z-index: 40;
-            }
-
-            .sidebar-container.collapsed {
-                width: var(--sidebar-collapsed-width);
+                overflow: visible;
             }
 
             .sidebar-content {
                 height: 100%;
                 overflow-y: auto;
-                overflow-x: hidden;
+                overflow-x: visible;
                 scrollbar-width: thin;
                 scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+                display: flex;
+                flex-direction: column;
             }
 
             .sidebar-content::-webkit-scrollbar {
@@ -48,7 +50,7 @@
                 padding: 12px 16px;
                 margin: 4px 12px;
                 border-radius: 10px;
-                color: rgba(255, 255, 255, 0.7);
+                color: var(--sidebar-item-text);
                 text-decoration: none;
                 transition: all 200ms ease;
                 font-size: 14px;
@@ -57,13 +59,14 @@
             }
 
             .nav-item:hover {
-                background: rgba(255, 255, 255, 0.05);
-                color: rgba(255, 255, 255, 0.95);
+                background: var(--sidebar-item-bg-hover);
+                color: var(--sidebar-item-text-hover);
+                transform: translateX(2px);
             }
 
             .nav-item.active {
-                background: rgba(99, 102, 241, 0.1);
-                color: rgb(129, 140, 248);
+                background: var(--sidebar-item-bg-active);
+                color: var(--sidebar-item-text-active);
             }
 
             .nav-item.active::before {
@@ -72,145 +75,107 @@
                 left: 0;
                 top: 50%;
                 transform: translateY(-50%);
-                width: 4px;
-                height: 70%;
-                background: rgb(129, 140, 248);
+                width: 3px;
+                height: 60%;
+                background: var(--sidebar-item-text);
                 border-radius: 0 4px 4px 0;
             }
 
             .nav-item-icon {
-                width: 20px;
-                height: 20px;
+                width: 22px;
+                height: 22px;
                 flex-shrink: 0;
             }
 
             .nav-item-text {
                 opacity: 1;
-                transition: opacity var(--transition-speed) ease;
-            }
-
-            .collapsed .nav-item-text {
-                opacity: 0;
-                width: 0;
-            }
-
-            .nav-group-heading {
-                padding: 8px 16px;
-                margin: 20px 12px 8px;
-                font-size: 11px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: rgba(255, 255, 255, 0.4);
-                transition: opacity var(--transition-speed) ease;
-            }
-
-            .collapsed .nav-group-heading {
-                opacity: 0;
-            }
-
-            .divider {
-                height: 1px;
-                background: rgba(255, 255, 255, 0.1);
-                margin: 16px 20px;
-            }
-
-            .toggle-btn {
-                position: absolute;
-                right: -12px;
-                top: 24px;
-                width: 24px;
-                height: 24px;
-                background: rgb(30, 41, 59);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 200ms ease;
-                z-index: 50;
-            }
-
-            .toggle-btn:hover {
-                background: rgb(51, 65, 85);
-                transform: scale(1.1);
-            }
-
-            .toggle-btn svg {
-                width: 14px;
-                height: 14px;
-                color: rgba(255, 255, 255, 0.7);
-                transition: transform var(--transition-speed) ease;
-            }
-
-            .collapsed .toggle-btn svg {
-                transform: rotate(180deg);
             }
 
             .logo-container {
                 padding: 24px 20px;
                 display: flex;
                 align-items: center;
-                gap: 12px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                gap: 16px;
+            }
+
+            .logo-icon {
+                width: 64px;
+                height: 64px;
+                background: white;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                flex-shrink: 0;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .logo-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .logo-icon span {
+                color: #1e293b;
+                font-weight: 700;
+                font-size: 18px;
             }
 
             .logo-text {
                 font-size: 18px;
                 font-weight: 700;
                 color: white;
-                transition: opacity var(--transition-speed) ease;
+                line-height: 1.3;
             }
 
-            .collapsed .logo-text {
-                opacity: 0;
-                width: 0;
+            .user-menu-container {
+                margin-top: auto;
+                padding: 16px;
+                position: relative;
             }
 
             .user-menu {
-                margin: 16px 12px;
-                padding: 12px;
-                border-radius: 10px;
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 10px;
+                border-radius: 12px;
+                background: var(--sidebar-bg-user);
                 cursor: pointer;
                 transition: all 200ms ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .user-menu:hover {
-                background: rgba(255, 255, 255, 0.05);
+                background: var(--sidebar-item-bg-hover);
+                transform: translateY(-2px);
             }
 
             .user-info {
                 display: flex;
                 align-items: center;
                 gap: 12px;
+                width: 100%;
             }
 
             .user-avatar {
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
-                background: linear-gradient(135deg, rgb(99, 102, 241), rgb(139, 92, 246));
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+                background: var(--sidebar-logo-user);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: white;
+                color: var(--sidebar-logo-letra-user);
                 font-weight: 600;
-                font-size: 14px;
+                font-size: 16px;
                 flex-shrink: 0;
             }
 
             .user-details {
                 flex: 1;
                 min-width: 0;
-                transition: opacity var(--transition-speed) ease;
-            }
-
-            .collapsed .user-details {
-                opacity: 0;
-                width: 0;
             }
 
             .user-name {
@@ -225,20 +190,75 @@
 
             .user-email {
                 font-size: 12px;
-                color: rgba(255, 255, 255, 0.5);
+                color: var(--sidebar-email-user);
                 display: block;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
 
-            .main-content {
-                margin-left: var(--sidebar-width);
-                transition: margin-left var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            .user-dropdown {
+                position: fixed;
+                bottom: 100px;
+                left: 16px;
+                width: calc(var(--sidebar-width) - 32px);
+                background: var(--sidebar-bg-user);
+                border-radius: 12px;
+                padding: 8px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(10px);
+                transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+                z-index: 9999;
             }
 
-            .sidebar-container.collapsed ~ .main-content {
-                margin-left: var(--sidebar-collapsed-width);
+            .user-dropdown.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .dropdown-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 14px;
+                color: var(--sidebar-item-text);
+                text-decoration: none;
+                transition: all 200ms ease;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                background: none;
+                border: none;
+                width: 100%;
+                text-align: left;
+                border-radius: 8px;
+            }
+
+            .dropdown-item:hover {
+                background: var(--sidebar-item-bg-hover);
+                color: white;
+                transform: translateX(4px);
+            }
+
+            .dropdown-item svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .dropdown-divider {
+                height: 1px;
+                background: var(--sidebar-divisor);
+                margin: 8px 0;
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-width);
+                background-color: var(--color-bg-all);
+                color: var(--text-section-title);
+                min-height: 100vh;
             }
 
             @media (max-width: 1024px) {
@@ -265,6 +285,12 @@
                 .mobile-overlay.show {
                     display: block;
                 }
+
+                .user-dropdown {
+                    width: calc(100% - 32px) !important;
+                    left: 16px !important;
+                    bottom: 90px !important;
+                }
             }
 
             .mobile-header {
@@ -282,10 +308,6 @@
                     display: flex;
                     align-items: center;
                     gap: 16px;
-                }
-
-                .toggle-btn {
-                    display: none;
                 }
             }
 
@@ -308,26 +330,45 @@
             }
         </style>
     </head>
-    <body class="min-h-screen bg-[#0f172a] text-white">
+    <body class="min-h-screen">
+
         <!-- Overlay móvil -->
         <div class="mobile-overlay" id="mobileOverlay"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar-container bg-gradient-to-b from-[#1e293b] to-[#0f172a]" id="sidebar">
-            <!-- Toggle Button -->
-            <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
-
+        <aside class="sidebar-container" 
+        style="background: linear-gradient(to bottom, var(--sidebar-bg), var(--sidebar-bg-alt));" 
+        id="sidebar">
             <div class="sidebar-content">
-                <!-- Logo -->
-                <div class="logo-container">
-                    <x-app-logo />
-                    <span class="logo-text">Mi Plataforma</span>
+               <!-- Logo -->
+                <div class="logo-container flex items-center gap-4">
+                    @php
+                        $welcome = \App\Models\WelcomeSection::find(1);
+                    @endphp
+
+                    {{-- Logo cuadrado con fondo blanco --}}
+                    <div class="logo-icon w-16 h-16 rounded-md bg-white flex items-center justify-center overflow-hidden shadow-sm">
+                        @if($welcome && $welcome->logo)
+                            <img src="{{ asset('storage/' . $welcome->logo) }}" 
+                                alt="{{ $welcome->abreviatura ?? 'ITSCO' }}" 
+                                class="w-full h-full object-contain">
+                        @else
+                            <span class="text-black font-bold text-lg">{{ $welcome->abreviatura ?? 'ITSCO' }}</span>
+                        @endif
+                    </div>
+
+                    {{-- Texto a la izquierda del logo --}}
+                    <div class="flex flex-col text-left">
+                        <span class="text-xl font-extrabold text-[var(--sidebar-title-text)] leading-snug">
+                            Servicio Social
+                        </span>
+                        <span class="text-sm font-medium text-[var(--sidebar-subtitle-text)]">
+                            ITSCO
+                        </span>
+                    </div>
                 </div>
 
+                <!-- Navigation -->
                 <nav class="py-4">
                     @if(auth()->user()->hasRole('admin'))
                         <a href="{{ route('dashboard') }}" 
@@ -390,30 +431,34 @@
                 </nav>
 
                 <!-- User Menu Desktop -->
-                <div style="margin-top: auto; padding-top: 16px;" class="hidden lg:block">
-                    <a href="{{ route('settings.profile') }}" 
-                       class="nav-item {{ request()->routeIs('settings.profile') ? 'active' : '' }}"
-                       wire:navigate>
-                        <svg class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span class="nav-item-text">{{ __('Configuración') }}</span>
-                    </a>
-
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <button type="submit" class="nav-item w-full text-left">
-                            <svg class="nav-item-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <div class="user-menu-container">
+                    <!-- Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="{{ route('settings.profile') }}" 
+                           class="dropdown-item"
+                           wire:navigate>
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            <span class="nav-item-text">{{ __('Cerrar Sesión') }}</span>
-                        </button>
-                    </form>
+                            <span>{{ __('Configuración') }}</span>
+                        </a>
 
-                    <div class="divider"></div>
+                        <div class="dropdown-divider"></div>
 
-                    <div class="user-menu">
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <button type="submit" class="dropdown-item">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                <span>{{ __('Cerrar Sesión') }}</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- User Info Button -->
+                    <div class="user-menu" onclick="toggleUserDropdown()">
                         <div class="user-info">
                             <div class="user-avatar">{{ auth()->user()->initials() }}</div>
                             <div class="user-details">
@@ -441,19 +486,19 @@
                     {{ auth()->user()->initials() }}
                 </div>
 
-                <flux:menu class="bg-[#1e293b] border border-[rgba(255,255,255,0.1)]">
+                <flux:menu class="!bg-[var(--sidebar-bg)]">
                     <div style="padding: 12px;">
                         <div class="user-name">{{ auth()->user()->name }}</div>
                         <div class="user-email">{{ auth()->user()->email }}</div>
                     </div>
 
-                    <flux:menu.separator class="border-[rgba(255,255,255,0.1)]" />
+                    <flux:menu.separator class="border-[var(--sidebar-border)]" />
 
                     <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
                         {{ __('Configuración') }}
                     </flux:menu.item>
 
-                    <flux:menu.separator class="border-[rgba(255,255,255,0.1)]" />
+                    <flux:menu.separator class="border-[var(--sidebar-border)]" />
 
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
@@ -471,12 +516,17 @@
         </main>
 
         <script>
-            function toggleSidebar() {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.classList.toggle('collapsed');
+            let userDropdownOpen = false;
+
+            function toggleUserDropdown() {
+                const dropdown = document.getElementById('userDropdown');
+                userDropdownOpen = !userDropdownOpen;
                 
-                // Guardar estado en localStorage
-                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                if (userDropdownOpen) {
+                    dropdown.classList.add('show');
+                } else {
+                    dropdown.classList.remove('show');
+                }
             }
 
             function toggleMobileSidebar() {
@@ -487,16 +537,18 @@
                 overlay.classList.toggle('show');
             }
 
-            // Cerrar sidebar móvil al hacer clic en overlay
-            document.getElementById('mobileOverlay').addEventListener('click', toggleMobileSidebar);
-
-            // Restaurar estado del sidebar al cargar
-            document.addEventListener('DOMContentLoaded', function() {
-                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-                if (isCollapsed) {
-                    document.getElementById('sidebar').classList.add('collapsed');
+            // Cerrar dropdown al hacer clic fuera
+            document.addEventListener('click', function(event) {
+                const userMenu = document.querySelector('.user-menu');
+                const dropdown = document.getElementById('userDropdown');
+                
+                if (userDropdownOpen && !userMenu.contains(event.target) && !dropdown.contains(event.target)) {
+                    toggleUserDropdown();
                 }
             });
+
+            // Cerrar sidebar móvil al hacer clic en overlay
+            document.getElementById('mobileOverlay').addEventListener('click', toggleMobileSidebar);
 
             // Cerrar sidebar móvil al navegar (Livewire)
             document.addEventListener('livewire:navigated', function() {
@@ -506,6 +558,11 @@
                 if (sidebar.classList.contains('mobile-open')) {
                     sidebar.classList.remove('mobile-open');
                     overlay.classList.remove('show');
+                }
+                
+                // Cerrar dropdown si está abierto
+                if (userDropdownOpen) {
+                    toggleUserDropdown();
                 }
             });
         </script>

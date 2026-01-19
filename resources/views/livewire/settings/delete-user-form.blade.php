@@ -1,9 +1,14 @@
 <section class="mt-10 space-y-6">
-    <div class="relative mb-5">
-        <flux:heading>{{ __('Eliminar cuenta') }}</flux:heading>
-        <flux:subheading>{{ __('Elimina tu cuenta y todos los recursos asociados') }}</flux:subheading>
+    {{-- Header --}}
+    <div class="rounded-xl p-6 shadow-sm" style="background-color: var(--student-document-bg);">
+        <x-auth-header
+            title="{{ __('Eliminar cuenta') }}"
+            description="{{ __('Elimina tu cuenta y todos los recursos asociados') }}"
+            :center="false"
+        />
     </div>
 
+    {{-- Botón Eliminar cuenta --}}
     <flux:modal.trigger name="confirm-user-deletion">
         <flux:button 
             x-data="" 
@@ -26,30 +31,36 @@
         </flux:button>
     </flux:modal.trigger>
 
+    {{-- Modal Confirmación --}}
     <flux:modal 
         name="confirm-user-deletion" 
         :show="$errors->isNotEmpty()" 
         focusable 
         class="max-w-lg"
     >
-        <form method="POST" wire:submit="deleteUser" class="space-y-6">
-            <div>
+        <form method="POST" wire:submit="deleteUser" class="space-y-6 rounded-xl p-6 shadow-lg" 
+              style="background-color: var(--student-document-bg-card);">
+
+            {{-- Header Modal --}}
+            <div class="space-y-2">
                 <flux:heading size="lg">
                     {{ __('¿Estás seguro de que deseas eliminar tu cuenta?') }}
                 </flux:heading>
-
                 <flux:subheading>
                     {{ __('Una vez que tu cuenta sea eliminada, todos sus recursos y datos se eliminarán de forma permanente. Por favor, ingresa tu contraseña para confirmar que deseas eliminar tu cuenta de manera definitiva.') }}
                 </flux:subheading>
             </div>
 
+            {{-- Input Contraseña --}}
             <flux:input 
                 wire:model="password" 
                 :label="__('Contraseña')" 
                 type="password" 
+                class="w-full"
             />
 
-            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+            {{-- Footer Modal --}}
+            <div class="flex justify-end gap-2 rtl:gap-2 mt-4">
                 <flux:modal.close>
                     <flux:button 
                         type="button"

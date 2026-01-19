@@ -1,8 +1,8 @@
 <div class="space-y-8 min-h-screen p-6">
 
     {{-- Header --}}
-    <div class="max-w-7xl mx-auto mb-8 rounded-xl shadow-sm p-6"
-     style="background-color: var(--student-document-bg);">
+    <div class="w-full mb-8 rounded-xl shadow-sm p-6"
+        style="background-color: var(--student-document-bg);">
 
         <button
             wire:click="goBack"
@@ -45,8 +45,9 @@
 
     </div>
 
+
     {{-- Quick Stats Bar --}}
-    <div class="max-w-7xl mx-auto mb-6">
+    <div class="w-full mb-6">
         <div class="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
 
             <!-- Total Estudiantes -->
@@ -153,7 +154,7 @@
     </div>
 
     {{-- Navigation Tabs --}}
-    <div class="max-w-7xl mx-auto mb-6">
+    <div class="w-full mb-6">
         <div class="backdrop-blur-xl rounded-2xl p-2 inline-flex gap-2" 
              style="background-color: var(--student-document-bg);">
             @foreach($tabs as $key => $data)
@@ -179,7 +180,7 @@
     </div>
 
     {{-- Content Area --}}
-    <div class="max-w-7xl mx-auto">
+    <div class="w-full">
         
         {{-- GESTIÓN DE ESTUDIANTES --}}
         @if($activeTab === 'estudiantes')
@@ -595,10 +596,12 @@
                             @if($editingDocumentId)
                                 <button wire:click="cancelEditDocument"
                                         class="px-6 py-3 font-medium rounded-xl transition-colors"
-                                        style="background-color: var(--student-document-bg-content); 
-                                               color: var(--student-document-text-primary);"
-                                        onmouseover="this.style.backgroundColor='var(--student-document-bg-card-indicator)'"
-                                        onmouseout="this.style.backgroundColor='var(--student-document-bg-content)'">
+                                        style="
+                                background-color: var(--modal-btn-close);
+                                    color: var(--modal-btn-close-text);
+                            "
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.1)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
                                     Cancelar
                                 </button>
                             @endif
@@ -759,8 +762,7 @@
                                             </button>
 
                                             {{-- Botón Eliminar --}}
-                                            <button wire:click="deleteDocument({{ $file->id }})" 
-                                                    onclick="return confirm('¿Estás seguro de eliminar este documento?')"
+                                            <button wire:click="deleteDocument({{ $file->id }})"
                                                     class="w-8 h-8 flex items-center justify-center rounded-lg 
                                                         bg-[var(--student-document-bg-button-replace)] 
                                                         text-[var(--student-document-text-button)] 
@@ -1175,11 +1177,11 @@
                 <div class="p-4" style="border-top: 1px solid var(--student-document-border-content);">
                     {{ $studentsRevision->links() }}
                 </div>
-            @endif
-        </div>
+                        @endif
+                    </div>
 
-    </div>
-@endif
+                </div>
+            @endif
     </div>
 
 
@@ -2083,6 +2085,67 @@
             </div>
         </flux:modal>
     @endif
+
+    <flux:modal 
+        wire:model="isDeleteDocumentModalOpen" 
+        :dismissible="false"
+        class="w-[95vw] sm:w-[450px] max-w-[95vw]">
+        
+        <div class="flex flex-col">
+            {{-- Contenido --}}
+            <div class="px-6 py-6" style="background-color: var(--student-document-bg-card);">
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 p-2 rounded-lg" style="background-color: var(--student-document-bg-card);">
+                            <svg class="w-5 h-5" style="color: var(--student-document-text-content-status-rejected-icon);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium mb-1" style="color: var(--student-document-text-primary);">
+                                ¿Está seguro de que desea eliminar este documento?
+                            </p>
+                            <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                Esta acción es irreversible.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer con botones --}}
+            <div 
+                class="px-6 py-4 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t flex-shrink-0 rounded-b-xl"
+                style="background-color: var(--student-document-bg-card);
+                    border-color: var(--student-document-border-content);">
+
+                {{-- Cancelar --}}
+                <button
+                    wire:click="$set('isDeleteDocumentModalOpen', false)"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium transition-all duration-200"
+                    style="background-color: var(--modal-btn-close); color: var(--modal-btn-close-text);">
+                    Cancelar
+                </button>
+
+                {{-- Eliminar --}}
+                <button
+                    wire:click="confirmDeleteDocument"
+                    class="w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg text-white"
+                    style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <span class="flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Eliminar
+                    </span>
+                </button>
+            </div>
+        </div>
+    </flux:modal>
+
 
 
     {{-- ================== MODAL RÁPIDO DE REVISIÓN  ================== --}}

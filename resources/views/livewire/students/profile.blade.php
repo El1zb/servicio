@@ -1,5 +1,10 @@
-<div class="flex flex-col gap-6 p-6 bg-[var(--student-profile-bg)] rounded-2xl
-            shadow-[0_12px_40px_rgba(0,0,0,0.12)] max-w-5xl mx-auto">
+<div class="flex flex-col gap-6
+            p-6 xl:px-12 2xl:px-16
+            bg-[var(--student-profile-bg)]
+            rounded-2xl
+            shadow-[0_12px_40px_rgba(0,0,0,0.12)]
+            max-w-7xl mx-auto">
+
 
     <!-- Encabezado -->
     <div class="space-y-2">

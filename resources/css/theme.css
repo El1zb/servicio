@@ -9,495 +9,524 @@
    ===================================================== */
 @theme {
 
-   --color-bg-all: #f5f6fa;
-  /* ===========================
-     TIPOGRAFÍAS
-     =========================== */
-  --font-sans: "Instrument Sans", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-heading: "Instrument Sans", "Inter", system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+   --color-bg-all: #efeff1;
 
-  /* ===========================
-     TAMAÑOS DE TEXTO
-     =========================== */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-
-  /* ===========================
-     PESOS DE FUENTE
-     =========================== */
-  --font-regular: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
-
-  /* ===========================
-     SECCION HEADER WELCOME
-     =========================== */
-   --color-header-bg-1: #273c6a;
-   --color-header-bg-2: #213561;
-   --color-border-header: rgba(33, 53, 97, 0.6);
-
-   --text-logo-header-1: #F8FAFF;
-   --text-logo-header-2: #E5EAF8;
-   
-   --color-header-bg: #F8FAFF;
-   --color-header-bg-hover: #f3f3f3;  
-   --text-header: #10182B;  
-
-   --text-login-header: #E5EAF8;
-   
-   /* ===========================
-     SECCION HERO
-     =========================== */
-   
-   /* Fondos hero */
-   --color-hero-bg-1: #e8eef7; /* blanco azulado suave */
-   --color-hero-bg-2: #dbe6f7; /* degradado hacia azul muy claro */
-   --color-hero-bg-accent: #d0d9ea; /* sutil contraste para overlay o sombras */
-   --color-border-hero: rgba(39, 60, 106, 0.1); /* borde tenue azul header */
-
-   /* Acentos institucionales sutiles */
-   --color-hero-accent-primary: #213561; /* azul oscuro header */
-   --color-hero-accent-secondary: #273c6a; /* azul header principal */
-   --color-hero-accent-light: #3d5a8f; /* azul claro derivado del header */
-
-   /* Badge institucional */
-   --color-badge-bg: rgba(39, 60, 106, 0.08); /* fondo azul header muy suave */
-   --color-badge-border: rgba(39, 60, 106, 0.25); /* borde badge azul header */
-   --color-badge-text: #213561; /* texto azul oscuro header */
-   --color-badge-icon: #273c6a; /* icono azul header */
-
-   /* Textos del hero - formal y legible */
-   --text-hero-title: #0A1628; /* casi negro azulado */
-   --text-hero-highlight: #213561; /* azul header oscuro */
-   --text-hero-subtitle: #1F2937; /* gris oscuro azulado */
-   --text-hero-body: #334155; /* gris azulado medio */
-   --text-hero-muted: #64748B; /* gris azulado suave */
-
-   /* Botones institucionales */
-   --color-btn-primary: #213561; /* azul oscuro header */
-   --color-btn-primary-hover: #1a2a4d; /* azul header más profundo */
-   --color-btn-primary-shadow: rgba(33, 53, 97, 0.2);
-   --text-btn-primary: #FFFFFF; /* blanco */
-
-   --color-btn-secondary: transparent;
-   --color-btn-secondary-hover: rgba(39, 60, 106, 0.1); 
-   --color-btn-secondary-border: rgba(148, 163, 184, 0.3);
-   --color-btn-secondary-border-hover: #273c6a;
-   --text-btn-secondary: #213561; /* azul header oscuro */
-
-   /* Efectos decorativos sutiles */
-   --color-hero-grid: rgba(39, 60, 106, 0.04); /* líneas de fondo muy suaves */
-   --color-hero-glow-subtle: rgba(33, 53, 97, 0.05); /* glow apenas perceptible */
-   --color-hero-divider: rgba(148, 163, 184, 0.1); /* separadores claros */
-
-   /* Cards y elementos hero */
-   --color-hero-card-bg: rgba(255, 255, 255, 0.6); /* fondo blanco semi-transparente */
-   --color-hero-card-border: rgba(148, 163, 184, 0.2);
-   --color-hero-card-hover: rgba(255, 255, 255, 0.8); /* efecto hover más brillante */
-
-   /* ===========================
-     SECCION MAIN QUE ES
-     =========================== */
-   /* Fondo de sección */
-   --color-section-bg: #FFFFFF;
-   
-   /* Cards */
-   --color-card-bg: #FFFFFF;
-   --color-card-border: #E2E8F0;
-   --color-card-border-hover: #CBD5E1;
-   --color-card-shadow: rgba(15, 23, 42, 0.04);
-   --color-card-shadow-hover: rgba(15, 23, 42, 0.12);
-   
-   /* Iconos de cards */
-   --color-icon-bg: rgba(33, 53, 97, 0.08);
-   --color-icon-text: #213561;
-   
-   /* Textos de sección */
-   --text-section-title: #0F172A;
-   --text-section-subtitle: #475569;
-   --text-card-title: #1E293B;
-   --text-card-body: #64748B;
-
-   /* ===========================
-     SECCION MAIN OBJETIVO
-     =========================== */
-   /* Fondo azul institucional */
-   --color-objetivo-bg: #eef2f9;
-   --color-objetivo-border: #d4dce8;
-   
-   /* Card central destacada */
-   --color-objetivo-card-bg: #FFFFFF;
-   --color-objetivo-card-border: rgba(33, 53, 97, 0.15);
-   --color-objetivo-card-shadow: rgba(33, 53, 97, 0.08);
-   
-   /* Acento del icono principal */
-   --color-objetivo-icon-bg: #213561;
-   --color-objetivo-icon-text: #FFFFFF;
-   
-   /* Checks de lista */
-   --color-objetivo-check: #213561;
-   
-   /* Textos de objetivo */
-   --text-objetivo-title: #0F172A;
-   --text-objetivo-subtitle: #475569;
-   --text-objetivo-body: #1E293B;
-
-   /* ===========================
-     SECCION MAIN REQUISITOS
-     =========================== */
-   /* Fondo de sección (blanco para contrastar con azul anterior) */
-   --color-requisitos-bg: #FFFFFF;
-   
-   /* Cards de requisitos */
-   --color-requisitos-card-bg: #FFFFFF;
-   --color-requisitos-card-border: #E2E8F0;
-   --color-requisitos-card-border-hover: #CBD5E1;
-   --color-requisitos-card-shadow: rgba(15, 23, 42, 0.04);
-   --color-requisitos-card-shadow-hover: rgba(15, 23, 42, 0.12);
-   
-   /* Iconos de requisitos */
-   --color-requisitos-icon-bg: rgba(33, 53, 97, 0.08);
-   --color-requisitos-icon-text: #213561;
-   
-   /* Textos de requisitos */
-   --text-requisitos-title: #0F172A;
-   --text-requisitos-subtitle: #475569;
-   --text-requisitos-card-title: #1E293B;
-   --text-requisitos-card-body: #64748B;
-
-   /* ===========================
-     SECCION MAIN CREDITOS
-     =========================== */
-   /* Fondo azul institucional (igual que Objetivo) */
-   --color-duracion-bg: #eef2f9;
-   --color-duracion-border: #d4dce8;
-   
-   /* Cards de estadísticas */
-   --color-duracion-card-bg: #FFFFFF;
-   --color-duracion-card-border: #E2E8F0;
-   --color-duracion-card-border-highlight: #213561;
-   --color-duracion-card-shadow: rgba(33, 53, 97, 0.08);
-   
-   /* Iconos de estadísticas */
-   --color-duracion-icon-bg: rgba(33, 53, 97, 0.08);
-   --color-duracion-icon-text: #213561;
-   
-   /* Números destacados */
-   --color-duracion-number: #213561;
-   
-   /* Textos de duración */
-   --text-duracion-title: #0F172A;
-   --text-duracion-subtitle: #475569;
-   --text-duracion-label: #64748B;
-
-   /* ===========================
-     SECCION MAIN QUE PERMITE
-     =========================== */
-   /* Fondo de sección (blanco, igual que ¿Qué es? y Requisitos) */
-   --color-plataforma-bg: #FFFFFF;
-   
-   /* Cards de funcionalidades */
-   --color-plataforma-card-bg: #FFFFFF;
-   --color-plataforma-card-border: #E2E8F0;
-   --color-plataforma-card-border-hover: #CBD5E1;
-   --color-plataforma-card-shadow: rgba(15, 23, 42, 0.04);
-   --color-plataforma-card-shadow-hover: rgba(15, 23, 42, 0.12);
-   
-   /* Iconos de funcionalidades */
-   --color-plataforma-icon-bg: rgba(33, 53, 97, 0.08);
-   --color-plataforma-icon-text: #213561;
-   
-   /* Textos de sección */
-   --text-plataforma-title: #0F172A;
-   --text-plataforma-subtitle: #475569;
-   --text-plataforma-card-title: #1E293B;
-   --text-plataforma-card-body: #64748B;
-
-   /* ===========================
-     SECCION MAIN CTA
-     =========================== */
-   /* Fondo azul institucional (igual que Objetivo y Duración) */
-   --color-cta-bg: #eef2f9;
-   --color-cta-border: #d4dce8;
-   
-   /* Card CTA principal */
-   --color-cta-card-bg: #FFFFFF;
-   --color-cta-card-border: rgba(33, 53, 97, 0.15);
-   --color-cta-card-shadow: rgba(33, 53, 97, 0.1);
-   
-   /* Botón primario */
-   --color-cta-btn-primary: #213561;
-   --color-cta-btn-primary-hover: #1a2a4d;
-   --color-cta-btn-primary-shadow: rgba(33, 53, 97, 0.25);
-   --text-cta-btn-primary: #FFFFFF;
-   
-   /* Botón secundario */
-   --color-cta-btn-secondary: #FFFFFF;
-   --color-cta-btn-secondary-hover: #F8FAFC;
-   --color-cta-btn-secondary-border: #213561;
-   --text-cta-btn-secondary: #213561;
-   --text-cta-btn-secondary-hover: #FFFFFF;
-   
-   /* Textos de CTA */
-   --text-cta-title: #0F172A;
-   --text-cta-body: #475569;
-
-   /* ===========================
-     SECCION FOOTER
-     =========================== */
-   /* Fondo del footer */
-   --color-footer-bg: #0F172A;
-   --color-footer-bg-secondary: #1E293B;
-   
-   /* Bordes */
-   --color-footer-border: #334155;
-   --color-footer-divider: rgba(255, 255, 255, 0.1);
-   
-   /* Textos del footer */
-   --text-footer-primary: #F8FAFC;
-   --text-footer-secondary: #94A3B8;
-   --text-footer-muted: #64748B;
-   
-   /* Links del footer */
-   --color-footer-link: #94A3B8;
-   --color-footer-link-hover: #E0E7FF;
-   
-   /* Acentos */
-   --color-footer-accent: #273c6a;
-   --color-footer-accent-hover: #3d5a8f;
-   
-
-   
-  /* ===========================
-     COLORES SIDEBAR
-     =========================== */
-   /* Sidebar colores personalizados sobre fondo azul oscuro */
-   --sidebar-bg: var(--color-header-bg-1);           /* #273c6a */
-   --sidebar-bg-alt: var(--color-header-bg-2);       /* #213561 */
-   --sidebar-border: var(--color-border-header);     /* borde opcional */
-
-   /* Textos */
-   --sidebar-title-text: #F8FAFF;       /* blanco suave para título */
-   --sidebar-subtitle-text: #C5D1E0;    /* gris azulado para subtítulo */
-
-   /* Item activo */
-   --sidebar-item-bg-active: #1c2a49;    /* seleccionado, azul más oscuro */
-   --sidebar-item-text-active: #FFFFFF;  /* texto sobre el item activo */
-
-   /* Hover sobre items */
-   --sidebar-item-bg-hover: #203155;     /* hover azul más brillante */
-   --sidebar-item-text-hover: #FFFFFF;   /* texto sobre hover */
-
-   --sidebar-item-text-muted: #C5D1E0;              /* texto activo suave */
-   --sidebar-item-bg-soft: rgba(255,255,255,0.04); /* fondo activo ligero */
-
-   --sidebar-text-initials: #000000; /* fondo activo ligero */
-
-   /* ===========================
-     COLORES SETTINGS
-     =========================== */
-     --settings-item-text: #23272d;
-     --settings-item-text-hover: #0b0f16;
-     --settings-item-bg-hover:  #e7e7e8;  
-
-   
-   /* ===========================
-     Botones SETTINGS
-     =========================== */
-    --settings-btn-primary: #213561;
-    --settings-btn-primary-hover: #1a2a4d;
-    --settings-btn-primary-shadow: rgba(33, 53, 97, 0.25);
-    --settings-btn-primary-text: #FFFFFF;
-
-    --settings-btn-danger: #DC2626; /* rojo principal */
-   --settings-btn-danger-hover: #B91C1C; /* rojo más oscuro al hover */
-   --settings-btn-danger-shadow: rgba(220, 38, 38, 0.25); /* sombra roja semi-transparente */
-   --settings-btn-danger-text: #FFFFFF; /* texto blanco */
-
-   --settings-btn-cancel: #dfe1e3; /* fondo principal */
-   --settings-btn-cancel-hover: #c6c8ca; /* fondo al hover */
-   --settings-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
-   --settings-btn-cancel-text: #000000; /* color de letra */
-
-   /* ===========================
-    Perfil Estudiante
+/* ===========================
+   TIPOGRAFÍAS
    =========================== */
---student-profile-bg: #ffffff;              
---student-profile-card-bg: #f6f7fb;         
---student-profile-border: #d0d7de;           
---student-profile-border-card: #d0d7de;     
---student-profile-text-primary: #1f2328;     
---student-profile-text-secondary: #656d76; 
+--font-sans: "Instrument Sans", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+--font-heading: "Instrument Sans", "Inter", system-ui, sans-serif;
+--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
---status-border-pending: rgba(37, 99, 235, 0.3);
---status-border-approved: rgba(5, 150, 105, 0.3);
---status-border-rejected: rgba(220, 38, 38, 0.3);
+/* ===========================
+   TAMAÑOS DE TEXTO
+   =========================== */
+--text-xs: 0.75rem;
+--text-sm: 0.875rem;
+--text-base: 1rem;
+--text-lg: 1.125rem;
+--text-xl: 1.25rem;
+--text-2xl: 1.5rem;
+--text-3xl: 1.875rem;
+--text-4xl: 2.25rem;
+
+/* ===========================
+   PESOS DE FUENTE
+   =========================== */
+--font-regular: 400;
+--font-medium: 500;
+--font-semibold: 600;
+--font-bold: 700;
+
+/* ===========================
+   SECCION HEADER WELCOME
+   =========================== */
+--color-header-bg-1: #273c6a;
+--color-header-bg-2: #213561;
+--color-border-header: rgba(33, 53, 97, 0.6);
+
+--text-logo-header-1: #F8FAFF;
+--text-logo-header-2: #E5EAF8;
+
+--color-header-bg: #FFFFFF;
+--color-header-bg-hover: #F5F7FA;
+--text-header: #0A1628;
+
+--text-login-header: #E5EAF8;
+
+/* ===========================
+   SECCION HERO
+   =========================== */
+
+/* Fondos hero */
+--color-hero-bg-1: #e8eef7;
+--color-hero-bg-2: #dbe6f7;
+--color-hero-bg-accent: #cdd7e8;
+--color-border-hero: rgba(39, 60, 106, 0.15);
+
+/* Acentos institucionales sutiles */
+--color-hero-accent-primary: #213561;
+--color-hero-accent-secondary: #273c6a;
+--color-hero-accent-light: #3d5a8f;
+
+/* Badge institucional */
+--color-badge-bg: rgba(39, 60, 106, 0.1);
+--color-badge-border: rgba(39, 60, 106, 0.3);
+--color-badge-text: #1a2a4d;
+--color-badge-icon: #213561;
+
+/* Textos del hero - formal y legible */
+--text-hero-title: #0A1628;
+--text-hero-highlight: #213561;
+--text-hero-subtitle: #1F2937;
+--text-hero-body: #374151;
+--text-hero-muted: #6B7280;
+
+/* Botones institucionales */
+--color-btn-primary: #213561;
+--color-btn-primary-hover: #1a2a4d;
+--color-btn-primary-shadow: rgba(33, 53, 97, 0.2);
+--text-btn-primary: #FFFFFF;
+
+--color-btn-secondary: transparent;
+--color-btn-secondary-hover: rgba(39, 60, 106, 0.12);
+--color-btn-secondary-border: rgba(100, 116, 139, 0.4);
+--color-btn-secondary-border-hover: #213561;
+--text-btn-secondary: #213561;
+
+/* Efectos decorativos sutiles */
+--color-hero-grid: rgba(39, 60, 106, 0.05);
+--color-hero-glow-subtle: rgba(33, 53, 97, 0.06);
+--color-hero-divider: rgba(100, 116, 139, 0.15);
+
+/* Cards y elementos hero */
+--color-hero-card-bg: rgba(255, 255, 255, 0.7);
+--color-hero-card-border: rgba(100, 116, 139, 0.25);
+--color-hero-card-hover: rgba(255, 255, 255, 0.9);
+
+/* ===========================
+   SECCION MAIN QUE ES
+   =========================== */
+/* Fondo de sección */
+--color-section-bg: #FFFFFF;
+
+/* Cards */
+--color-card-bg: #FAFBFC;
+--color-card-border: #DDE2E8;
+--color-card-border-hover: #C1C9D2;
+--color-card-shadow: rgba(15, 23, 42, 0.06);
+--color-card-shadow-hover: rgba(15, 23, 42, 0.14);
+
+/* Iconos de cards */
+--color-icon-bg: rgba(33, 53, 97, 0.1);
+--color-icon-text: #1a2a4d;
+
+/* Textos de sección */
+--text-section-title: #0A1628;
+--text-section-subtitle: #475569;
+--text-card-title: #1E293B;
+--text-card-body: #64748B;
+
+/* ===========================
+   SECCION MAIN OBJETIVO
+   =========================== */
+/* Fondo azul institucional */
+--color-objetivo-bg: #EDF2F9;
+--color-objetivo-border: #D0DAEA;
+
+/* Card central destacada */
+--color-objetivo-card-bg: #FFFFFF;
+--color-objetivo-card-border: rgba(33, 53, 97, 0.2);
+--color-objetivo-card-shadow: rgba(33, 53, 97, 0.1);
+
+/* Acento del icono principal */
+--color-objetivo-icon-bg: #213561;
+--color-objetivo-icon-text: #FFFFFF;
+
+/* Checks de lista */
+--color-objetivo-check: #213561;
+
+/* Textos de objetivo */
+--text-objetivo-title: #0A1628;
+--text-objetivo-subtitle: #475569;
+--text-objetivo-body: #1E293B;
+
+/* ===========================
+   SECCION MAIN REQUISITOS
+   =========================== */
+/* Fondo de sección */
+--color-requisitos-bg: #FFFFFF;
+
+/* Cards de requisitos */
+--color-requisitos-card-bg: #FAFBFC;
+--color-requisitos-card-border: #DDE2E8;
+--color-requisitos-card-border-hover: #C1C9D2;
+--color-requisitos-card-shadow: rgba(15, 23, 42, 0.06);
+--color-requisitos-card-shadow-hover: rgba(15, 23, 42, 0.14);
+
+/* Iconos de requisitos */
+--color-requisitos-icon-bg: rgba(33, 53, 97, 0.1);
+--color-requisitos-icon-text: #1a2a4d;
+
+/* Textos de requisitos */
+--text-requisitos-title: #0A1628;
+--text-requisitos-subtitle: #475569;
+--text-requisitos-card-title: #1E293B;
+--text-requisitos-card-body: #64748B;
+
+/* ===========================
+   SECCION MAIN CREDITOS
+   =========================== */
+/* Fondo azul institucional */
+--color-duracion-bg: #EDF2F9;
+--color-duracion-border: #D0DAEA;
+
+/* Cards de estadísticas */
+--color-duracion-card-bg: #FFFFFF;
+--color-duracion-card-border: #DDE2E8;
+--color-duracion-card-border-highlight: #213561;
+--color-duracion-card-shadow: rgba(33, 53, 97, 0.1);
+
+/* Iconos de estadísticas */
+--color-duracion-icon-bg: rgba(33, 53, 97, 0.1);
+--color-duracion-icon-text: #1a2a4d;
+
+/* Números destacados */
+--color-duracion-number: #213561;
+
+/* Textos de duración */
+--text-duracion-title: #0A1628;
+--text-duracion-subtitle: #475569;
+--text-duracion-label: #64748B;
+
+/* ===========================
+   SECCION MAIN QUE PERMITE
+   =========================== */
+/* Fondo de sección */
+--color-plataforma-bg: #FFFFFF;
+
+/* Cards de funcionalidades */
+--color-plataforma-card-bg: #FAFBFC;
+--color-plataforma-card-border: #DDE2E8;
+--color-plataforma-card-border-hover: #C1C9D2;
+--color-plataforma-card-shadow: rgba(15, 23, 42, 0.06);
+--color-plataforma-card-shadow-hover: rgba(15, 23, 42, 0.14);
+
+/* Iconos de funcionalidades */
+--color-plataforma-icon-bg: rgba(33, 53, 97, 0.1);
+--color-plataforma-icon-text: #1a2a4d;
+
+/* Textos de sección */
+--text-plataforma-title: #0A1628;
+--text-plataforma-subtitle: #475569;
+--text-plataforma-card-title: #1E293B;
+--text-plataforma-card-body: #64748B;
+
+/* ===========================
+   SECCION MAIN CTA
+   =========================== */
+/* Fondo azul institucional */
+--color-cta-bg: #EDF2F9;
+--color-cta-border: #D0DAEA;
+
+/* Card CTA principal */
+--color-cta-card-bg: #FFFFFF;
+--color-cta-card-border: rgba(33, 53, 97, 0.2);
+--color-cta-card-shadow: rgba(33, 53, 97, 0.12);
+
+/* Botón primario */
+--color-cta-btn-primary: #213561;
+--color-cta-btn-primary-hover: #1a2a4d;
+--color-cta-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+--text-cta-btn-primary: #FFFFFF;
+
+/* Botón secundario */
+--color-cta-btn-secondary: #FFFFFF;
+--color-cta-btn-secondary-hover: #F5F7FA;
+--color-cta-btn-secondary-border: #213561;
+--text-cta-btn-secondary: #213561;
+--text-cta-btn-secondary-hover: #1a2a4d;
+
+/* Textos de CTA */
+--text-cta-title: #0A1628;
+--text-cta-body: #475569;
+
+/* ===========================
+   SECCION FOOTER
+   =========================== */
+/* Fondo del footer */
+--color-footer-bg: #0F172A;
+--color-footer-bg-secondary: #1E293B;
+
+/* Bordes */
+--color-footer-border: #334155;
+--color-footer-divider: rgba(255, 255, 255, 0.1);
+
+/* Textos del footer */
+--text-footer-primary: #F8FAFC;
+--text-footer-secondary: #94A3B8;
+--text-footer-muted: #64748B;
+
+/* Links del footer */
+--color-footer-link: #94A3B8;
+--color-footer-link-hover: #E0E7FF;
+
+/* Acentos */
+--color-footer-accent: #273c6a;
+--color-footer-accent-hover: #3d5a8f;
+
+/* ===========================
+   COLORES SIDEBAR
+   =========================== */
+--sidebar-bg: var(--color-header-bg-1);
+--sidebar-bg-alt: var(--color-header-bg-2);
+--sidebar-border: var(--color-border-header);
+
+/* Textos */
+--sidebar-title-text: #F8FAFF;
+--sidebar-subtitle-text: #C5D1E0;
+
+--sidebar-item-text: #E5EAF8;
+
+/* Item activo */
+--sidebar-item-bg-active: #1c2a49;
+--sidebar-item-text-active: #FFFFFF;
+
+/* Hover sobre items */
+--sidebar-item-bg-hover: #203155;
+--sidebar-item-text-hover: #FFFFFF;
+
+--sidebar-item-text-muted: #C5D1E0;
+--sidebar-item-bg-soft: rgba(255, 255, 255, 0.04);
+
+--sidebar-text-initials: #000000;
+
+--sidebar-bg-user: #1c2a49;
+--sidebar-border-user: #2a3d61;
+
+--sidebar-logo-user: #FFFFFF;
+--sidebar-logo-letra-user: #213561;
+
+--sidebar-email-user: #C5D1E0;
+--sidebar-divisor: rgba(255, 255, 255, 0.15);
+
+/* ===========================
+   COLORES SETTINGS
+   =========================== */
+--settings-item-text: #1F2937;
+--settings-item-text-hover: #0A1628;
+--settings-item-bg-hover: #F0F3F7;
+
+/* ===========================
+   Botones SETTINGS
+   =========================== */
+--settings-btn-primary: #213561;
+--settings-btn-primary-hover: #1a2a4d;
+--settings-btn-primary-shadow: rgba(33, 53, 97, 0.25);
+--settings-btn-primary-text: #FFFFFF;
+
+--settings-btn-danger: #DC2626;
+--settings-btn-danger-hover: #B91C1C;
+--settings-btn-danger-shadow: rgba(220, 38, 38, 0.25);
+--settings-btn-danger-text: #FFFFFF;
+
+--settings-btn-cancel: #E8ECF1;
+--settings-btn-cancel-hover: #D4DBE4;
+--settings-btn-cancel-shadow: rgba(0, 0, 0, 0.08);
+--settings-btn-cancel-text: #1F2937;
+
+/* ===========================
+   Perfil Estudiante
+   =========================== */
+--student-profile-bg: #F7F9FB;
+--student-profile-card-bg: #FFFFFF;
+--student-profile-border: #DDE2E8;
+--student-profile-border-card: #C8D0DB;
+--student-profile-text-primary: #0A1628;
+--student-profile-text-secondary: #64748B;
+--student-document-bg-card-header-profile: #F0F3F7;
+--student-document-bg-card-header-profile-2: #E3E8F0;
+
+--status-border-pending: rgba(37, 99, 235, 0.45);
+--status-border-approved: rgba(5, 150, 105, 0.45);
+--status-border-rejected: rgba(220, 38, 38, 0.45);
 
 --status-icon-bg-pending: rgba(37, 99, 235, 0.15);
 --status-icon-bg-approved: rgba(5, 150, 105, 0.15);
 --status-icon-bg-rejected: rgba(220, 38, 38, 0.15);
 
---status-icon-color-pending: rgb(30, 64, 175);
+--status-icon-color-pending: rgb(29, 78, 216);
 --status-icon-color-approved: rgb(4, 120, 87);
 --status-icon-color-rejected: rgb(185, 28, 28);
 
 /* ===========================
-    Document Estudiante, de aqui a abajo debo editar modo claro
-   =========================== */     
---student-document-bg: #ffffff;
---student-document-text-primary: #1f2328;
---student-document-text-secondary: #656d76;
---student-document-progress: #8E949E;
---student-document-progress-indicador: #2563eb;
+   Document Estudiante
+   =========================== */
+--student-document-bg: #F7F9FB;
+--student-document-text-primary: #0A1628;
+--student-document-text-secondary: #64748B;
+--student-document-progress: #9CA3AF;
+--student-document-progress-indicador: #2563EB;
 
---student-document-bg-card: #f8f9fa;
---student-document-bg-card-header: #f6f7fb;
---student-document-bg-card-header-2: #edf0f5;
---student-document-bg-card-header-approved: #f6f7fb;
---student-document-bg-card-header-approved-2: #edf0f5;
---student-document-bg-card-header-expired: #f3f4f6;
---student-document-bg-card-header-expired-2: #e5e7eb;
---student-document-bg-card-indicator: #d1d5db;
+--student-document-bg-card: #FFFFFF;
+--student-document-bg-card-header: #eff1f3;
+--student-document-bg-card-header-2: #ebedf1;
+--student-document-bg-card-header-approved: #eff1f3;
+--student-document-bg-card-header-approved-2: #ebedf1;
+--student-document-bg-card-header-expired: #EEEFF1;
+--student-document-bg-card-header-expired-2: #E0E3E7;
+--student-document-bg-card-indicator: #CDD3DC;
 
---student-document-bg-content: #ffffff;
---student-document-border-content: #e5e7eb;
---student-document-border-content-hover: #656d76;
+--student-document-bg-content: #F8FAFC;
+--student-document-border-content: #DDE2E8;
+--student-document-border-content-hover: #64748B;
 --student-document-bg-content-status-approved: rgba(5, 150, 105, 0.1);
 --student-document-text-content-status-approved-icon: rgb(4, 120, 87);
 --student-document-bg-content-status-normal: rgba(37, 99, 235, 0.1);
---student-document-text-content-status-normal-icon: rgb(30, 64, 175);
+--student-document-text-content-status-normal-icon: rgb(29, 78, 216);
 --student-document-bg-content-status-rejected: rgba(220, 38, 38, 0.1);
 --student-document-text-content-status-rejected-icon: rgb(185, 28, 28);
 
---student-document-text-button: #ffffff;
+--student-document-text-button: #FFFFFF;
 
---student-document-bg-button-word: #2563eb;
---student-document-bg-button-word-hover: #1d4ed8;
+--student-document-bg-button-word: #2563EB;
+--student-document-bg-button-word-hover: #1D4ED8;
 --student-document-bg-tooltip-word: var(--student-document-bg-button-word-hover);
 
---student-document-bg-button-pdf: #dc2626;
---student-document-bg-button-pdf-hover: #b91c1c;
+--student-document-bg-button-pdf: #DC2626;
+--student-document-bg-button-pdf-hover: #B91C1C;
 --student-document-bg-tooltip-pdf: var(--student-document-bg-button-pdf-hover);
 
---student-document-bg-button-view: #374151;
---student-document-bg-button-view-hover: #1f2937;
---student-document-text-button-view: #ffffff;
+--student-document-bg-button-view: #4B5563;
+--student-document-bg-button-view-hover: #374151;
+--student-document-text-button-view: #FFFFFF;
 --student-document-text-tooltip-view: var(--student-document-text-button-view);
 --student-document-bg-tooltip-view: var(--student-document-bg-button-view-hover);
 
---student-document-bg-button-replace: #6b7280;
---student-document-bg-button-replace-hover: #4b5563;
+--student-document-bg-button-replace: #6B7280;
+--student-document-bg-button-replace-hover: #4B5563;
 --student-document-bg-tooltip-replace: var(--student-document-bg-button-replace-hover);
 
---student-document-bg-button-upload: #2563eb;
---student-document-bg-button-upload-hover: #1d4ed8;
+--student-document-bg-button-upload: #2563EB;
+--student-document-bg-button-upload-hover: #1D4ED8;
 --student-document-bg-tooltip-upload: var(--student-document-bg-button-upload-hover);
 
---student-document-bg-button-expired: #9ca3af;
---student-document-bg-button-icon-expired: #4b5563;
+--student-document-bg-button-expired: #D1D5DB;
+--student-document-bg-button-icon-expired: #6B7280;
 --student-document-text-tooltip-expired: var(--student-document-bg-button-icon-expired);
 --student-document-bg-tooltip-expired: var(--student-document-bg-button-expired);
 
---student-document-size-color: #2563eb;
+--student-document-size-color: #2563EB;
 
---student-document-border-separator: #9ca3af;
---student-document-text-comment: #dc2626;
---student-document-text-comment-hover: #b91c1c;
+--student-document-border-separator: #9CA3AF;
+--student-document-text-comment: #DC2626;
+--student-document-text-comment-hover: #B91C1C;
 
 --student-document-control-bg: var(--student-document-bg);
---student-document-control-bg-header: #f3f4f6;
---student-document-control-bg-header-2: #e5e7eb;
+--student-document-control-bg-header: #eff1f3;
+--student-document-control-bg-header-2: #ebedf1;
 
 --student-document-calendar-bg: var(--student-document-bg-card);
---student-document-calendar-bg-header: #f6f7fb;
---student-document-calendar-bg-header-2: #edf0f5;
---student-document-calendar-button-date-hover: #e0e7ff;
+--student-document-calendar-bg-header: #eff1f3;
+--student-document-calendar-bg-header-2: #ebedf1;
+--student-document-calendar-button-date-hover: #E8EDFF;
 
 --student-document-calendar-approved: #059669;
---student-document-calendar-review: #2563eb;
---student-document-calendar-rejected: #dc2626;
---student-document-calendar-pending: #ca8a04;
---student-document-calendar-expired: #6b7280;
+--student-document-calendar-review: #2563EB;
+--student-document-calendar-rejected: #DC2626;
+--student-document-calendar-pending: #D97706;
+--student-document-calendar-expired: #6B7280;
 
---student-document-calendar-selected-day-bg: rgba(37, 99, 235, 0.1);
---student-document-calendar-selected-day-border: #2563eb;
---student-document-calendar-selected-day-hover: #e5e7eb;
+--student-document-calendar-selected-day-bg: rgba(37, 99, 235, 0.15);
+--student-document-calendar-selected-day-border: #2563EB;
+--student-document-calendar-selected-day-hover: #F0F3F7;
 
---student-document-calendar-selected-day-content-bg: #f3f4f6;
---student-document-calendar-selected-day-content-bg-2: #e5e7eb;
---student-document-calendar-selected-day-content-border: #9ca3af;
---student-document-calendar-selected-day-content-text-hover: #4b5563;
+--student-document-calendar-selected-day-content-bg: #F7F9FB;
+--student-document-calendar-selected-day-content-bg-2: #F0F3F7;
+--student-document-calendar-selected-day-content-border: #9CA3AF;
+--student-document-calendar-selected-day-content-text-hover: #4B5563;
 --student-document-calendar-selected-day-content-card: var(--student-document-bg-content);
 
 --student-document-alert-bg: var(--student-document-calendar-bg);
---student-document-alert-button-date-hover: #e0e7ff;
+--student-document-alert-button-date-hover: #E8EDFF;
 --student-document-alert-approved-border: #059669;
---student-document-alert-review-border: #2563eb;
---student-document-alert-rejected-border: #dc2626;
---student-document-alert-pending-border: #ca8a04;
---student-document-alert-expired-border: #6b7280;
+--student-document-alert-review-border: #2563EB;
+--student-document-alert-rejected-border: #DC2626;
+--student-document-alert-pending-border: #D97706;
+--student-document-alert-expired-border: #6B7280;
 
---student-document-validation-bg: #ffffff;
+--student-document-validation-bg: #FFFFFF;
 --student-document-validation-no-perfil: rgba(5, 150, 105, 0.3);
 --student-document-validation-warning: rgba(37, 99, 235, 0.3);
 --student-document-validation-negative: rgba(220, 38, 38, 0.3);
---student-document-validation-icon: #1f2328;
+--student-document-validation-icon: #1F2937;
 
 /* ===========================
-    Botones MODAL
+   Botones MODAL
    =========================== */
---modal-bg: #ffffff;
---modal-text-primary: #1f2328;
---modal-text-secondary: #656d76;
+--modal-bg: #FFFFFF;
+--modal-text-primary: #0A1628;
+--modal-text-secondary: #64748B;
 
---modal-btn-primary: #1f2328;
---modal-btn-primary-hover: #000000;
---modal-btn-primary-shadow: rgba(0, 0, 0, 0.1);
---modal-btn-primary-text: #ffffff;
+--modal-btn-primary: #213561;
+--modal-btn-primary-hover: #1a2a4d;
+--modal-btn-primary-shadow: rgba(33, 53, 97, 0.15);
+--modal-btn-primary-text: #FFFFFF;
 
---modal-btn-cancel: #9ca3af;
---modal-btn-cancel-hover: #6b7280;
---modal-btn-cancel-shadow: rgba(0, 0, 0, 0.1);
---modal-btn-cancel-text: #ffffff;
+--modal-btn-cancel: #E8ECF1;
+--modal-btn-cancel-hover: #D4DBE4;
+--modal-btn-cancel-shadow: rgba(0, 0, 0, 0.08);
+--modal-btn-cancel-text: #374151;
 
---icon-document-student-modal-dowload-bg: #f6f7fb;
---icon-document-student-modal-dowload-icon: #f8f9fa;
+--icon-document-student-modal-dowload-bg: #F0F3F7;
+--icon-document-student-modal-dowload-icon: #F8FAFC;
 
---icon-document-student-modal-comment-bg: #2563eb;
---icon-document-student-modal-comment-icon: #ffffff;
+--icon-document-student-modal-comment-bg: #2563EB;
+--icon-document-student-modal-comment-icon: #FFFFFF;
 
---document-student-modal-border: #9ca3af;
---document-student-modal-bg-comment: #f8f9fa;
---document-student-modal-border-comment: #d1d5db;
+--document-student-modal-border: #9CA3AF;
+--document-student-modal-bg-comment: #F7F9FB;
+--document-student-modal-border-comment: #DDE2E8;
 
---modal-btn-document-descargar: #2563eb;
---modal-btn-document-descargar-text: #ffffff;
---modal-btn-document-descargar-shadow: rgba(0, 0, 0, 0.1);
---modal-btn-document-descargar-hover: #1d4ed8;
+--modal-btn-document-descargar: #2563EB;
+--modal-btn-document-descargar-text: #FFFFFF;
+--modal-btn-document-descargar-shadow: rgba(37, 99, 235, 0.15);
+--modal-btn-document-descargar-hover: #1D4ED8;
 
---modal-btn-document-cerrar: #1f2328;
---modal-btn-document-cerrar-text: #ffffff;
---modal-btn-document-cerrar-shadow: rgba(0, 0, 0, 0.1);
---modal-btn-document-cerrar-hover: #000000;
+--modal-btn-document-cerrar: #374151;
+--modal-btn-document-cerrar-text: #FFFFFF;
+--modal-btn-document-cerrar-shadow: rgba(0, 0, 0, 0.08);
+--modal-btn-document-cerrar-hover: #1F2937;
 
 /* ===========================
-    TOAST notifications
+   TOAST notifications
    =========================== */
---toast-notification-bg: #f8f9fa;
+--toast-notification-bg: #FFFFFF;
 --toast-notification-success: #059669;
---toast-notification-error: #dc2626;
---toast-notification-info: #2563eb;
---toast-notification-warning: #ca8a04;
---toast-notification-text-primary: #1f2328;
---toast-notification-text-secondary: #656d76;
+--toast-notification-error: #DC2626;
+--toast-notification-info: #2563EB;
+--toast-notification-warning: #D97706;
+--toast-notification-text-primary: #0A1628;
+--toast-notification-text-secondary: #64748B;
+
+/* ===========================
+   Botón Aprobar / Rechazar / Cerrar
+   =========================== */
+
+/* Botón Aprobar - Verde */
+--modal-btn-approve: #059669;
+--modal-btn-approve-hover: #047857;
+--modal-btn-approve-text: #FFFFFF;
+
+/* Botón Rechazar - Rojo */
+--modal-btn-reject: #DC2626;
+--modal-btn-reject-hover: #B91C1C;
+--modal-btn-reject-text: #FFFFFF;
+
+/* Botón Cerrar - Gris */
+--modal-btn-close: #6B7280;
+--modal-btn-close-hover: #4B5563;
+--modal-btn-close-text: #FFFFFF;
 
 
 
@@ -853,26 +882,36 @@
      =========================== */
    /* Sidebar colores personalizados sobre fondo azul oscuro */
    /*--sidebar-bg: var(--color-header-bg-1);           /* #273c6a */
-   --sidebar-bg: var(--color-header-bg-1);  
-   --sidebar-bg-alt: var(--color-header-bg-2);       /* #213561 */
+   --sidebar-bg: #0b1117;   
+   --sidebar-bg-alt: #0d131a;       /* #213561 */
    --sidebar-border: var(--color-border-header);     /* borde opcional */
 
    /* Textos */
    --sidebar-title-text: #F8FAFF;       /* blanco suave para título */
-   --sidebar-subtitle-text: #C5D1E0;    /* gris azulado para subtítulo */
+   --sidebar-subtitle-text: #d8dce0;    /* gris azulado para subtítulo */
 
+   --sidebar-item-text: #cacaca;  /* texto sobre el item activo */
    /* Item activo */
-   --sidebar-item-bg-active: #23272d;    /* seleccionado, azul más oscuro */
+   --sidebar-item-bg-active: #21262d;    /* seleccionado, azul más oscuro */
    --sidebar-item-text-active: #FFFFFF;  /* texto sobre el item activo */
 
    /* Hover sobre items */
-   --sidebar-item-bg-hover: #151a25;     /* hover azul más brillante */
+   --sidebar-item-bg-hover: #21262d;     /* hover azul más brillante */
    --sidebar-item-text-hover: #FFFFFF;   /* texto sobre hover */
 
    --sidebar-item-text-muted: #C5D1E0;              /* texto activo suave */
    --sidebar-item-bg-soft: rgba(255,255,255,0.04); /* fondo activo ligero */
 
    --sidebar-text-initials: #FFFFFF; /* fondo activo ligero */
+
+   --sidebar-bg-user: #1c2027 ;
+   --sidebar-border-user: #1a2733;
+
+   --sidebar-logo-user: #FFFFFF;
+   --sidebar-logo-letra-user: #0b1117;
+
+   --sidebar-email-user: #b6babe;
+   --sidebar-divisor: rgba(255, 255, 255, 0.1);
 
    /* ===========================
      COLORES SETTINGS
@@ -903,7 +942,7 @@
     Perfil Estudiante
      =========================== */
    --student-profile-bg: #1c2128;
-   --student-profile-card-bg: #0d1117;
+   --student-profile-card-bg: #0b1117;
    --student-profile-border: #10151c ;
    --student-profile-border-card: #3c3e42;
    --student-profile-text-primary: #e6edf3;
@@ -933,15 +972,15 @@
    --student-document-progress-indicador: #3c78c7;
    
    --student-document-bg-card: #242930;
-   --student-document-bg-card-header: #0d1117;
-   --student-document-bg-card-header-2: #121826;
-   --student-document-bg-card-header-approved: #0d1117;
-   --student-document-bg-card-header-approved-2: #121826;
+   --student-document-bg-card-header: #0b1117;
+   --student-document-bg-card-header-2: #0d131a;
+   --student-document-bg-card-header-approved: #0b1117;
+   --student-document-bg-card-header-approved-2: #0d131a;
    --student-document-bg-card-header-expired: #0a0d12;
    --student-document-bg-card-header-expired-2: #11131c;
    --student-document-bg-card-indicator: #424550;
    
-   --student-document-bg-content: #161d25;
+   --student-document-bg-content: #161a1f;
    --student-document-border-content: #1e232b;
    --student-document-border-content-hover: #a5afbd;
    --student-document-bg-content-status-approved: rgba(16, 185, 129, 0.1);
@@ -991,8 +1030,8 @@
    --student-document-control-bg-header-2: #11131c;
 
    --student-document-calendar-bg: var(--student-document-bg-card);
-   --student-document-calendar-bg-header: #0d1117;
-   --student-document-calendar-bg-header-2: #121826;
+   --student-document-calendar-bg-header: #0b1117;
+   --student-document-calendar-bg-header-2: #0d131a;
    --student-document-calendar-button-date-hover: #151c2d;
 
    --student-document-calendar-approved: #34D399;
@@ -1042,7 +1081,7 @@
       --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
       --modal-btn-cancel-text: #ffffff; /* color de letra */
 
-      --icon-document-student-modal-dowload-bg: #0d1117;
+      --icon-document-student-modal-dowload-bg: #0b1117;
       --icon-document-student-modal-dowload-icon: #242930;
 
       --icon-document-student-modal-comment-bg: #3c78c7;
@@ -1065,7 +1104,7 @@
       /* ===========================
     TOAST notifications
      =========================== */
-      --toast-notification-bg: #262c35;
+      --toast-notification-bg: #161f2d;
       --toast-notification-success: #1f8f5f;
       --toast-notification-error:   #9e1f1f;
       --toast-notification-info:    #2f6fed;

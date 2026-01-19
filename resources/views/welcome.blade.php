@@ -34,13 +34,27 @@
                         transition-transform duration-200 hover:scale-105
                         animate-fade-in-left delay-100">
 
+                    {{-- Logo con fondo blanco --}}
+                    <div class="w-10 h-10 rounded-[var(--radius-md)] bg-white flex items-center justify-center overflow-hidden shadow-sm">
+                        @if($welcome && $welcome->logo)
+                            <img src="{{ asset('storage/' . $welcome->logo) }}" 
+                                alt="{{ $welcome->abreviatura ?? 'Logo' }}" 
+                                class="w-full h-full object-contain">
+
+                        @else
+                            {{-- Fallback si no hay logo --}}
+                            <span class="text-gray-800 font-bold">{{ $welcome->abreviatura ?? 'ITSCO' }}</span>
+                        @endif
+                    </div>
+
+                    {{-- Títulos --}}
                     <div class="flex flex-col leading-tight">
                         <span
                             class="text-[length:var(--text-base)]
                                 font-[var(--font-semibold)]
                                 text-[var(--text-logo-header-1)]
                                 animate-fade-in-up delay-150">
-                            Servicio Social
+                            {{ $welcome->header_title ?? 'Servicio Social' }}
                         </span>
 
                         <span
@@ -48,10 +62,11 @@
                                 text-[var(--text-logo-header-2)]
                                 hidden sm:block
                                 animate-fade-in-up delay-200">
-                            ITSCO
+                            {{ $welcome->header_subtitle ?? 'ITSCO' }}
                         </span>
                     </div>
                 </a>
+
 
                 {{-- Actions --}}
                 <div class="flex items-center gap-3 animate-fade-in-right delay-150">
@@ -151,19 +166,19 @@
                 <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
-                <span class="tracking-wider">Agiliza en linea</span>
+                <span class="tracking-wider">{{ $welcome->indicador ?? 'Agiliza en línea' }}</span>
             </div>
 
             {{-- Título principal --}}
             <h1 class="text-5xl sm:text-6xl lg:text-7xl font-[var(--font-bold)] mb-6 animate-fade-in-up animation-delay-100 leading-[1.1]">
-                <span class="text-[var(--text-hero-title)] block mb-2">Gestión de</span>
-                <span class="bg-gradient-to-r from-[var(--color-hero-accent-primary)] via-[var(--text-hero-highlight)] to-[var(--color-hero-accent-secondary)] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">Servicio Social</span>
+                <span class="text-[var(--text-hero-title)] block mb-2">{{ $welcome->main_encabezado ?? 'Gestión de' }}</span>
+                <span class="bg-gradient-to-r from-[var(--color-hero-accent-primary)] via-[var(--text-hero-highlight)] to-[var(--color-hero-accent-secondary)] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">{{ $welcome->main_encabezado2 ?? 'Servicio Social' }}</span>
             </h1>
 
             {{-- Información institucional --}}
             <div class="mb-10 animate-fade-in-up animation-delay-200">
                 <p class="text-[length:var(--text-xl)] text-[var(--text-hero-subtitle)] font-[var(--font-medium)] mb-3">
-                    Instituto Tecnológico Superior de Cosamaloapan
+                    {{ $welcome->main_subencabezado ?? 'Instituto Tecnológico Superior de Cosamaloapan' }}
                 </p>
             </div>
 
@@ -534,7 +549,7 @@
                                     Avance académico
                                 </h3>
                                 <p class="text-[length:var(--text-base)] text-[var(--text-requisitos-card-body)] leading-relaxed">
-                                    Al menos el 70% de créditos aprobados de tu plan de estudios
+                                    Al menos el {{ $welcome->requisito_avance_academico ?? '70%' }} de créditos aprobados de tu plan de estudios
                                 </p>
                             </div>
                         </div>
@@ -718,7 +733,7 @@
                         
                         {{-- Número --}}
                         <div class="text-5xl lg:text-6xl font-[var(--font-bold)] text-[var(--color-duracion-number)] mb-3">
-                            500
+                            {{ $welcome->horas_total ?? '500' }}
                         </div>
                         
                         {{-- Label --}}
@@ -750,7 +765,7 @@
                         
                         {{-- Número --}}
                         <div class="text-5xl lg:text-6xl font-[var(--font-bold)] text-[var(--color-duracion-number)] mb-3">
-                            10
+                            {{ $welcome->creditos ?? '10' }}
                         </div>
                         
                         {{-- Label --}}
@@ -783,7 +798,7 @@
                         
                         {{-- Número --}}
                         <div class="text-5xl lg:text-6xl font-[var(--font-bold)] text-[var(--color-duracion-number)] mb-3">
-                            6
+                            {{ $welcome->meses_maximo ?? '6' }}
                         </div>
                         
                         {{-- Label --}}
@@ -1103,17 +1118,22 @@
                     <div class="lg:col-span-2">
                         {{-- Logo o nombre --}}
                         <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--color-footer-accent)] flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                                </svg>
+                            <div class="w-10 h-10 rounded-[var(--radius-md)] bg-white flex items-center justify-center overflow-hidden shadow-sm">
+                                @if($welcome && $welcome->logo)
+                                    <img src="{{ asset('storage/' . $welcome->logo) }}" 
+                                        alt="{{ $welcome->abreviatura ?? 'Logo' }}" 
+                                        class="w-full h-full object-contain">
+                                @else
+                                    {{-- Si no hay logo, mostrar la abreviatura --}}
+                                    <span class="text-gray-800 font-bold">{{ $welcome->abreviatura ?? 'ITSCO' }}</span>
+                                @endif
                             </div>
                             <h3 class="text-[length:var(--text-lg)] font-[var(--font-bold)] text-[var(--text-footer-primary)]">
-                                ITSCO
+                                {{ $welcome->abreviatura ?? 'ITSCO' }}
                             </h3>
                         </div>
                         <p class="text-[length:var(--text-sm)] text-[var(--text-footer-secondary)] leading-relaxed mb-4 max-w-md">
-                            Instituto Tecnológico Superior de Cosamaloapan
+                                {{ $welcome->nombre_institucion ?? 'Instituto Tecnológico Superior de Cosamaloapan' }}
                         </p>
                         <p class="text-[length:var(--text-xs)] text-[var(--text-footer-muted)] leading-relaxed max-w-md">
                             Plataforma oficial para la gestión del Servicio Social
@@ -1161,16 +1181,18 @@
                                 <svg class="w-4 h-4 text-[var(--color-footer-accent)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                 </svg>
-                                <a href="mailto:serviciosocial@itsco.edu.mx" class="text-[length:var(--text-sm)] text-[var(--color-footer-link)] hover:text-[var(--color-footer-link-hover)] transition-colors duration-200">
-                                    serviciosocial@itsco.edu.mx
+                                <a href="mailto:{{ $welcome->email_contacto ?? 'serviciosocial@itsco.edu.mx' }}" 
+                                class="text-[length:var(--text-sm)] text-[var(--color-footer-link)] hover:text-[var(--color-footer-link-hover)] transition-colors duration-200">
+                                    {{ $welcome->email_contacto ?? 'serviciosocial@itsco.edu.mx' }}
                                 </a>
+
                             </li>
                             <li class="flex items-start gap-2">
                                 <svg class="w-4 h-4 text-[var(--color-footer-accent)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                 </svg>
                                 <span class="text-[length:var(--text-sm)] text-[var(--text-footer-secondary)]">
-                                    (288) 882-4000
+                                    {{ $welcome->telefono_contacto ?? ' (288) 000 0000' }}
                                 </span>
                             </li>
                             <li class="flex items-start gap-2">
@@ -1179,7 +1201,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                                 <span class="text-[length:var(--text-sm)] text-[var(--text-footer-secondary)] leading-relaxed">
-                                    Cosamaloapan, Veracruz
+                                    {{ $welcome->direccion_contacto ?? 'Cosamaloapan, Veracruz' }}
                                 </span>
                             </li>
                         </ul>
@@ -1195,7 +1217,7 @@
             <div class="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 {{-- Copyright --}}
                 <p class="text-[length:var(--text-xs)] text-[var(--text-footer-muted)] text-center sm:text-left">
-                    © {{ date('Y') }} Instituto Tecnológico Superior de Cosamaloapan. Todos los derechos reservados.
+                    © {{ date('Y') }} Instituto Tecnológico Superior de Cosamaloapan.
                 </p>
 
                 {{-- Links legales opcionales --}}

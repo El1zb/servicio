@@ -1,5 +1,5 @@
 <div class="flex items-start max-md:flex-col">
-    <div class="me-10 w-full pb-4 md:w-[220px]">
+    <div class="me-10 w-full pb-4 md:w-[220px] md:sticky md:top-6">
         <flux:navlist>
             <flux:navlist.item
                 :href="route('settings.profile')"
@@ -33,6 +33,34 @@
             >
                 {{ __('Apariencia') }}
             </flux:navlist.item>
+
+            {{-- Solo mostrar este item si el usuario es admin --}}
+            @if(auth()->user()->hasRole('admin'))
+                <flux:navlist.item 
+                    :href="route('admin.create-admin')" 
+                    wire:navigate
+                    class="
+                        text-[var(--settings-item-text)]
+                        hover:text-[var(--settings-item-text-hover)]
+                        hover:bg-[var(--settings-item-bg-hover)]!
+                    "
+                >
+                    {{ __('Administradores') }}
+                </flux:navlist.item>
+
+                <flux:navlist.item 
+                    :href="route('admin.welcome-section')" 
+                    wire:navigate
+                    class="
+                        text-[var(--settings-item-text)]
+                        hover:text-[var(--settings-item-text-hover)]
+                        hover:bg-[var(--settings-item-bg-hover)]!
+                    "
+                >
+                    {{ __('Sitio') }}
+                </flux:navlist.item>
+
+            @endif
         </flux:navlist>
     </div>
 
@@ -42,7 +70,7 @@
         <flux:heading>{{ $heading ?? '' }}</flux:heading>
         <flux:subheading>{{ $subheading ?? '' }}</flux:subheading>
 
-        <div class="mt-5 w-full max-w-lg">
+        <div class="w-full max-w-3xl">
             {{ $slot }}
         </div>
     </div>

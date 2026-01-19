@@ -67,23 +67,26 @@ class PeriodDetail extends Component
     public $editingComments = [];
     public $editingDates = [];
 
-
     public $searchDocuments = '';
-
 
     public $statusFilterStudents = null;
 
+    public $showQuickReviewModal = false;
+
+    protected $updatesQueryString = ['search', 'searchRevision'];
+
+    public $deleteDocumentId = null;
+    public $isDeleteDocumentModalOpen = false;
+
+
+    protected $queryString = [
+        'activeTab' => ['except' => 'estudiantes'], // si es el default no lo agrega a la URL
+    ];
 
     public function updatedSearchDocuments()
     {
         $this->resetPage('paginatedFiles'); // resetea la paginación de archivos cuando busque
     }
-
-
-    public $showQuickReviewModal = false;
-
-
-    protected $updatesQueryString = ['search', 'searchRevision'];
 
     public function mount($id)
     {
@@ -131,17 +134,6 @@ class PeriodDetail extends Component
     {
         $this->resetPage('revisionPage');
     }
-
-
-
-
-
-
-
-
-
-
-
 
     /** ========================= NUEVOS MÉTODOS - Estadísticas ========================= */
     
@@ -225,7 +217,6 @@ class PeriodDetail extends Component
         $this->previousPendingDoc = $studentDocs[$currentIndex - 1] ?? null;
     }
 
-
     public function navigateToNextDoc()
     {
         if ($this->nextPendingDoc) {
@@ -254,7 +245,7 @@ class PeriodDetail extends Component
             'reviewed_at' => now(),
         ]);
 
-        session()->flash('message', 'Documento aprobado correctamente');
+        $this->dispatch('notify', type: 'success', message: "Documento aprobado correctamente");
         
         // Intentar navegar al siguiente, si no hay, cerrar modal
         if (!$this->navigateToNextDoc()) {
@@ -279,13 +270,14 @@ class PeriodDetail extends Component
             'reviewed_at' => now(),
         ]);
 
-        session()->flash('message', 'Documento rechazado correctamente');
+        $this->dispatch('notify', type: 'error', message: "Documento rechazado correctamente");
+        
+         // Intentar navegar al siguiente, si no hay, cerrar modal
 
         if (!$this->navigateToNextDoc()) {
             $this->closeQuickReview();
         }
     }
-
 
     public function closeQuickReview()
     {
@@ -430,7 +422,8 @@ class PeriodDetail extends Component
 
 
         $this->selectedStudent->update($this->studentData);
-        session()->flash('message', "Información actualizada correctamente");
+        $fullName = "{$this->selectedStudent->name} {$this->selectedStudent->last_name_paterno} {$this->selectedStudent->last_name_materno}";
+        $this->dispatch('notify', type: 'info', message: "Información actualizada correctamente");
         $this->closeModal();
     }
 
@@ -439,7 +432,8 @@ class PeriodDetail extends Component
         $student = Student::where('period_id', $this->periodId)->find($studentId);
         if ($student) {
             $student->update(['status' => 'aprobado']);
-            session()->flash('message', "Perfil aprobado");
+            
+            $this->dispatch('notify', type: 'success', message: "Perfil aprobado correctamente");
         }
 
         $this->closeModal();
@@ -468,7 +462,9 @@ class PeriodDetail extends Component
             'rejection_reason' => $this->rejectionReason,
         ]);
 
-        session()->flash('info', "Perfil rechazado");
+        $fullName = "{$this->selectedStudent->name} {$this->selectedStudent->last_name_paterno} {$this->selectedStudent->last_name_materno}";
+        $this->dispatch('notify', type: 'error', message: "Perfil rechazado correctamente");
+
         $this->reset(['showRejectModal', 'selectedStudent', 'rejectionReason']);
     }
 
@@ -511,6 +507,8 @@ class PeriodDetail extends Component
             'example_name_file' => $this->documentExample?->getClientOriginalName(),
             'max_size'          => $this->maxSize,
         ]);
+
+        $this->dispatch('notify', type: 'success', message: 'Documento creado correctamente');
 
         $this->reset(['documentName', 'documentDeadline', 'documentFile', 'documentExample', 'maxSize']);
         $this->loadPeriod();
@@ -562,7 +560,7 @@ class PeriodDetail extends Component
             $file->max_size   = $this->maxSize;
             $file->save();
 
-            session()->flash('message', "Documento actualizado correctamente");
+            $this->dispatch('notify', type: 'info', message: 'Documento actualizado correctamente');
         } else {
             $this->createDocument();
             return;
@@ -574,11 +572,28 @@ class PeriodDetail extends Component
 
     public function deleteDocument($id)
     {
-        $file = File::findOrFail($id);
-        if ($file->file_path) Storage::disk('public')->delete($file->file_path);
-        if ($file->example_path) Storage::disk('public')->delete($file->example_path);
-        $file->delete();
-        $this->loadPeriod();
+        $this->deleteDocumentId = $id;
+        $this->isDeleteDocumentModalOpen = true;
+    }
+
+    public function confirmDeleteDocument()
+    {
+        if ($this->deleteDocumentId) {
+            $file = File::findOrFail($this->deleteDocumentId);
+
+            if ($file->file_path) Storage::disk('public')->delete($file->file_path);
+            if ($file->example_path) Storage::disk('public')->delete($file->example_path);
+
+            $file->delete();
+            $this->loadPeriod();
+
+            // ✅ Notificación tipo toast
+            $this->dispatch('notify', type: 'error', message: 'Documento eliminado correctamente');
+        }
+
+        // Cerrar modal
+        $this->isDeleteDocumentModalOpen = false;
+        $this->deleteDocumentId = null;
     }
 
     public function previewFile($path, $name)
@@ -586,11 +601,6 @@ class PeriodDetail extends Component
         $this->previewPath = $path;
         $this->previewName = $name;
     }
-
-
-
-
-
 
     /** ========================= Render ========================= */
     
