@@ -2,15 +2,38 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+        
+        <!-- 🎯 CRITICAL: Aplicar estado INMEDIATAMENTE (blocking script) -->
+        <script>
+            // Este script DEBE ejecutarse de forma síncrona ANTES del render
+            (function() {
+                const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (collapsed) {
+                    // Aplicar clase al html ANTES de que el CSS se procese
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            })();
+        </script>
+        
         <style>
             :root {
                 --sidebar-width: 280px;
+                --sidebar-collapsed-width: 80px;
                 --transition-speed: 300ms;
             }
 
-            body {
-                background-color: var(--color-bg-all);
-                color: var(--text-section-title);
+            /* 🎯 Estado por defecto - SIN transiciones durante carga inicial */
+            body.livewire-navigating * {
+                transition: none !important;
+            }
+
+            /* 🎯 Aplicar estado colapsado desde CSS puro */
+            html.sidebar-collapsed .sidebar-container {
+                width: var(--sidebar-collapsed-width);
+            }
+
+            html.sidebar-collapsed .main-content {
+                margin-left: var(--sidebar-collapsed-width);
             }
 
             .sidebar-container {
@@ -21,6 +44,11 @@
                 height: 100vh;
                 z-index: 40;
                 overflow: visible;
+                transition: width var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed {
+                width: var(--sidebar-collapsed-width);
             }
 
             .sidebar-content {
@@ -42,6 +70,41 @@
                 border-radius: 3px;
             }
 
+            /* Botón de toggle */
+            .sidebar-toggle-btn {
+                position: absolute;
+                right: -16px;
+                top: 24px;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: var(--sidebar-bg-user);
+                border: 2px solid var(--sidebar-bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 200ms ease;
+                z-index: 50;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            .sidebar-toggle-btn:hover {
+                background: var(--sidebar-item-bg-hover);
+                transform: scale(1.1);
+            }
+
+            .sidebar-toggle-btn svg {
+                width: 18px;
+                height: 18px;
+                color: white;
+                transition: transform var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .sidebar-toggle-btn svg {
+                transform: rotate(180deg);
+            }
+
             .nav-item {
                 position: relative;
                 display: flex;
@@ -58,9 +121,17 @@
                 white-space: nowrap;
             }
 
+            .sidebar-container.collapsed .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+
             .nav-item:hover {
                 background: var(--sidebar-item-bg-hover);
                 color: var(--sidebar-item-text-hover);
+            }
+
+            .sidebar-container:not(.collapsed) .nav-item:hover {
                 transform: translateX(2px);
             }
 
@@ -89,6 +160,13 @@
 
             .nav-item-text {
                 opacity: 1;
+                transition: opacity var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .nav-item-text {
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
             }
 
             .logo-container {
@@ -96,6 +174,12 @@
                 display: flex;
                 align-items: center;
                 gap: 16px;
+                transition: all var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .logo-container {
+                justify-content: center;
+                padding: 24px 10px;
             }
 
             .logo-icon {
@@ -109,6 +193,12 @@
                 overflow: hidden;
                 flex-shrink: 0;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                transition: all var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .logo-icon {
+                width: 48px;
+                height: 48px;
             }
 
             .logo-icon img {
@@ -128,6 +218,14 @@
                 font-weight: 700;
                 color: white;
                 line-height: 1.3;
+                opacity: 1;
+                transition: opacity var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .logo-text {
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
             }
 
             .user-menu-container {
@@ -147,6 +245,10 @@
                 justify-content: center;
             }
 
+            .sidebar-container.collapsed .user-menu {
+                padding: 10px;
+            }
+
             .user-menu:hover {
                 background: var(--sidebar-item-bg-hover);
                 transform: translateY(-2px);
@@ -157,6 +259,10 @@
                 align-items: center;
                 gap: 12px;
                 width: 100%;
+            }
+
+            .sidebar-container.collapsed .user-info {
+                justify-content: center;
             }
 
             .user-avatar {
@@ -176,6 +282,14 @@
             .user-details {
                 flex: 1;
                 min-width: 0;
+                opacity: 1;
+                transition: opacity var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .user-details {
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
             }
 
             .user-name {
@@ -211,6 +325,11 @@
                 transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
                 z-index: 9999;
+            }
+
+            .sidebar-container.collapsed .user-dropdown {
+                left: calc(var(--sidebar-collapsed-width) + 16px);
+                width: 250px;
             }
 
             .user-dropdown.show {
@@ -254,16 +373,32 @@
                 margin: 8px 0;
             }
 
+            /* 🎯 SOLUCIÓN: Aplicar margin-left INSTANTÁNEAMENTE sin transición */
             .main-content {
                 margin-left: var(--sidebar-width);
                 background-color: var(--color-bg-all);
                 color: var(--text-section-title);
                 min-height: 100vh;
+                /* ❌ REMOVEMOS la transición del margin-left */
+            }
+
+            .sidebar-container.collapsed ~ .main-content {
+                margin-left: var(--sidebar-collapsed-width);
             }
 
             @media (max-width: 1024px) {
+                .sidebar-toggle-btn {
+                    display: none;
+                }
+
                 .sidebar-container {
                     transform: translateX(-100%);
+                    width: 100vw;
+                    transition: transform var(--transition-speed) ease;
+                }
+
+                .sidebar-container.collapsed {
+                    width: 100vw;
                 }
 
                 .sidebar-container.mobile-open {
@@ -277,19 +412,114 @@
                 .mobile-overlay {
                     position: fixed;
                     inset: 0;
-                    background: rgba(0, 0, 0, 0.5);
+                    background: rgba(0, 0, 0, 0.6);
                     z-index: 39;
                     display: none;
+                    backdrop-filter: blur(2px);
                 }
 
                 .mobile-overlay.show {
                     display: block;
                 }
 
+                .logo-container {
+                    padding: 32px 24px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                .logo-icon {
+                    width: 72px;
+                    height: 72px;
+                }
+
+                .logo-text {
+                    font-size: 20px;
+                    opacity: 1 !important;
+                    width: auto !important;
+                }
+
+                .nav-item {
+                    padding: 16px 20px;
+                    margin: 6px 16px;
+                    font-size: 16px;
+                    border-radius: 12px;
+                    justify-content: flex-start !important;
+                }
+
+                .nav-item-icon {
+                    width: 24px;
+                    height: 24px;
+                }
+
+                .nav-item-text {
+                    opacity: 1 !important;
+                    width: auto !important;
+                }
+
+                .user-menu-container {
+                    position: sticky;
+                    bottom: 0;
+                    background: linear-gradient(to top, var(--sidebar-bg) 70%, transparent);
+                    padding: 20px;
+                    margin-top: auto;
+                }
+
+                .user-menu {
+                    padding: 14px;
+                    border-radius: 14px;
+                }
+
+                .user-avatar {
+                    width: 48px;
+                    height: 48px;
+                    font-size: 18px;
+                }
+
+                .user-details {
+                    opacity: 1 !important;
+                    width: auto !important;
+                }
+
+                .user-name {
+                    font-size: 15px;
+                }
+
+                .user-email {
+                    font-size: 13px;
+                }
+
                 .user-dropdown {
-                    width: calc(100% - 32px) !important;
-                    left: 16px !important;
-                    bottom: 90px !important;
+                    width: calc(100vw - 48px) !important;
+                    left: 24px !important;
+                    bottom: 110px !important;
+                    max-width: 400px;
+                    margin: 0 auto;
+                    right: 24px !important;
+                }
+
+                .mobile-close-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 12px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: none;
+                    cursor: pointer;
+                    transition: all 200ms ease;
+                    margin-left: auto;
+                }
+
+                .mobile-close-btn:hover {
+                    background: rgba(255, 255, 255, 0.15);
+                    transform: scale(1.05);
+                }
+
+                .mobile-close-btn svg {
+                    width: 24px;
+                    height: 24px;
+                    color: white;
                 }
             }
 
@@ -328,6 +558,29 @@
                 height: 24px;
                 color: white;
             }
+
+            /* 🎯 Desactivar transiciones durante navegación Livewire */
+            body.livewire-navigating,
+            body.livewire-navigating * {
+                transition: none !important;
+                animation: none !important;
+            }
+
+            /* 🎯 El sidebar y main-content NO deben tener transición en el margin/width durante carga */
+            html.sidebar-collapsed .sidebar-container,
+            html.sidebar-collapsed .main-content {
+                transition: none;
+            }
+
+            /* Solo aplicar transiciones cuando el usuario interactúa manualmente */
+            .sidebar-container:not(.navigating) {
+                transition: width var(--transition-speed) ease;
+            }
+
+            .main-content:not(.navigating) {
+                transition: margin-left var(--transition-speed) ease;
+            }
+            
         </style>
     </head>
     <body class="min-h-screen">
@@ -338,15 +591,29 @@
         <!-- Sidebar -->
         <aside class="sidebar-container" 
         style="background: linear-gradient(to bottom, var(--sidebar-bg), var(--sidebar-bg-alt));" 
-        id="sidebar">
+        id="sidebar"
+        data-collapsed="false">
+            <!-- Botón de toggle para desktop -->
+            <button class="sidebar-toggle-btn" onclick="toggleSidebarCollapse()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
             <div class="sidebar-content">
+                <!-- Botón de cerrar para móvil -->
+                <button class="mobile-close-btn lg:hidden" onclick="toggleMobileSidebar()" style="position: absolute; top: 20px; right: 20px; z-index: 50;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
                <!-- Logo -->
                 <div class="logo-container flex items-center gap-4">
                     @php
                         $welcome = \App\Models\WelcomeSection::find(1);
                     @endphp
 
-                    {{-- Logo cuadrado con fondo blanco --}}
                     <div class="logo-icon w-16 h-16 rounded-md bg-white flex items-center justify-center overflow-hidden shadow-sm">
                         @if($welcome && $welcome->logo)
                             <img src="{{ asset('storage/' . $welcome->logo) }}" 
@@ -357,8 +624,7 @@
                         @endif
                     </div>
 
-                    {{-- Texto a la izquierda del logo --}}
-                    <div class="flex flex-col text-left">
+                    <div class="flex flex-col text-left logo-text">
                         <span class="text-xl font-extrabold text-[var(--sidebar-title-text)] leading-snug">
                             Servicio Social
                         </span>
@@ -516,25 +782,48 @@
         </main>
 
         <script>
+            // 🎯 APLICAR ESTADO INMEDIATAMENTE (antes de cualquier render)
+            (function() {
+                const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (collapsed) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) {
+                        sidebar.classList.add('collapsed');
+                    }
+                }
+            })();
+
             let userDropdownOpen = false;
+            let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+            function toggleSidebarCollapse() {
+                const sidebar = document.getElementById('sidebar');
+                sidebarCollapsed = !sidebarCollapsed;
+                
+                if (sidebarCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    document.documentElement.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    document.documentElement.classList.remove('sidebar-collapsed');
+                }
+                
+                localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+            }
 
             function toggleUserDropdown() {
                 const dropdown = document.getElementById('userDropdown');
                 userDropdownOpen = !userDropdownOpen;
-                
-                if (userDropdownOpen) {
-                    dropdown.classList.add('show');
-                } else {
-                    dropdown.classList.remove('show');
-                }
+                dropdown?.classList.toggle('show', userDropdownOpen);
             }
 
             function toggleMobileSidebar() {
                 const sidebar = document.getElementById('sidebar');
                 const overlay = document.getElementById('mobileOverlay');
                 
-                sidebar.classList.toggle('mobile-open');
-                overlay.classList.toggle('show');
+                sidebar?.classList.toggle('mobile-open');
+                overlay?.classList.toggle('show');
             }
 
             // Cerrar dropdown al hacer clic fuera
@@ -542,28 +831,54 @@
                 const userMenu = document.querySelector('.user-menu');
                 const dropdown = document.getElementById('userDropdown');
                 
-                if (userDropdownOpen && !userMenu.contains(event.target) && !dropdown.contains(event.target)) {
+                if (userDropdownOpen && !userMenu?.contains(event.target) && !dropdown?.contains(event.target)) {
                     toggleUserDropdown();
                 }
             });
 
             // Cerrar sidebar móvil al hacer clic en overlay
-            document.getElementById('mobileOverlay').addEventListener('click', toggleMobileSidebar);
+            document.getElementById('mobileOverlay')?.addEventListener('click', toggleMobileSidebar);
 
-            // Cerrar sidebar móvil al navegar (Livewire)
+            // 🎯 EVENTOS DE LIVEWIRE - Prevenir flash visual
+            document.addEventListener('livewire:navigating', function() {
+                // Desactivar TODAS las transiciones durante navegación
+                document.body.classList.add('livewire-navigating');
+                
+                // Mantener el estado actual visible
+                const currentCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (currentCollapsed) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            });
+
             document.addEventListener('livewire:navigated', function() {
+                // Reaplicar estado INMEDIATAMENTE después de navegación
+                const savedState = localStorage.getItem('sidebarCollapsed') === 'true';
                 const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('mobileOverlay');
                 
-                if (sidebar.classList.contains('mobile-open')) {
+                if (savedState) {
+                    sidebar?.classList.add('collapsed');
+                    document.documentElement.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar?.classList.remove('collapsed');
+                    document.documentElement.classList.remove('sidebar-collapsed');
+                }
+                
+                // Cerrar elementos abiertos
+                if (sidebar?.classList.contains('mobile-open')) {
                     sidebar.classList.remove('mobile-open');
-                    overlay.classList.remove('show');
+                    document.getElementById('mobileOverlay')?.classList.remove('show');
                 }
                 
-                // Cerrar dropdown si está abierto
                 if (userDropdownOpen) {
-                    toggleUserDropdown();
+                    userDropdownOpen = false;
+                    document.getElementById('userDropdown')?.classList.remove('show');
                 }
+                
+                // Reactivar transiciones después de 50ms
+                setTimeout(() => {
+                    document.body.classList.remove('livewire-navigating');
+                }, 50);
             });
         </script>
 

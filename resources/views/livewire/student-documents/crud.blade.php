@@ -166,201 +166,338 @@
                 </div>
 
                 <div x-data="{ 
-                        openCard: null,
-                        toggleCard(date) {
-                            this.openCard = this.openCard === date ? null : date;
+                    openCard: null,
+                    toggleCard(date) {
+                        this.openCard = this.openCard === date ? null : date;
                         }
-                    }" class="bg-[var(--student-document-bg)] rounded-xl shadow-sm p-6">
-                        <div class="space-y-4">
-                            @forelse ($documents as $limitDate => $docs)
-                                @php 
-                                    $isExpired = $limitDate !== 'Sin fecha' && now()->gt(Carbon\Carbon::parse($limitDate)->endOfDay());
-
-                                    $totalDocs = count($docs);
-                                    $uploadedDocs = collect($docs)
-                                        ->filter(fn($d) => $d->student_file_name)
-                                        ->count();
-
-                                    $allApproved = collect($docs)
-                                        ->every(fn($doc) => $doc->status === 'revisado');
-
-                                    $allUploaded = $uploadedDocs === $totalDocs;
-                                    $noneUploaded = $uploadedDocs === 0;
-
-                                    $cardId = 'card-' . str_replace(' ', '-', $limitDate);
-                                @endphp
-
-                                <div class="bg-[var(--student-document-bg-card)] rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
-                                    
-                                    <!-- Header clickeable -->
-                                    <button 
-                                        @click="toggleCard('{{ $cardId }}')"
-                                        class="w-full bg-gradient-to-r {{ $isExpired ? 'from-[var(--student-document-bg-card-header-expired)] to-[var(--student-document-bg-card-header-expired-2)]' : ($allApproved ? 'from-[var(--student-document-bg-card-header-approved)] to-[var(--student-document-bg-card-header-approved-2)]' : 'from-[var(--student-document-bg-card-header)] to-[var(--student-document-bg-card-header-2)]') }} px-6 py-4 hover:brightness-105 transition-all focus:outline-none">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <div class="text-left">
-                                                    <p class="text-[var(--student-document-text-primary)] text-xs font-medium">Fecha límite</p>
-                                                    <h3 class="text-[var(--student-document-text-secondary)] text-lg font-bold">
-                                                    {{ 
-                                                        $limitDate !== 'Sin fecha'
-                                                            ? \Carbon\Carbon::parse($limitDate)->locale('es')->isoFormat('DD MMM YYYY')
-                                                            : 'Sin fecha'
-                                                    }}
-                                                    </h3>
-
-                                                </div>
-                                            </div>
+                    }"  class="bg-[var(--student-document-bg)] rounded-xl shadow-sm p-6">
+                    <div class="space-y-4">
+                        
+                        {{-- 🔹 NUEVA SECCIÓN: Documentos Informativos (admin_only) --}}
+                        @if($adminOnlyDocuments->count() > 0)
+                            <div class="bg-[var(--student-document-bg-card)] rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md mb-6">
+                                
+                                {{-- Header diferente para admin_only --}}
+                                <button 
+                                    @click="toggleCard('admin-only-docs')"
+                                    class="w-full bg-gradient-to-r from-[var(--student-document-bg-card-header)] to-[var(--student-document-bg-card-header-2)] px-6 py-4 hover:brightness-105 transition-all focus:outline-none">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
                                             
-                                            <div class="flex items-center gap-3">
-                                                <!-- Badge de estado -->
-                                                @php
-                                                    $statusText = '';
-                                                    $statusIcon = '';
-
-                                                    if ($allApproved) {
-                                                        $statusText = 'COMPLETADO';
-                                                    } elseif ($isExpired && $allUploaded) {
-                                                        $statusText = 'ENTREGADO';
-                                                    } elseif ($isExpired && !$noneUploaded) {
-                                                        $statusText = 'INCOMPLETO';
-                                                    } elseif ($isExpired && $noneUploaded) {
-                                                        $statusText = 'NO ENTREGADO';
-                                                    } else {
-                                                        if($limitDate !== 'Sin fecha') {
-                                                            $today = \Carbon\Carbon::today();
-                                                            $limit = \Carbon\Carbon::parse($limitDate)->startOfDay();
-
-                                                            if ($limit->eq($today)) {
-                                                                $statusText = 'HOY';
-                                                            } elseif ($limit->eq($today->copy()->addDay())) {
-                                                                $statusText = 'MAÑANA';
-                                                            } elseif ($limit->gt($today->copy()->addDay())) {
-                                                                $daysLeft = $today->diffInDays($limit); // siempre positivo
-                                                                $statusText = "$daysLeft DÍAS";
-                                                            }
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                @if($statusText)
-                                                    <span class="px-3 py-1 bg-[var(--student-document-bg-card-indicator)] backdrop-blur rounded-full text-[var(--student-document-text-primary)] text-xs font-bold flex items-center gap-1.5">
-                                                        {!! $statusIcon !!}{{ $statusText }}
-                                                    </span>
-                                                @endif
-
-                                                <!-- Contador de documentos -->
-                                                <div class="flex items-center gap-2 px-3 py-1 bg-[var(--student-document-bg-card-indicator)] backdrop-blur rounded-full">
-                                                    <i class="fas fa-file-alt text-[var(--student-document-text-primary)] text-xs"></i>
-                                                    <span class="text-[var(--student-document-text-primary)] text-xs font-bold">{{ count($docs) }}</span>
-                                                </div>
-
-                                                <!-- Icono de acordeón -->
-                                                <div class="w-8 h-8 bg-[var(--student-document-bg-card-indicator)] backdrop-blur rounded-lg flex items-center justify-center transition-transform duration-300"
-                                                    :class="{ 'rotate-180': openCard === '{{ $cardId }}' }">
-                                                    <i class="fas fa-chevron-down text-[var(--student-document-text-primary)] text-sm"></i>
-                                                </div>
+                                            <div class="text-left">
+                                                <p class="text-[var(--student-document-text-primary)] text-xs font-medium">Documentos</p>
+                                                <h3 class="text-[var(--student-document-text-secondary)] text-lg font-bold">Información y Recursos</h3>
                                             </div>
                                         </div>
-                                    </button>
+                                        
+                                        <div class="flex items-center gap-3">
+                                            {{-- Contador de documentos --}}
+                                            <div class="flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur rounded-full">
+                                                <i class="fas fa-file-alt text-white text-xs"></i>
+                                                <span class="text-white text-xs font-bold">{{ $adminOnlyDocuments->count() }}</span>
+                                            </div>
 
-                                    <!-- Contenido expandible -->
-                                    <div x-show="openCard === '{{ $cardId }}'"
-                                        x-collapse
-                                        x-cloak>
-                                        <div class="p-4 space-y-3">
-                                            @foreach($docs as $document)
-                                                <div class="bg-[var(--student-document-bg-content)] rounded-lg border border-[var(--student-document-border-content)] hover:border-[var(--student-document-border-content-hover)] transition-all p-4">
-                                                    <div class="flex items-center gap-4">
-                                                        
-                                                        <!-- Info -->
-                                                        <div class="flex-1 min-w-0">
-                                                            <h4 class="font-semibold text-[var(--student-document-text-primary)] text-sm truncate">{{ $document->name }}</h4>
-                                                            @if($document->student_file_name)
-                                                                @php
-                                                                    $nameParts = explode('_'.$student->control_number, $document->student_file_name);
-                                                                    $baseName = $nameParts[0];
-                                                                    $extension = pathinfo($document->student_file_name, PATHINFO_EXTENSION);
-                                                                @endphp
-                                                                <p class="text-xs text-[var(--student-document-text-secondary)] truncate">{{ $baseName }}.{{ $extension }}</p>
+                                            {{-- Icono de acordeón --}}
+                                            <div class="w-8 h-8 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center transition-transform duration-300"
+                                                :class="{ 'rotate-180': openCard === 'admin-only-docs' }">
+                                                <i class="fas fa-chevron-down text-white text-sm"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                {{-- Contenido expandible --}}
+                                <div x-show="openCard === 'admin-only-docs'"
+                                    x-collapse
+                                    x-cloak>
+                                    <div class="p-4 space-y-3">
+                                        @foreach($adminOnlyDocuments as $document)
+                                            @php
+                                                $showAdminFiles = $this->shouldShowAdminFiles($document);
+                                                $adminFiles = $this->getFileToDisplay($document);
+                                            @endphp
+
+                                            <div class="bg-[var(--student-document-bg-content)] rounded-lg border border-[var(--student-document-border-content)] hover:border-[var(--student-document-border-content-hover)] transition-all p-4">
+                                                <div class="flex items-center gap-4">
+                                                    {{-- Info --}}
+                                                    <div class="flex-1 min-w-0">
+                                                        <h4 class="font-semibold text-[var(--student-document-text-primary)] text-sm truncate">{{ $document->name }}</h4>
+                                                        <p class="text-xs text-[var(--student-document-text-secondary)] italic">Documento</p>
+                                                    </div>
+
+                                                    {{-- Acciones rápidas --}}
+                                                    <div class="flex-shrink-0 flex items-center gap-2">
+                                                        @if($showAdminFiles && $adminFiles)
+                                                            <div class="flex gap-1">
+                                                                @foreach($adminFiles as $file)
+                                                                    @php
+                                                                        $isPdf = str_ends_with(strtolower($file['path']), '.pdf');
+                                                                        $isWord = str_ends_with(strtolower($file['path']), '.docx') || str_ends_with(strtolower($file['path']), '.doc');
+                                                                    @endphp
+                                                                    <div class="relative group">
+                                                                        <button wire:click="previewFile('{{ $file['path'] }}','{{ $file['name'] }}')"
+                                                                                class="w-8 h-8 flex items-center justify-center rounded-lg 
+                                                                                {{ $isPdf ? 'bg-[var(--student-document-bg-button-pdf)] text-[var(--student-document-text-button)] hover:bg-[var(--student-document-bg-button-pdf-hover)]' : 'bg-[var(--student-document-bg-button-word)] text-[var(--student-document-text-button)] hover:bg-[var(--student-document-bg-button-word-hover)]' }} transition text-xs">
+                                                                            <i class="fas {{ $isPdf ? 'fa-file-pdf' : ($file['type']==='individual' ? 'fa-file' : 'fa-file-word') }}"></i>
+                                                                        </button>
+                                                                        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
+                                                                                    rounded opacity-0 group-hover:opacity-100 transition-opacity
+                                                                                    whitespace-nowrap {{ $isPdf ? 'bg-[var(--student-document-bg-tooltip-pdf)] text-[var(--student-document-text-button)]' : 'bg-[var(--student-document-bg-tooltip-word)] text-[var(--student-document-text-button)]' }}">
+                                                                            {{ $isPdf ? 'Ver PDF' : ($file['type']==='individual' ? 'Ver Word' : 'Ver Word') }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                {{-- Información adicional y comentarios en la misma línea --}}
+                                                @if(($document->file && ($document->file->firman || $document->file->observations)) || !empty(trim($document->comments)))
+                                                    <div x-data="{ expanded: false }" class="mt-3">
+                                                        <div class="flex items-center justify-between gap-4">
+                                                            {{-- Botón de información adicional --}}
+                                                            @if($document->file && ($document->file->firman || $document->file->observations))
+                                                                <button @click="expanded = !expanded" 
+                                                                        class="text-xs text-[var(--student-document-text-secondary)] hover:text-[var(--student-document-text-primary)] flex items-center gap-1 transition-colors">
+                                                                    <i class="fas fa-info-circle"></i>
+                                                                    <span>Información adicional</span>
+                                                                    <i class="fas fa-chevron-down text-[10px] transition-transform" :class="{ 'rotate-180': expanded }"></i>
+                                                                </button>
                                                             @else
-                                                                <p class="text-xs text-[var(--student-document-text-secondary)] italic">Sin entregar</p>
+                                                                <div></div>
+                                                            @endif
+
+                                                            {{-- Botón de comentarios --}}
+                                                            @if(!empty(trim($document->comments)))
+                                                                <button wire:click="openComments({{ $document->id }})"
+                                                                        class="flex items-center gap-2 text-[var(--student-document-text-comment)] hover:text-[var(--student-document-text-comment-hover)] text-xs font-medium transition-colors">
+                                                                    <i class="fas fa-comment-dots"></i>
+                                                                    <span class="hidden sm:inline">Ver comentarios</span>
+                                                                    <i class="fas fa-chevron-right text-[10px]"></i>
+                                                                </button>
                                                             @endif
                                                         </div>
+                                                        
+                                                        {{-- Contenido expandible --}}
+                                                        @if($document->file && ($document->file->firman || $document->file->observations))
+                                                            <div x-show="expanded" x-collapse class="mt-3 space-y-3">
+                                                                @if($document->file && $document->file->firman)
+                                                                    <div class="bg-[var(--student-document-bg-content)]/50 rounded p-3">
+                                                                        <p class="text-xs font-semibold text-[var(--student-document-text-primary)] mb-1">
+                                                                            <i class="fas fa-signature mr-1"></i>Firman:
+                                                                        </p>
+                                                                        <p class="text-xs text-[var(--student-document-text-secondary)]">{{ $document->file->firman }}</p>
+                                                                    </div>
+                                                                @endif
 
-                                                        <!-- Status badge -->
+                                                                @if($document->file && $document->file->observations)
+                                                                    <div class="bg-[var(--student-document-bg-content)]/50 rounded p-3">
+                                                                        <p class="text-xs font-semibold text-[var(--student-document-text-primary)] mb-1">
+                                                                            <i class="fas fa-info-circle mr-1"></i>Observaciones:
+                                                                        </p>
+                                                                        <p class="text-xs text-[var(--student-document-text-secondary)]">{{ $document->file->observations }}</p>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- 🔹 Documentos con fecha límite (user_only y bidirectional) --}}
+                        @forelse ($documents as $limitDate => $docs)
+                            @php 
+                                $isExpired = $limitDate !== 'Sin fecha' && now()->gt(Carbon\Carbon::parse($limitDate)->endOfDay());
+
+                                $totalDocs = count($docs);
+                                $uploadedDocs = collect($docs)
+                                    ->filter(fn($d) => $d->student_file_name)
+                                    ->count();
+
+                                $allApproved = collect($docs)
+                                    ->every(fn($doc) => $doc->status === 'revisado');
+
+                                $allUploaded = $uploadedDocs === $totalDocs;
+                                $noneUploaded = $uploadedDocs === 0;
+
+                                $cardId = 'card-' . str_replace(' ', '-', $limitDate);
+                            @endphp
+
+                            <div class="bg-[var(--student-document-bg-card)] rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                                
+                                <!-- Header clickeable -->
+                                <button 
+                                    @click="toggleCard('{{ $cardId }}')"
+                                    class="w-full bg-gradient-to-r {{ $isExpired ? 'from-[var(--student-document-bg-card-header-expired)] to-[var(--student-document-bg-card-header-expired-2)]' : ($allApproved ? 'from-[var(--student-document-bg-card-header-approved)] to-[var(--student-document-bg-card-header-approved-2)]' : 'from-[var(--student-document-bg-card-header)] to-[var(--student-document-bg-card-header-2)]') }} px-6 py-4 hover:brightness-105 transition-all focus:outline-none">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="text-left">
+                                                <p class="text-[var(--student-document-text-primary)] text-xs font-medium">Fecha límite</p>
+                                                <h3 class="text-[var(--student-document-text-secondary)] text-lg font-bold">
+                                                {{ 
+                                                    $limitDate !== 'Sin fecha'
+                                                        ? \Carbon\Carbon::parse($limitDate)->locale('es')->isoFormat('DD MMM YYYY')
+                                                        : 'Sin fecha'
+                                                }}
+                                                </h3>
+
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex items-center gap-3">
+                                            <!-- Badge de estado -->
+                                            @php
+                                                $statusText = '';
+                                                $statusIcon = '';
+
+                                                if ($allApproved) {
+                                                    $statusText = 'COMPLETADO';
+                                                } elseif ($isExpired && $allUploaded) {
+                                                    $statusText = 'ENTREGADO';
+                                                } elseif ($isExpired && !$noneUploaded) {
+                                                    $statusText = 'INCOMPLETO';
+                                                } elseif ($isExpired && $noneUploaded) {
+                                                    $statusText = 'NO ENTREGADO';
+                                                } else {
+                                                    if($limitDate !== 'Sin fecha') {
+                                                        $today = \Carbon\Carbon::today();
+                                                        $limit = \Carbon\Carbon::parse($limitDate)->startOfDay();
+
+                                                        if ($limit->eq($today)) {
+                                                            $statusText = 'HOY';
+                                                        } elseif ($limit->eq($today->copy()->addDay())) {
+                                                            $statusText = 'MAÑANA';
+                                                        } elseif ($limit->gt($today->copy()->addDay())) {
+                                                            $daysLeft = $today->diffInDays($limit);
+                                                            $statusText = "$daysLeft DÍAS";
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+
+                                            @if($statusText)
+                                                <span class="px-3 py-1 bg-[var(--student-document-bg-card-indicator)] backdrop-blur rounded-full text-[var(--student-document-text-primary)] text-xs font-bold flex items-center gap-1.5">
+                                                    {!! $statusIcon !!}{{ $statusText }}
+                                                </span>
+                                            @endif
+
+                                            <!-- Contador de documentos -->
+                                            <div class="flex items-center gap-2 px-3 py-1 bg-[var(--student-document-bg-card-indicator)] backdrop-blur rounded-full">
+                                                <i class="fas fa-file-alt text-[var(--student-document-text-primary)] text-xs"></i>
+                                                <span class="text-[var(--student-document-text-primary)] text-xs font-bold">{{ count($docs) }}</span>
+                                            </div>
+
+                                            <!-- Icono de acordeón -->
+                                            <div class="w-8 h-8 bg-[var(--student-document-bg-card-indicator)] backdrop-blur rounded-lg flex items-center justify-center transition-transform duration-300"
+                                                :class="{ 'rotate-180': openCard === '{{ $cardId }}' }">
+                                                <i class="fas fa-chevron-down text-[var(--student-document-text-primary)] text-sm"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <!-- Contenido expandible -->
+                                <div x-show="openCard === '{{ $cardId }}'"
+                                    x-collapse
+                                    x-cloak>
+                                    <div class="p-4 space-y-3">
+                                        @foreach($docs as $document)
+                                            @php
+                                                $uploadMode = $document->file?->upload_mode ?? 'bidirectional';
+                                                $isIndividual = $document->file?->is_individual ?? false;
+                                                $canUpload = $this->canUploadFile($document);
+                                                $showAdminFiles = $this->shouldShowAdminFiles($document);
+                                                $adminFiles = $this->getFileToDisplay($document);
+                                            @endphp
+
+                                            <div class="bg-[var(--student-document-bg-content)] rounded-lg border border-[var(--student-document-border-content)] hover:border-[var(--student-document-border-content-hover)] transition-all p-4">
+                                                <div class="flex items-center gap-4">
+                                                    
+                                                    <!-- Info -->
+                                                    <div class="flex-1 min-w-0">
+                                                        <h4 class="font-semibold text-[var(--student-document-text-primary)] text-sm truncate">{{ $document->name }}</h4>
+                                                        
                                                         @if($document->student_file_name)
                                                             @php
-                                                                $statusNames = [
-                                                                    'revisado' => 'Revisado',
-                                                                    'rechazado' => 'Rechazado',
-                                                                    'en_revision' => 'En revisión',
-                                                                ];
+                                                                $nameParts = explode('_'.$student->control_number, $document->student_file_name);
+                                                                $baseName = $nameParts[0];
+                                                                $extension = pathinfo($document->student_file_name, PATHINFO_EXTENSION);
                                                             @endphp
+                                                            <p class="text-xs text-[var(--student-document-text-secondary)] truncate">{{ $baseName }}.{{ $extension }}</p>
+                                                        @else
+                                                            <p class="text-xs text-[var(--student-document-text-secondary)] italic">Sin entregar</p>
+                                                        @endif
+                                                    </div>
 
-                                                            <span class="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-bold
-                                                                {{ $document->status === 'revisado' ? 'bg-[var(--student-document-bg-content-status-approved)] text-[var(--student-document-text-content-status-approved-icon)]' : '' }}
-                                                                {{ $document->status === 'rechazado' ? 'bg-[var(--student-document-bg-content-status-rejected)] text-[var(--student-document-text-content-status-rejected-icon)]' : '' }}
-                                                                {{ $document->status === 'en_revision' ? 'bg-[var(--student-document-bg-content-status-normal)] text-[var(--student-document-text-content-status-normal-icon)]' : '' }}">
-                                                                {{ $statusNames[$document->status] ?? ucfirst($document->status) }}
-                                                            </span>
+                                                    <!-- Status badge (solo si hay archivo del estudiante y puede subirlo) -->
+                                                    @if($document->student_file_name && $canUpload)
+                                                        @php
+                                                            $statusNames = [
+                                                                'revisado' => 'Revisado',
+                                                                'rechazado' => 'Rechazado',
+                                                                'en_revision' => 'En revisión',
+                                                            ];
+                                                        @endphp
+
+                                                        <span class="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-bold
+                                                            {{ $document->status === 'revisado' ? 'bg-[var(--student-document-bg-content-status-approved)] text-[var(--student-document-text-content-status-approved-icon)]' : '' }}
+                                                            {{ $document->status === 'rechazado' ? 'bg-[var(--student-document-bg-content-status-rejected)] text-[var(--student-document-text-content-status-rejected-icon)]' : '' }}
+                                                            {{ $document->status === 'en_revision' ? 'bg-[var(--student-document-bg-content-status-normal)] text-[var(--student-document-text-content-status-normal-icon)]' : '' }}">
+                                                            {{ $statusNames[$document->status] ?? ucfirst($document->status) }}
+                                                        </span>
+                                                    @endif
+
+                                                    <!-- Acciones rápidas -->
+                                                    <div class="flex-shrink-0 flex items-center gap-2">
+
+                                                        <!-- 🔹 Archivos del Administrador (Word/PDF general o individual) -->
+                                                        @if($showAdminFiles && $adminFiles)
+                                                            <div class="flex gap-1">
+                                                                @foreach($adminFiles as $file)
+                                                                    @php
+                                                                        $isPdf = str_ends_with(strtolower($file['path']), '.pdf');
+                                                                        $isWord = str_ends_with(strtolower($file['path']), '.docx') || str_ends_with(strtolower($file['path']), '.doc');
+                                                                    @endphp
+                                                                    <div class="relative group">
+                                                                        <button wire:click="previewFile('{{ $file['path'] }}','{{ $file['name'] }}')"
+                                                                                class="w-8 h-8 flex items-center justify-center rounded-lg 
+                                                                                {{ $isExpired ? 'bg-[var(--student-document-bg-button-expired)] text-[var(--student-document-bg-button-icon-expired)] cursor-not-allowed' : ($isPdf ? 'bg-[var(--student-document-bg-button-pdf)] text-[var(--student-document-text-button)] hover:bg-[var(--student-document-bg-button-pdf-hover)]' : 'bg-[var(--student-document-bg-button-word)] text-[var(--student-document-text-button)] hover:bg-[var(--student-document-bg-button-word-hover)]') }} transition text-xs"
+                                                                                {{ $isExpired ? 'disabled' : '' }}>
+                                                                            <i class="fas {{ $isPdf ? 'fa-file-pdf' : ($file['type']==='individual' ? 'fa-file' : 'fa-file-word') }}"></i>
+                                                                        </button>
+                                                                        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
+                                                                                    rounded opacity-0 group-hover:opacity-100 transition-opacity
+                                                                                    whitespace-nowrap {{ $isExpired ? 'bg-[var(--student-document-bg-tooltip-expired)] text-[var(--student-document-text-tooltip-expired)]' : ($isPdf ? 'bg-[var(--student-document-bg-tooltip-pdf)] text-[var(--student-document-text-button)]' : 'bg-[var(--student-document-bg-tooltip-word)] text-[var(--student-document-text-button)]') }}">
+                                                                            {{ $isPdf ? 'Ver PDF' : ($file['type']==='individual' ? 'Ver archivo asignado' : 'Ver Word') }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
                                                         @endif
 
-                                                        <!-- Acciones rápidas -->
-                                                        <div class="flex-shrink-0 flex items-center gap-2">
-
-                                                            <!-- Word y PDF -->
-                                                            @if($document->file?->file_path || $document->file?->example_path)
-                                                                <div class="flex gap-1">
-                                                                    <!-- Botón Word -->
-                                                                    @if($document->file?->file_path)
-                                                                        <div class="relative group">
-                                                                            <button wire:click="previewFile('{{ $document->file->file_path }}','{{ $document->file->name_file }}')"
-                                                                                    class="w-8 h-8 flex items-center justify-center rounded-lg {{ $isExpired ? 'bg-[var(--student-document-bg-button-expired)] text-[var(--student-document-bg-button-icon-expired)] cursor-not-allowed' : 'bg-[var(--student-document-bg-button-word)] text-[var(--student-document-text-button)] hover:bg-[var(--student-document-bg-button-word-hover)] cursor-pointer' }} transition text-xs"
-                                                                                    {{ $isExpired ? 'disabled' : '' }}>
-                                                                                <i class="fas fa-file-word"></i>
-                                                                            </button>
-                                                                            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
-                                                                                        rounded opacity-0 group-hover:opacity-100 transition-opacity
-                                                                                        whitespace-nowrap {{ $isExpired ? 'bg-[var(--student-document-bg-tooltip-expired)] text-[var(--student-document-text-tooltip-expired)]' : 'bg-[var(--student-document-bg-tooltip-word)] text-[var(--student-document-text-button)]' }}">
-                                                                                Ver Word
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-
-                                                                    <!-- Botón PDF -->
-                                                                    @if($document->file?->example_path)
-                                                                        <div class="relative group">
-                                                                            <button wire:click="previewFile('{{ $document->file->example_path }}','{{ $document->file->example_name_file }}')"
-                                                                                    class="w-8 h-8 flex items-center justify-center rounded-lg {{ $isExpired ? 'bg-[var(--student-document-bg-button-expired)] text-[var(--student-document-bg-button-icon-expired)] cursor-not-allowed' : 'bg-[var(--student-document-bg-button-pdf)] text-[var(--student-document-text-button)] hover:bg-[var(--student-document-bg-button-pdf-hover)] cursor-pointer' }} transition text-xs"
-                                                                                    {{ $isExpired ? 'disabled' : '' }}>
-                                                                                <i class="fas fa-file-pdf"></i>
-                                                                            </button>
-                                                                            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
-                                                                                        rounded opacity-0 group-hover:opacity-100 transition-opacity
-                                                                                        whitespace-nowrap {{ $isExpired ? 'bg-[var(--student-document-bg-tooltip-expired)] text-[var(--student-document-text-tooltip-expired)]' : 'bg-[var(--student-document-bg-tooltip-pdf)] text-[var(--student-document-text-button)]' }}">
-                                                                                Ver PDF
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
+                                                        <!-- Botón Ver mi archivo -->
+                                                        @if($canUpload && $document->student_file_path)
+                                                            <div class="relative group">
+                                                                <button wire:click="previewFile('{{ $document->student_file_path }}','{{ $document->student_file_name }}')"
+                                                                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--student-document-bg-button-view)] text-[var(--student-document-text-button-view)] hover:bg-[var(--student-document-bg-button-view-hover)] transition text-xs cursor-pointer">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                                <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
+                                                                            rounded opacity-0 group-hover:opacity-100 transition-opacity
+                                                                            whitespace-nowrap bg-[var(--student-document-bg-tooltip-view)] text-[var(--student-document-text-tooltip-view)]">
+                                                                    Ver mi archivo
                                                                 </div>
-                                                            @endif
+                                                            </div>
+                                                        @endif
 
-                                                            <!-- Botón Ver mi archivo -->
-                                                            @if($document->student_file_path)
-                                                                <div class="relative group">
-                                                                    <button wire:click="previewFile('{{ $document->student_file_path }}','{{ $document->student_file_name }}')"
-                                                                            class="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--student-document-bg-button-view)] text-[var(--student-document-text-button-view)] hover:bg-[var(--student-document-bg-button-view-hover)] transition text-xs cursor-pointer">
-                                                                        <i class="fas fa-eye"></i>
-                                                                    </button>
-                                                                    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
-                                                                                rounded opacity-0 group-hover:opacity-100 transition-opacity
-                                                                                whitespace-nowrap bg-[var(--student-document-bg-tooltip-view)] text-[var(--student-document-text-tooltip-view)]">
-                                                                        Ver mi archivo
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-
-                                                            <!-- Botón Subir/Reemplazar -->
+                                                        <!-- Botón Subir/Reemplazar -->
+                                                        @if($canUpload)
                                                             <div class="relative group">
                                                                 <button type="button" 
                                                                         onclick="document.getElementById('fileInput-{{ $document->id }}').click()" 
@@ -371,56 +508,100 @@
                                                                 <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
                                                                             rounded opacity-0 group-hover:opacity-100 transition-opacity
                                                                             whitespace-nowrap {{ $isExpired ? 'bg-[var(--student-document-bg-tooltip-expired)] text-[var(--student-document-text-tooltip-expired)]' : ($document->student_file_name ? 'bg-[var(--student-document-bg-tooltip-replace)] text-[var(--student-document-text-button)]' : 'bg-[var(--student-document-bg-tooltip-upload)] text-[var(--student-document-text-button)]') }}">
-                                                                    {{ $document->student_file_name ? 'Reemplazar' : 'Subir archivo' }}
+                                                                {{ $document->student_file_name ? 'Reemplazar' : 'Subir archivo' }}
                                                                 </div>
                                                             </div>
 
                                                             <input type="file" id="fileInput-{{ $document->id }}" class="hidden" 
                                                                 wire:model="fileUpload.{{ $document->id }}" accept=".pdf">
-                                                        </div>
-
+                                                        @endif
                                                     </div>
 
-                                                    <!-- Información de tamaño máximo -->
-                                                    @if($document->file)
-                                                        <div class="mt-3 pt-3">
-                                                            <div class="flex items-center gap-2">
-                                                                <div class="flex items-center gap-1.5 text-xs text-[var(--student-document-text-secondary)]">
-                                                                    <i class="fas fa-info-circle text-[var(--student-document-size-color)]"></i>
-                                                                    <span>Tamaño máximo:</span>
-                                                                    <span class="font-bold text-[var(--student-document-size-color)]">
-                                                                        {{ $this->formatSize($document->file->max_size * 1024) }}
-                                                                    </span>
-                                                                </div>
+                                                </div>
+
+                                                <!-- Información de tamaño máximo (solo si puede subir) -->
+                                                @if($canUpload && $document->file)
+                                                    <div class="mt-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="flex items-center gap-1.5 text-xs text-[var(--student-document-text-secondary)]">
+                                                                <i class="fas fa-info-circle text-[var(--student-document-size-color)]"></i>
+                                                                <span>Tamaño máximo:</span>
+                                                                <span class="font-bold text-[var(--student-document-size-color)]">
+                                                                    {{ $this->formatSize($document->file->max_size * 1024) }}
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                    @endif
+                                                    </div>
+                                                @endif
 
-                                                    <!-- Observaciones compactas -->
-                                                    @if(!empty($document->comments) && $document->status === 'rechazado')
-                                                        <div class="mt-3 pt-3 border-t border-[var(--student-document-border-separator)]">
-                                                            <button wire:click="openComments({{ $document->id }})"
-                                                                    class="flex items-center gap-2 text-[var(--student-document-text-comment)] hover:text-[var(--student-document-text-comment-hover)] text-xs font-medium">
-                                                                <i class="fas fa-comment-dots"></i>
-                                                                Ver observaciones del revisor
-                                                                <i class="fas fa-chevron-right text-[10px]"></i>
-                                                            </button>
+                                                <!-- Información adicional y comentarios en la misma línea -->
+                                                @if(($document->file && ($document->file->firman || $document->file->observations)) || !empty(trim($document->comments)))
+                                                    <div x-data="{ expanded: false }" class="mt-3">
+                                                        <div class="flex items-center justify-between gap-4">
+                                                            <!-- Botón de información adicional -->
+                                                            @if($document->file && ($document->file->firman || $document->file->observations))
+                                                                <button @click="expanded = !expanded" 
+                                                                        class="text-xs text-[var(--student-document-text-secondary)] hover:text-[var(--student-document-text-primary)] flex items-center gap-1 transition-colors">
+                                                                    <i class="fas fa-info-circle"></i>
+                                                                    <span>Información adicional</span>
+                                                                    <i class="fas fa-chevron-down text-[10px] transition-transform" :class="{ 'rotate-180': expanded }"></i>
+                                                                </button>
+                                                            @else
+                                                                <div></div>
+                                                            @endif
+
+                                                            <!-- Botón de comentarios -->
+                                                            @if(!empty(trim($document->comments)))
+                                                                <button wire:click="openComments({{ $document->id }})"
+                                                                        class="flex items-center gap-2 text-[var(--student-document-text-comment)] hover:text-[var(--student-document-text-comment-hover)] text-xs font-medium transition-colors">
+                                                                    <i class="fas fa-comment-dots"></i>
+                                                                    <span class="hidden sm:inline">Ver comentarios</span>
+                                                                    <i class="fas fa-chevron-right text-[10px]"></i>
+                                                                </button>
+                                                            @endif
                                                         </div>
-                                                    @endif
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                                        
+                                                        <!-- Contenido expandible -->
+                                                        @if($document->file && ($document->file->firman || $document->file->observations))
+                                                            <div x-show="expanded" x-collapse class="mt-3 space-y-3">
+                                                                @if($document->file->firman)
+                                                                    <div class="bg-[var(--student-document-bg-content)]/50 rounded p-3">
+                                                                        <p class="text-xs font-semibold text-[var(--student-document-text-primary)] mb-1">
+                                                                            <i class="fas fa-signature mr-1"></i>Firman:
+                                                                        </p>
+                                                                        <p class="text-xs text-[var(--student-document-text-secondary)] whitespace-pre-line">{{ $document->file->firman }}</p>
+                                                                    </div>
+                                                                @endif
+
+                                                                @if($document->file->observations)
+                                                                    <div class="bg-[var(--student-document-bg-content)]/50 rounded p-3">
+                                                                        <p class="text-xs font-semibold text-[var(--student-document-text-primary)] mb-1">
+                                                                            <i class="fas fa-info-circle mr-1"></i>Observaciones:
+                                                                        </p>
+                                                                        <p class="text-xs text-[var(--student-document-text-secondary)] whitespace-pre-line">{{ $document->file->observations }}</p>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
-                            @empty
-                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-12 text-center">
-                                    <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-folder-open text-4xl text-gray-400"></i>
+                            </div>
+                        @empty
+                            {{-- Solo mostrar este mensaje si tampoco hay documentos admin_only --}}
+                            @if($adminOnlyDocuments->count() === 0)
+                                <div class="rounded-xl shadow-sm p-12 text-center">
+                                    <div class="w-20 h-20 bg-[var(--student-document-bg-content)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-folder-open text-4xl text-[var(--student-document-text-primary)]"></i>
                                     </div>
-                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No hay documentos</h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Cuando se te asignen documentos aparecerán aquí</p>
+                                    <h3 class="text-xl font-bold text-[var(--student-document-text-primary)] mb-2">No hay documentos</h3>
+                                    <p class="text-[var(--student-document-text-secondary)] text-sm">Cuando se te asignen documentos aparecerán aquí</p>
                                 </div>
-                            @endforelse
+                            @endif
+                        @endforelse
                     </div>
                 </div>
             </div>

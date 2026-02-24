@@ -16,7 +16,7 @@ return new class extends Migration
             
             // Relaciones
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('file_id')->nullable()->constrained('files')->onDelete('set null'); // relación con File
+            $table->foreignId('file_id')->nullable()->constrained('files')->onDelete('cascade');
 
             // Información del documento
             $table->string('name'); // nombre del documento/entrega

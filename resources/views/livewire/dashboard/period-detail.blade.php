@@ -346,286 +346,575 @@
                 {{-- ================== CREAR / EDITAR DOCUMENTO ================== --}}
                 <div class="backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden" 
                      style="background-color: var(--student-document-bg); ">
-                    {{-- Header --}}
-                    <div class="p-6" 
-                         style="background: linear-gradient(135deg, var(--student-document-bg-card-header) 0%, var(--student-document-bg-card-header-2) 100%);
-                                border-bottom: 1px solid var(--student-document-border-content);">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg text-white"
-                                 style="background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%);">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    @if($editingDocumentId)
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4"/>
-                                    @endif
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h2 class="text-xl font-bold" style="color: var(--student-document-text-primary);">
-                                    {{ $editingDocumentId ? 'Editar Documento Base' : 'Crear Nuevo Documento Base' }}
-                                </h2>
-                                <p class="text-sm" style="color: var(--student-document-text-secondary);">
-                                    {{ $editingDocumentId ? 'Actualiza la información del documento' : 'Los estudiantes deberán subir este documento' }}
-                                </p>
-                            </div>
-                            @if($editingDocumentId)
-                                <button wire:click="cancelEditDocument"
-                                        class="px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                                        style="background-color: var(--student-document-bg-content); 
-                                               color: var(--student-document-text-secondary);"
-                                        onmouseover="this.style.backgroundColor='var(--student-document-bg-card-indicator)'"
-                                        onmouseout="this.style.backgroundColor='var(--student-document-bg-content)'">
-                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                    Cancelar
-                                </button>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Form --}}
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            
-                            {{-- Nombre del Documento --}}
-                            <flux:field class="lg:col-span-2">
-                                <flux:label class="flex items-center">
-                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-hero-accent-primary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                                    </svg>
-                                    <span>Nombre del Documento</span>
-                                    <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
-                                </flux:label>
-                                <flux:input wire:model.defer="documentName" type="text"
-                                    placeholder="Ej: Anexo 10. Plan de Trabajo"
-                                    style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
-                                    class="w-full px-4 py-3 rounded-xl transition-all"/>
-                                <flux:error name="documentName" />
-                            </flux:field>
-
-                            {{-- Fecha Límite y Tamaño Máximo en la misma fila --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:col-span-2">
-
-                                {{-- Fecha límite --}}
-                                <flux:field>
-                                    <flux:label class="flex items-center">
-                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--color-hero-accent-primary);">
+                        {{-- Header --}}
+                        <div class="p-6" 
+                            style="background: linear-gradient(135deg, var(--student-document-bg-card-header) 0%, var(--student-document-bg-card-header-2) 100%);
+                                    border-bottom: 1px solid var(--student-document-border-content);">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg text-white"
+                                    style="background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%);">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        @if($editingDocumentId)
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                        <span>Fecha Límite</span>
-                                        <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
-                                    </flux:label>
-                                    <flux:input wire:model.defer="documentDeadline" type="date"
-                                        style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
-                                        class="w-full px-4 py-3 rounded-xl transition-all"/>
-                                    <flux:error name="documentDeadline" />    
-                                    
-                                </flux:field>
-
-                                {{-- Tamaño máximo --}}
-                                <flux:field>
-                                    <flux:label class="flex items-center">
-                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--color-hero-accent-primary);">
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        @else
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
-                                        </svg>
-                                        <span>Tamaño Máximo (KB)</span>
-                                        <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
-                                    </flux:label>
-                                    <flux:input wire:model.defer="maxSize" type="number" placeholder="10240"
-                                        style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
-                                        class="w-full px-4 py-3 rounded-xl transition-all"/>
-                                    <flux:error name="maxSize" /> 
-                                </flux:field>
-
-                            </div>
-
-                            {{-- Archivo principal --}}
-                            <flux:field class="lg:col-span-2">
-                                <flux:label class="flex items-center">
-                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-hero-accent-primary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                d="M12 4v16m8-8H4"/>
+                                        @endif
                                     </svg>
-                                    <span>Archivo del Documento (Word)</span>
-                                    @if(!$editingDocumentId)
-                                        <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
-                                    @endif
-                                </flux:label>
-
-                                <input type="file" wire:model="documentFile"  accept=".doc,.docx" class="hidden" id="documentFile">
-
-                                <label for="documentFile"
-                                    class="group flex items-center justify-center w-full px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-all"
-                                    style="background-color: var(--student-document-bg-card); border-color: var(--student-document-border-content); color: var(--student-document-text-primary);"
-                                    onmouseover="this.style.borderColor='var(--color-hero-accent-primary)';"
-                                    onmouseout="this.style.borderColor='var(--student-document-border-content)';">
-                                    <div class="text-center">
-                                        <svg class="w-12 h-12 mx-auto mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--student-document-text-secondary);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                        </svg>
-                                        <p class="text-sm font-medium transition-colors" style="color: var(--student-document-text-secondary);">
-                                            Haz clic para seleccionar
-                                        </p>
-                                        <p class="text-xs mt-1" style="color: var(--student-document-text-secondary);"></p>
-                                    </div>
-                                </label>
-
-                                @if ($documentFile)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
-                                    style="background-color: var(--student-document-bg-card); 
-                                            border: 1px solid var(--student-document-border-content);">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--student-document-text-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <span class="text-sm flex-1" style="color: var(--student-document-text-secondary);">{{ $documentFile->getClientOriginalName() }}</span>
-                                    <button wire:click="$set('documentFile', null)" 
-                                            style="color: var(--student-document-text-secondary);"
-                                            onmouseover="this.style.opacity='0.7'"
-                                            onmouseout="this.style.opacity='1'">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                </div>
+                                <div class="flex-1">
+                                    <h2 class="text-xl font-bold" style="color: var(--student-document-text-primary);">
+                                        {{ $editingDocumentId ? 'Editar Documento Base' : 'Crear Nuevo Documento Base' }}
+                                    </h2>
+                                    <p class="text-sm" style="color: var(--student-document-text-secondary);">
+                                        {{ $editingDocumentId ? 'Actualiza la información del documento' : 'Los estudiantes deberán subir este documento' }}
+                                    </p>
+                                </div>
+                                @if($editingDocumentId)
+                                    <button wire:click="cancelEditDocument"
+                                            class="px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                                            style="background-color: var(--student-document-bg-content); 
+                                                color: var(--student-document-text-secondary);"
+                                            onmouseover="this.style.backgroundColor='var(--student-document-bg-card-indicator)'"
+                                            onmouseout="this.style.backgroundColor='var(--student-document-bg-content)'">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
+                                        Cancelar
                                     </button>
-                                </div>
-                                @elseif($editingDocumentId && $period->files->find($editingDocumentId)?->name_file)
-                                    <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
-                                        style="background-color: var(--student-document-bg-card); border: 1px solid var(--student-document-border-content);">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--student-document-text-secondary);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Form --}}
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                
+                                {{-- Nombre del Documento --}}
+                                <flux:field class="lg:col-span-2">
+                                    <flux:label class="flex items-center">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            style="color: var(--color-hero-accent-primary);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                         </svg>
-                                        <span class="text-sm" style="color: var(--student-document-text-secondary);">Archivo actual: {{ $period->files->find($editingDocumentId)->name_file }}</span>
+                                        <span>Nombre del Documento</span>
+                                        <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                                    </flux:label>
+                                    <flux:input wire:model.defer="documentName" type="text"
+                                        placeholder="Ej: Anexo 10. Plan de Trabajo"
+                                        style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
+                                        class="w-full px-4 py-3 rounded-xl transition-all"/>
+                                    <flux:error name="documentName" />
+                                </flux:field>
+
+                                {{-- ============ MODO DE CARGA ============ --}}
+                                <div class="lg:col-span-2">
+                                    <label class="block text-sm font-semibold mb-3 flex items-center gap-2" 
+                                        style="color: var(--student-document-text-primary);">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            style="color: var(--color-hero-accent-primary);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                        </svg>
+                                        Modo de Carga
+                                        <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                                    </label>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {{-- Bidirectional --}}
+                                        <label class="relative cursor-pointer group">
+                                            <input type="radio" 
+                                                wire:model.live="documentUploadMode" 
+                                                value="bidirectional" 
+                                                class="peer sr-only"
+                                                {{ (!$documentUploadMode || $documentUploadMode === 'bidirectional') ? 'checked' : '' }}>
+                                            
+                                            <div class="p-4 rounded-xl border-2 transition-all flex h-full peer-checked:border-2"
+                                                style="background-color: var(--student-document-bg-card); border-color: var(--student-document-border-content);"
+                                                onmouseover="if(!this.previousElementSibling.checked) this.style.borderColor='var(--color-hero-accent-primary)'"
+                                                onmouseout="if(!this.previousElementSibling.checked) this.style.borderColor='var(--student-document-border-content)'">
+                                                
+                                                <div class="flex items-stretch gap-3 w-full">
+                                                    <div class="upload-mode-icon w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                                                        style="background-color: var(--student-document-bg-content);">
+                                                        <svg class="w-5 h-5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                            style="color: var(--student-document-text-secondary);">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 flex flex-col justify-between">
+                                                        <div>
+                                                            <h4 class="font-semibold text-sm mb-1" style="color: var(--student-document-text-primary);">
+                                                                Bidireccional
+                                                            </h4>
+                                                            <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                                                Admin y estudiantes pueden subir archivos
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        {{-- User Only --}}
+                                        <label class="relative cursor-pointer group">
+                                            <input type="radio" 
+                                                wire:model.live="documentUploadMode" 
+                                                value="user_only" 
+                                                class="peer sr-only">
+                                            
+                                            <div class="p-4 rounded-xl border-2 transition-all flex h-full peer-checked:border-2"
+                                                style="background-color: var(--student-document-bg-card); border-color: var(--student-document-border-content);"
+                                                onmouseover="if(!this.previousElementSibling.checked) this.style.borderColor='var(--color-hero-accent-primary)'"
+                                                onmouseout="if(!this.previousElementSibling.checked) this.style.borderColor='var(--student-document-border-content)'">
+                                                
+                                                <div class="flex items-stretch gap-3 w-full">
+                                                    <div class="upload-mode-icon w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                                                        style="background-color: var(--student-document-bg-content);">
+                                                        <svg class="w-5 h-5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                            style="color: var(--student-document-text-secondary);">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 flex flex-col justify-between">
+                                                        <div>
+                                                            <h4 class="font-semibold text-sm mb-1" style="color: var(--student-document-text-primary);">
+                                                                Solo Estudiantes
+                                                            </h4>
+                                                            <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                                                Solo estudiantes pueden subir archivos
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        {{-- Admin Only --}}
+                                        <label class="relative cursor-pointer group">
+                                            <input type="radio" 
+                                                wire:model.live="documentUploadMode" 
+                                                value="admin_only" 
+                                                class="peer sr-only">
+                                            
+                                            <div class="p-4 rounded-xl border-2 transition-all flex h-full peer-checked:border-2"
+                                                style="background-color: var(--student-document-bg-card); border-color: var(--student-document-border-content);"
+                                                onmouseover="if(!this.previousElementSibling.checked) this.style.borderColor='var(--color-hero-accent-primary)'"
+                                                onmouseout="if(!this.previousElementSibling.checked) this.style.borderColor='var(--student-document-border-content)'">
+                                                
+                                                <div class="flex items-stretch gap-3 w-full">
+                                                    <div class="upload-mode-icon w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                                                        style="background-color: var(--student-document-bg-content);">
+                                                        <svg class="w-5 h-5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                            style="color: var(--student-document-text-secondary);">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 flex flex-col justify-between">
+                                                        <div>
+                                                            <h4 class="font-semibold text-sm mb-1" style="color: var(--student-document-text-primary);">
+                                                                Solo Admin
+                                                            </h4>
+                                                            <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                                                Solo administradores pueden subir archivos
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <flux:error name="documentUploadMode" />
+                                </div>
+
+                                {{-- Fecha Límite y Tamaño Máximo --}}
+                                @if($documentUploadMode !== 'admin_only')
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:col-span-2">
+
+                                    {{-- Fecha límite --}}                                    
+                                    <flux:field>
+                                        <flux:label class="flex items-center">
+                                            <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                style="color: var(--color-hero-accent-primary);">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span>Fecha Límite</span>
+                                                <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                                        </flux:label>
+                                        <flux:input 
+                                            wire:model.defer="documentDeadline" 
+                                            type="date"
+                                            min="{{ $period->start_date }}" 
+                                            max="{{ $period->end_date }}" 
+                                            style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
+                                            class="w-full px-4 py-3 rounded-xl transition-all"/>
+                                        
+                                        <flux:error name="documentDeadline" />    
+                                    </flux:field>
+                                    
+                                    {{-- Tamaño máximo --}}
+                                    <flux:field>
+                                        <flux:label class="flex items-center">
+                                            <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                style="color: var(--color-hero-accent-primary);">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                                            </svg>
+                                            <span>Tamaño Máximo (KB)</span>
+                                            <span class="ml-1" style="color: var(--student-document-text-content-status-rejected-icon);">*</span>
+                                        </flux:label>
+                                        <flux:input 
+                                            wire:model.defer="maxSize" 
+                                            type="number" 
+                                            placeholder="10240"
+                                            min="1"
+                                            max="20480"
+                                            style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
+                                            class="w-full px-4 py-3 rounded-xl transition-all"/>
+                                        <flux:error name="maxSize" /> 
+                                    </flux:field>
+                                </div>
+                                @endif
+
+                                <style>
+                                    /* Estilos para radio buttons checked */
+                                    input[type="radio"]:checked + div {
+                                        border-color: var(--color-hero-accent-primary) !important;
+                                        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+                                    }
+                                    input[type="radio"]:checked + div .upload-mode-icon {
+                                        background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%) !important;
+                                    }
+                                    input[type="radio"]:checked + div .upload-mode-icon svg {
+                                        color: white !important;
+                                    }
+                                </style>
+
+                                {{-- Checkbox de Documento Individual (solo visible si admin_only) --}}
+                                @if($documentUploadMode === 'admin_only')
+                                    <div class="lg:col-span-2">
+                                        <div class="p-5 rounded-xl border-2 transition-all cursor-pointer"
+                                            style="background-color: var(--student-document-bg-card); border-color: var(--student-document-border-content);"
+                                            wire:click="$toggle('isIndividual')"
+                                            onmouseover="this.style.borderColor='var(--color-hero-accent-primary)'"
+                                            onmouseout="this.style.borderColor='var(--student-document-border-content)')">
+
+                                            <div class="flex items-start gap-4">
+                                                {{-- Checkbox Custom --}}
+                                                <div class="flex-shrink-0 pt-0.5">
+                                                    <input type="checkbox"
+                                                        wire:model.live="isIndividual"
+                                                        id="isIndividual"
+                                                        class="sr-only">
+
+                                                    <label for="isIndividual"
+                                                        class="w-6 h-6 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all"
+                                                        style="border-color: var(--student-document-border-content); 
+                                                                {{ $isIndividual ? 'background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%); border: 0;' : '' }}">
+                                                        @if($isIndividual)
+                                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                                            </svg>
+                                                        @endif
+                                                    </label>
+                                                </div>
+
+                                                {{-- Contenido --}}
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-2 mb-2">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                            style="color: var(--color-hero-accent-primary);">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                        </svg>
+                                                        <h4 style="color: var(--student-document-text-primary);">
+                                                            Documento Individual
+                                                        </h4>
+                                                    </div>
+                                                    <p class="text-sm leading-relaxed" style="color: var(--student-document-text-secondary);">
+                                                        El administrador podrá subir un archivo específico diferente para cada alumno. En la sección de Revisión de Documentos.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
-                                
-                                @error('documentFile')
-                                    <p class="mt-2 text-sm flex items-center gap-2" style="color: #ee6e6c;">
-                                        <!-- Triángulo relleno con ! -->
-                                        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
 
-                            </flux:field>
+                                {{-- Archivos (solo si no es user_only) --}}
+                                @if(!$documentUploadMode || $documentUploadMode !== 'user_only')
+                                    {{-- Solo mostrar archivos si NO es admin_only con individual --}}
+                                    @if(!($documentUploadMode === 'admin_only' && $isIndividual))
+                                        {{-- Archivo principal --}}
+                                        <flux:field class="lg:col-span-2">
+                                            <flux:label class="flex items-center">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    style="color: var(--color-hero-accent-primary);">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                <span>Archivo del Documento (Word)</span>
+                                            </flux:label>
 
+                                            <input type="file" wire:model="documentFile" accept=".doc,.docx" class="hidden" id="documentFile">
 
-                            {{-- Ejemplo (PDF) --}}
-                            <div class="lg:col-span-2">
-                                <label class="block text-sm font-semibold mb-3 flex items-center gap-2" 
-                                    style="color: var(--student-document-text-primary);">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-hero-accent-primary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                    </svg>
-                                    Ejemplo (PDF)
-                                    <span class="text-xs font-normal" style="color: var(--student-document-text-secondary);">- Archivo de referencia para estudiantes</span>
-                                </label>
-                                
-                                <input type="file" wire:model="documentExample" accept=".pdf" class="hidden" id="documentExample">
-                                
-                                <label for="documentExample"
-                                    class="group flex items-center justify-center w-full px-6 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-all"
-                                    style="background-color: var(--student-document-bg-card); 
-                                        border-color: var(--student-document-border-content);"
-                                    onmouseover="this.style.borderColor='var(--color-hero-accent-secondary)'; this.style.backgroundColor='var(--student-document-bg-card)';"
-                                    onmouseout="this.style.borderColor='var(--student-document-border-content)'; this.style.backgroundColor='var(--student-document-bg-card)';">
-                                    <div class="text-center">
-                                        <svg class="w-10 h-10 mx-auto mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--student-document-text-secondary);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                        </svg>
-                                        <p class="text-sm font-medium transition-colors" 
-                                        style="color: var(--student-document-text-secondary);">
-                                            Subir ejemplo
-                                        </p>
-                                    </div>
-                                </label>
+                                            <label for="documentFile"
+                                                class="group flex items-center justify-center w-full px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-all"
+                                                style="background-color: var(--student-document-bg-card); border-color: var(--student-document-border-content); color: var(--student-document-text-primary);"
+                                                onmouseover="this.style.borderColor='var(--color-hero-accent-primary)';"
+                                                onmouseout="this.style.borderColor='var(--student-document-border-content)';">
+                                                <div class="text-center">
+                                                    <svg class="w-12 h-12 mx-auto mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: var(--student-document-text-secondary);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                                    </svg>
+                                                    <p class="text-sm font-medium transition-colors" style="color: var(--student-document-text-secondary);">
+                                                        Haz clic para seleccionar
+                                                    </p>
+                                                </div>
+                                            </label>
 
-                                {{-- Mostrar archivo seleccionado --}}
-                                @if ($documentExample)
-                                    <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
-                                        style="background-color: var(--student-document-bg-card); 
-                                                border: 1px solid var(--student-document-border-content);">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--student-document-text-secondary);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                            @if ($documentFile)
+                                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
+                                                    style="background-color: var(--student-document-bg-card); 
+                                                            border: 1px solid var(--student-document-border-content);">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: var(--student-document-text-secondary);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                                    </svg>
+                                                    <span class="text-sm flex-1" style="color: var(--student-document-text-secondary);">{{ $documentFile->getClientOriginalName() }}</span>
+                                                    <button wire:click="$set('documentFile', null)" 
+                                                            type="button"
+                                                            style="color: var(--student-document-text-secondary);"
+                                                            onmouseover="this.style.opacity='0.7'"
+                                                            onmouseout="this.style.opacity='1'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @elseif($editingDocumentId && $period->files->find($editingDocumentId)?->name_file && !$removeDocumentFile)
+                                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
+                                                    style="background-color: var(--student-document-bg-card); border: 1px solid var(--student-document-border-content);">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: var(--student-document-text-secondary);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                    </svg>
+                                                    <span class="text-sm flex-1" style="color: var(--student-document-text-secondary);">
+                                                        Archivo actual: {{ $period->files->find($editingDocumentId)->name_file }}
+                                                    </span>
+                                                    <button wire:click="removeExistingDocumentFile" 
+                                                            type="button"
+                                                            class="p-1 rounded-full transition-all"
+                                                            style="color: var(--student-document-text-secondary);"
+                                                            onmouseover="this.style.opacity='0.8'"
+                                                            onmouseout="this.style.opacity='1'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+
+                                                </div>
+                                            @elseif($editingDocumentId && $removeDocumentFile)
+                                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
+                                                    style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: rgb(239, 68, 68);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                    </svg>
+                                                    <span class="text-sm flex-1" style="color: rgb(239, 68, 68);">
+                                                        El archivo será eliminado al guardar
+                                                    </span>
+                                                    <button wire:click="cancelRemoveDocumentFile" 
+                                                            type="button"
+                                                            class="px-3 py-1 text-xs rounded-lg transition-all"
+                                                            style="color: var(--student-document-text-primary);"
+                                                            onmouseover="this.style.opacity='0.8'"
+                                                            onmouseout="this.style.opacity='1'">
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            @endif
+                                            
+                                            <flux:error name="documentFile" />
+                                        </flux:field>
+
+                                        {{-- Ejemplo (PDF) --}}
+                                        <div class="lg:col-span-2">
+                                            <label class="block text-sm font-semibold mb-3 flex items-center gap-2" 
+                                                style="color: var(--student-document-text-primary);">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                    style="color: var(--color-hero-accent-primary);">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                </svg>
+                                                Ejemplo (PDF)
+                                                <span class="text-xs font-normal" style="color: var(--student-document-text-secondary);">- Archivo de referencia para estudiantes</span>
+                                            </label>
+                                            
+                                            <input type="file" wire:model="documentExample" accept=".pdf" class="hidden" id="documentExample">
+                                            
+                                            <label for="documentExample"
+                                                class="group flex items-center justify-center w-full px-6 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-all"
+                                                style="background-color: var(--student-document-bg-card); 
+                                                    border-color: var(--student-document-border-content);"
+                                                onmouseover="this.style.borderColor='var(--color-hero-accent-secondary)'; this.style.backgroundColor='var(--student-document-bg-card)';"
+                                                onmouseout="this.style.borderColor='var(--student-document-border-content)'; this.style.backgroundColor='var(--student-document-bg-card)';">
+                                                <div class="text-center">
+                                                    <svg class="w-10 h-10 mx-auto mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: var(--student-document-text-secondary);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    <p class="text-sm font-medium transition-colors" 
+                                                    style="color: var(--student-document-text-secondary);">
+                                                        Subir ejemplo
+                                                    </p>
+                                                </div>
+                                            </label>
+
+                                            @if ($documentExample)
+                                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
+                                                    style="background-color: var(--student-document-bg-card); 
+                                                            border: 1px solid var(--student-document-border-content);">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: var(--student-document-text-secondary);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    <span class="text-sm flex-1" style="color: var(--student-document-text-secondary);">{{ $documentExample->getClientOriginalName() }}</span>
+                                                    <button wire:click="$set('documentExample', null)" 
+                                                            type="button"
+                                                            style="color: var(--student-document-text-secondary);"
+                                                            onmouseover="this.style.opacity='0.7'"
+                                                            onmouseout="this.style.opacity='1'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @elseif($editingDocumentId && $period->files->find($editingDocumentId)?->example_name_file && !$removeExampleFile)
+                                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
+                                                    style="background-color: var(--student-document-bg-card); 
+                                                            border: 1px solid var(--student-document-border-content);">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: var(--student-document-text-secondary);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    <span class="text-sm flex-1" style="color: var(--student-document-text-secondary);">
+                                                        Archivo actual: {{ $period->files->find($editingDocumentId)->example_name_file }}
+                                                    </span>
+                                                    <button wire:click="removeExistingExampleFile" 
+                                                            type="button"
+                                                            class="p-1 rounded-full transition-all"
+                                                            style="color: var(--student-document-text-secondary);"
+                                                            onmouseover="this.style.opacity='0.8'"
+                                                            onmouseout="this.style.opacity='1'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @elseif($editingDocumentId && $removeExampleFile)
+                                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
+                                                    style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                        style="color: rgb(239, 68, 68);">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                    </svg>
+                                                    <span class="text-sm flex-1" style="color: rgb(239, 68, 68);">
+                                                        El archivo de ejemplo será eliminado al guardar
+                                                    </span>
+                                                    <button wire:click="cancelRemoveExampleFile" 
+                                                            type="button"
+                                                            class="px-3 py-1 text-xs rounded-lg transition-all"
+                                                            style="color: var(--student-document-text-primary);"
+                                                            onmouseover="this.style.opacity='0.8'"
+                                                            onmouseout="this.style.opacity='1'">
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            @endif                      
+                                        </div>
+                                    @endif
+                                @endif
+
+                                {{-- ============ FIRMAN ============ --}}
+                                <flux:field class="lg:col-span-2">
+                                    <flux:label class="flex items-center">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            style="color: var(--color-hero-accent-primary);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
-                                        <span class="text-sm flex-1" style="color: var(--student-document-text-secondary);">{{ $documentExample->getClientOriginalName() }}</span>
-                                        <button wire:click="$set('documentExample', null)" 
-                                                style="color: var(--student-document-text-secondary);"
-                                                onmouseover="this.style.opacity='0.7'"
-                                                onmouseout="this.style.opacity='1'">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                @elseif($editingDocumentId && $period->files->find($editingDocumentId)?->example_name_file)
-                                    <div class="mt-3 p-3 rounded-lg flex items-center gap-3" 
-                                        style="background-color: var(--student-document-bg-card); 
-                                                border: 1px solid var(--student-document-border-content);">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--student-document-text-secondary);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                        <span>Firman</span>
+                                    </flux:label>
+                                    <flux:textarea wire:model.defer="documentFirman" 
+                                        rows="3"
+                                        placeholder="Escribe aquí..."
+                                        style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
+                                        class="w-full px-4 py-3 rounded-xl transition-all resize-none"/>
+                                    <flux:error name="documentFirman" />
+                                </flux:field>
+
+                                {{-- ============ OBSERVACIONES ============ --}}
+                                <flux:field class="lg:col-span-2">
+                                    <flux:label class="flex items-center">
+                                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            style="color: var(--color-hero-accent-primary);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
-                                        <span class="text-sm" style="color: var(--student-document-text-secondary);">Archivo actual: {{ $period->files->find($editingDocumentId)->example_name_file }}</span>
-                                    </div>
-                                @endif                      
+                                        <span>Observaciones</span>
+                                    </flux:label>
+                                    <flux:textarea wire:model.defer="documentObservations" 
+                                        rows="4"
+                                        placeholder="Escribe aquí..."
+                                        style="background-color: var(--student-document-bg-card); color: var(--student-document-text-primary);"
+                                        class="w-full px-4 py-3 rounded-xl transition-all resize-none"/>
+                                    <flux:error name="documentObservations" />
+                                </flux:field>
+
                             </div>
 
-                        </div>
-
-                        {{-- Action Buttons --}}
-                        <div class="flex justify-end gap-3 mt-8 pt-6" style="border-top: 1px solid var(--student-document-border-content);">
-                            @if($editingDocumentId)
-                                <button wire:click="cancelEditDocument"
-                                        class="px-6 py-3 font-medium rounded-xl transition-colors"
-                                        style="
-                                background-color: var(--modal-btn-close);
-                                    color: var(--modal-btn-close-text);
-                            "
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.1)';"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
-                                    Cancelar
+                            {{-- Action Buttons --}}
+                            <div class="flex justify-end gap-3 mt-8 pt-6" style="border-top: 1px solid var(--student-document-border-content);">
+                                @if($editingDocumentId)
+                                    <button wire:click="cancelEditDocument"
+                                            class="px-6 py-3 font-medium rounded-xl transition-colors"
+                                            style="
+                                    background-color: var(--modal-btn-close);
+                                        color: var(--modal-btn-close-text);
+                                "
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.1)';"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.filter='brightness(1)';">
+                                        Cancelar
+                                    </button>
+                                @endif
+                                
+                                <button wire:click="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}"
+                                        wire:loading.attr="disabled"
+                                        class="px-6 py-3 font-semibold rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                        style="background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%); 
+                                            color: white;"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 25px -5px rgba(0, 0, 0, 0.3)';"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.3)';">
+                                    <span wire:loading.remove wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}">
+                                        {{ $editingDocumentId ? 'Guardar Cambios' : 'Crear Documento' }}
+                                    </span>
+                                    <span wire:loading wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}" class="flex items-center gap-2">
+                                        <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Procesando...
+                                    </span>
                                 </button>
-                            @endif
-                            
-                            <button wire:click="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}"
-                                    wire:loading.attr="disabled"
-                                    class="px-6 py-3 font-semibold rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                    style="background: linear-gradient(135deg, var(--color-hero-accent-primary) 0%, var(--color-hero-accent-secondary) 100%); 
-                                           color: white;"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 25px -5px rgba(0, 0, 0, 0.3)';"
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.3)';">
-                                <span wire:loading.remove wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}">
-                                    {{ $editingDocumentId ? 'Guardar Cambios' : 'Crear Documento' }}
-                                </span>
-                                <span wire:loading wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}" class="flex items-center gap-2">
-                                    <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Procesando...
-                                </span>
-                            </button>
+                            </div>
                         </div>
-                    </div>
                 </div>
 
                 {{-- ================== LISTA DE DOCUMENTOS ================== --}}
@@ -976,6 +1265,7 @@
                                                         {{ $student->name }} {{ $student->last_name_paterno }} {{ $student->last_name_materno }}
                                                     </p>
                                                     <p class="text-xs" style="color: var(--student-document-text-secondary);">{{ $student->control_number }}</p>
+                                                    <p class="text-xs" style="color: var(--student-document-text-secondary);">{{ $student->personal_email }}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -1047,59 +1337,115 @@
                                                     </h4>
 
                                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                                                        @forelse(
-                                                                $student->documents
-                                                                    ->filter(fn ($d) => $d->file && $d->file->period_id == $periodId)
-                                                                    ->sortBy([
-                                                                        fn ($d) => is_null($d->student_file_path),
+                                                        @forelse($this->getStudentDocuments($student->id) as $doc)
+                                                            <div class="group rounded-lg p-4 transition cursor-pointer"
+                                                                wire:click="quickReviewDocument({{ $doc->id }})"
+                                                                style="background-color: var(--student-document-bg); 
+                                                                    border: 1px solid var(--student-document-border-content);"
+                                                                onmouseover="this.style.borderColor='var(--color-hero-accent-primary)'"
+                                                                onmouseout="this.style.borderColor='var(--student-document-border-content)'">
 
-                                                                        fn ($d) => $d->id,
-                                                                    ])
-                                                                as $doc
-
-                                                            )
-                                                                <div class="group rounded-lg p-4 transition cursor-pointer"
-                                                                    wire:click="quickReviewDocument({{ $doc->id }})"
-                                                                    style="background-color: var(--student-document-bg); 
-                                                                        border: 1px solid var(--student-document-border-content);"
-                                                                    onmouseover="this.style.borderColor='var(--color-hero-accent-primary)'"
-                                                                    onmouseout="this.style.borderColor='var(--student-document-border-content)'">
-
-                                                                    <div class="flex items-start justify-between gap-3">
-                                                                        <div class="flex-1 min-w-0">
-                                                                            <div class="flex items-center gap-2 mb-2">
-                                                                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                                                    style="color: var(--color-hero-accent-primary);">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                                                </svg>
-                                                                                <h5 class="text-sm font-semibold truncate" 
-                                                                                    style="color: var(--student-document-text-primary);">
-                                                                                    {{ $doc->file->name ?? $doc->name }}
-                                                                                </h5>
-                                                                            </div>
-
-                                                                            @if($doc->student_file_path)
-                                                                                <p class="text-xs truncate mb-2"
-                                                                                style="color: var(--student-document-text-secondary);">
-                                                                                    {{ Str::before(pathinfo($doc->student_file_name, PATHINFO_FILENAME), '_') }}
-                                                                                </p>
-                                                                            @else
-                                                                                <p class="text-xs mb-2"
-                                                                                style="color: var(--student-document-text-secondary); opacity: 0.6;">
-                                                                                    Sin entregar
-                                                                                </p>
-                                                                            @endif
-
-
-                                                                            @if($doc->limit_date)
-                                                                                <p class="text-xs" 
-                                                                                style="color: var(--student-document-text-secondary);">
-                                                                                    📅 Límite: {{ \Carbon\Carbon::parse($doc->limit_date)->format('d/m/Y') }}
-                                                                                </p>
-                                                                            @endif
+                                                                <div class="flex items-start justify-between gap-3">
+                                                                    <div class="flex-1 min-w-0">
+                                                                        <div class="flex items-center gap-2 mb-2">
+                                                                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                                                style="color: var(--color-hero-accent-primary);">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                                            </svg>
+                                                                            <h5 class="text-sm font-semibold truncate" 
+                                                                                style="color: var(--student-document-text-primary);">
+                                                                                {{ $doc->file->name ?? $doc->name }}
+                                                                            </h5>
                                                                         </div>
 
-                                                                        <div class="flex-shrink-0">
+                                                                        {{-- Mostrar nombre del archivo según el upload_mode --}}
+                                                                        @php
+                                                                            $hasFile = false;
+                                                                            $fileName = '';
+
+                                                                            if ($doc->file->upload_mode === 'admin_only') {
+
+                                                                                if ($doc->file->is_individual) {
+                                                                                    // admin_only + individual → depende del archivo individual
+                                                                                    $individualUpload = \App\Models\FileStudentUpload::where('file_id', $doc->file->id)
+                                                                                        ->where('student_id', $student->id)
+                                                                                        ->first();
+
+                                                                                    if ($individualUpload) {
+                                                                                        $hasFile = true;
+                                                                                        $fileName = Str::before(
+                                                                                            pathinfo($individualUpload->name_file, PATHINFO_FILENAME),
+                                                                                            '_'
+                                                                                        );
+                                                                                    }
+                                                                                }
+
+                                                                                // admin_only + NO individual → no mostrar nada
+                                                                            } else {
+                                                                                // user_only o bidirectional
+                                                                                if ($doc->student_file_path) {
+                                                                                    $hasFile = true;
+                                                                                    $fileName = Str::before(
+                                                                                        pathinfo($doc->student_file_name, PATHINFO_FILENAME),
+                                                                                        '_'
+                                                                                    );
+                                                                                }
+                                                                            }
+                                                                        @endphp
+
+                                                                        @if($hasFile)
+                                                                            <p class="text-xs truncate mb-2"
+                                                                                style="color: var(--student-document-text-secondary);">
+                                                                                {{ $fileName }}
+                                                                            </p>
+
+                                                                        @elseif($doc->file->upload_mode !== 'admin_only')
+                                                                            <p class="text-xs mb-2"
+                                                                                style="color: var(--student-document-text-secondary); opacity: 0.6;">
+                                                                                Sin entregar
+                                                                            </p>
+                                                                        @endif
+
+                                                                    </div>
+
+                                                                    <div class="flex-shrink-0">
+                                                                        @if($doc->file->upload_mode === 'admin_only')
+                                                                            {{-- Para admin_only --}}
+                                                                            @if($doc->file->is_individual)
+                                                                                @php
+                                                                                    $individualUpload = \App\Models\FileStudentUpload::where('file_id', $doc->file->id)
+                                                                                        ->where('student_id', $student->id)
+                                                                                        ->first();
+                                                                                @endphp
+                                                                                @if($individualUpload)
+                                                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold" 
+                                                                                        style="background-color: rgba(16, 185, 129, 0.2); color: var(--student-document-text-content-status-approved-icon);">
+                                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                                                        </svg>
+                                                                                        Subido
+                                                                                    </span>
+                                                                                @else
+                                                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold" 
+                                                                                        style="background-color: var(--student-document-bg-card); color: var(--student-document-text-secondary); border: 1px solid var(--student-document-border-content); opacity: 0.6;">
+                                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                                                                        </svg>
+                                                                                        Sin Subir
+                                                                                    </span>
+                                                                                @endif
+                                                                            @else
+                                                                                {{-- Documento base --}}
+                                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold" 
+                                                                                    style="background-color: rgba(16, 185, 129, 0.2); color: var(--student-document-text-content-status-approved-icon);">
+                                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                                                    </svg>
+                                                                                    Base
+                                                                                </span>
+                                                                            @endif
+                                                                        @else
+                                                                            {{-- Para user_only o bidirectional --}}
                                                                             @if($doc->student_file_path)
                                                                                 @if($doc->status === 'revisado')
                                                                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold" 
@@ -1135,20 +1481,19 @@
                                                                                     Pendiente
                                                                                 </span>
                                                                             @endif
-
-                                                                        </div>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
-                                                            @empty
-                                                                <div class="col-span-2 text-center py-8" 
-                                                                    style="color: var(--student-document-text-secondary);">
-                                                                    <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                                    </svg>
-                                                                    <p class="text-sm">No hay documentos asignados</p>
-                                                                </div>
-                                                            @endforelse
-
+                                                            </div>
+                                                        @empty
+                                                            <div class="col-span-2 text-center py-8" 
+                                                                style="color: var(--student-document-text-secondary);">
+                                                                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                                </svg>
+                                                                <p class="text-sm">No hay documentos asignados</p>
+                                                            </div>
+                                                        @endforelse
                                                     </div>
                                                 </div>
                                             </td>
@@ -2146,50 +2491,154 @@
         </div>
     </flux:modal>
 
+    <flux:modal 
+        wire:model="isUploadModeChangeModalOpen" 
+        :dismissible="false"
+        class="w-[95vw] sm:w-[450px] max-w-[95vw]">
+
+        <div class="flex flex-col">
+            {{-- Contenido --}}
+            <div class="px-6 py-6" style="background-color: var(--student-document-bg-card);">
+                <div 
+                    class="p-4 rounded-xl border"
+                    style="background-color: var(--student-document-bg-content);
+                        border-color: var(--student-document-border-content);">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 p-2 rounded-lg" style="background-color: var(--student-document-bg-card);">
+                            <svg class="w-5 h-5" style="color: var(--student-document-text-content-status-rejected-icon);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium mb-1" style="color: var(--student-document-text-primary);">
+                                Estás a punto de cambiar el modo de carga de este documento.
+                            </p>
+                            <p class="text-xs" style="color: var(--student-document-text-secondary);">
+                                Esto afectará todos los archivos subidos por el administrador para este documento.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer con botones --}}
+            <div 
+                class="px-6 py-4 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t flex-shrink-0 rounded-b-xl"
+                style="background-color: var(--student-document-bg-card);
+                    border-color: var(--student-document-border-content);">
+
+                {{-- Cancelar --}}
+                <button
+                    wire:click="$set('isUploadModeChangeModalOpen', false)"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium transition-all duration-200"
+                    style="background-color: var(--modal-btn-close); color: var(--modal-btn-close-text);">
+                    Cancelar
+                </button>
+
+                {{-- Confirmar cambio --}}
+                <button
+                    wire:click="confirmUploadModeChange"
+                    class="w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-lg text-white"
+                    style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </flux:modal>
+
+
 
 
     {{-- ================== MODAL RÁPIDO DE REVISIÓN  ================== --}}
+    {{-- ================== MODAL RÁPIDO DE REVISIÓN - ACTUALIZADO ================== --}}
     <flux:modal
         wire:model="showQuickReviewModal" 
         :dismissible="false"
         class="w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[1200px] xl:w-[1400px] max-w-[95vw]">
         @if($quickReviewDoc)
         <div class="flex flex-col h-[90vh] max-h-[95vh]">
-                {{-- Header revisión rápida --}}
-                <div
-                    class="p-5 flex-shrink-0 rounded-2xl"
-                    style="
-                        background: linear-gradient(
-                            135deg,
-                            var(--student-document-bg-card-header) 0%,
-                            var(--student-document-bg-card-header-2) 100%
-                        );
-                        border-bottom: 1px solid var(--student-document-border-content);
-                    "
-                >
+            {{-- Header revisión rápida --}}
+            <div
+                class="p-5 flex-shrink-0 rounded-2xl"
+                style="
+                    background: linear-gradient(
+                        135deg,
+                        var(--student-document-bg-card-header) 0%,
+                        var(--student-document-bg-card-header-2) 100%
+                    );
+                    border-bottom: 1px solid var(--student-document-border-content);
+                "
+            >
+                <div class="flex items-center gap-4">
+                    {{-- Texto --}}
+                    <div class="flex-1 min-w-0">
+                        <h2
+                            class="text-lg font-bold truncate"
+                            style="color: var(--student-document-text-primary);"
+                        >
+                            {{ $quickReviewDoc->file->name ?? $quickReviewDoc->name }}
+                        </h2>
+                        <p
+                            class="text-sm truncate"
+                            style="color: var(--student-document-text-secondary);"
+                        >
+                            {{ $quickReviewDoc->student->name }}
+                            {{ $quickReviewDoc->student->last_name_paterno }}
+                            {{ $quickReviewDoc->student->last_name_materno }}
+                            • {{ $quickReviewDoc->student->control_number }}
+                        </p>
+                    </div>
 
-                    <div class="flex items-center gap-4">
-                        {{-- Texto --}}
-                        <div class="flex-1 min-w-0">
-                            <h2
-                                class="text-lg font-bold truncate"
-                                style="color: var(--student-document-text-primary);"
+                    {{-- Estado - ACTUALIZADO según upload_mode --}}
+                    @if($quickReviewDoc->file->upload_mode === 'admin_only')
+                        {{-- Para admin_only, mostrar si tiene archivo o no --}}
+                        @if($quickReviewDoc->file->is_individual)
+                            {{-- Individual: verificar en file_student_uploads --}}
+                            @if($currentIndividualUpload)
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold border flex-shrink-0"
+                                    style="
+                                        background-color: rgba(16, 185, 129, 0.15);
+                                        color: var(--student-document-text-content-status-approved-icon);
+                                        border-color: rgba(16, 185, 129, 0.3);
+                                    "
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Archivo Subido
+                                </span>
+                            @else
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold border flex-shrink-0"
+                                    style="
+                                        background-color: rgba(148, 163, 184, 0.15);
+                                        color: #64748b;
+                                        border-color: rgba(148, 163, 184, 0.3);
+                                    "
+                                >
+                                    Sin Subir
+                                </span>
+                            @endif
+                        @else
+                            {{-- No individual: archivo base --}}
+                            <span
+                                class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold border flex-shrink-0"
+                                style="
+                                    background-color: rgba(16, 185, 129, 0.15);
+                                    color: var(--student-document-text-content-status-approved-icon);
+                                    border-color: rgba(16, 185, 129, 0.3);
+                                "
                             >
-                                {{ $quickReviewDoc->file->name ?? $quickReviewDoc->name }}
-                            </h2>
-                            <p
-                                class="text-sm truncate"
-                                style="color: var(--student-document-text-secondary);"
-                            >
-                                {{ $quickReviewDoc->student->name }}
-                                {{ $quickReviewDoc->student->last_name_paterno }}
-                                {{ $quickReviewDoc->student->last_name_materno }}
-                                • {{ $quickReviewDoc->student->control_number }}
-                            </p>
-                        </div>
-
-                        {{-- Estado --}}
-                        @if($quickReviewDoc->status)
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Documento Base
+                            </span>
+                        @endif
+                    @else
+                        {{-- user_only o bidirectional: mostrar estado normal --}}
+                        @if($quickReviewDoc->student_file_path)
                             <span
                                 class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold border flex-shrink-0"
                                 style="
@@ -2226,34 +2675,95 @@
                                     En revisión
                                 @endif
                             </span>
+                        @else
+                            <span
+                                class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold border flex-shrink-0"
+                                style="
+                                    background-color: rgba(148, 163, 184, 0.15);
+                                    color: #64748b;
+                                    border-color: rgba(148, 163, 184, 0.3);
+                                "
+                            >
+                                Pendiente
+                            </span>
                         @endif
-
-                    </div>
+                    @endif
                 </div>
+            </div>
+
+            {{-- Layout de 2 columnas optimizado --}}
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] gap-4 p-4 flex-1 overflow-hidden">
+                
+                {{-- Columna izquierda: Preview --}}
+                <div class="flex flex-col gap-3 min-h-0">
+                    <div class="
+                        bg-[var(--student-document-bg-card)]
+                        rounded-xl
+                        border border-[var(--student-document-border-content)]
+                        flex-1 flex flex-col min-h-0
+                        overflow-hidden
+                    ">
+
+                        {{-- ================= ADMIN ONLY + NO INDIVIDUAL ================= --}}
+                        @if($quickReviewDoc->file->upload_mode === 'admin_only' && !$quickReviewDoc->file->is_individual)
+
+                            {{-- ===== PDF DE EJEMPLO (PREVIEW) ===== --}}
+                            @if($adminExamplePdf)
+                                <div class="flex-1 border-b border-[var(--student-document-border-content)]">
+                                    <iframe
+                                        src="{{ $adminExamplePdf['url'] }}"
+                                        class="w-full h-full bg-white"
+                                    ></iframe>
+                                </div>
+                            @endif
+
+                            {{-- ===== WORD BASE (DESCARGA) ===== --}}
+                            @if($adminBaseWord)
+                                <div class="p-4 flex items-center justify-between gap-4">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <svg class="w-8 h-8 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4 4h16v16H4z"/>
+                                        </svg>
+
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-semibold truncate">
+                                                Documento base (Word)
+                                            </p>
+                                            <p class="text-xs text-[var(--student-document-text-secondary)] truncate">
+                                                {{ $adminBaseWord['name'] }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <a
+                                        href="{{ $adminBaseWord['url'] }}"
+                                        download
+                                        class="text-sm font-semibold text-[var(--student-document-progress-indicador)] hover:underline"
+                                    >
+                                        Descargar
+                                    </a>
+                                </div>
+                            @endif
+
+                            {{-- ===== NADA CARGADO ===== --}}
+                            @if(!$adminExamplePdf && !$adminBaseWord)
+                                <div class="flex flex-col items-center justify-center flex-1 text-center px-4">
+                                    <p class="text-sm text-[var(--student-document-text-secondary)]">
+                                        No hay documentos base disponibles
+                                    </p>
+                                </div>
+                            @endif
 
 
-                {{-- Layout de 2 columnas optimizado --}}
-                <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] gap-4 p-4 flex-1 overflow-hidden">
-                    
-                    {{-- Columna izquierda: Preview (usa todo el espacio disponible) --}}
-                    <div class="flex flex-col gap-3 min-h-0">
-                        <div class="
-                            bg-[var(--student-document-bg-card)]
-                            rounded-xl
-                            border border-[var(--student-document-border-content)]
-                            flex-1 flex flex-col min-h-0
-                            overflow-hidden
-                        ">
+                        {{-- ================= RESTO DE CASOS ================= --}}
+                        @else
+
                             @if($quickReviewPreviewUrl)
-
-                                {{-- ===== PDF (pantalla completa) ===== --}}
-                                @if(pathinfo($quickReviewDoc->student_file_path, PATHINFO_EXTENSION) === 'pdf')
+                                @if(pathinfo($quickReviewPreviewUrl, PATHINFO_EXTENSION) === 'pdf')
                                     <iframe
                                         src="{{ $quickReviewPreviewUrl }}"
                                         class="w-full h-full bg-white"
                                     ></iframe>
-
-                                {{-- ===== NO PREVIEW ===== --}}
                                 @else
                                     <div class="
                                         flex flex-col items-center justify-center flex-1
@@ -2274,122 +2784,165 @@
                                         </p>
 
                                         <a href="{{ $quickReviewPreviewUrl }}"
-                                        download
-                                        class="
-                                            text-xs font-semibold
-                                            text-[var(--student-document-progress-indicador)]
-                                            hover:underline
-                                        ">
+                                            download
+                                            class="text-xs font-semibold text-[var(--student-document-progress-indicador)] hover:underline">
                                             Descargar para ver
                                         </a>
                                     </div>
                                 @endif
-
-                            {{-- ===== SIN DOCUMENTO ===== --}}
                             @else
                                 <div class="flex flex-col items-center justify-center flex-1 text-center px-4">
-                                    <svg class="w-12 h-12 mb-3 text-[var(--student-document-text-secondary)]"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-
                                     <p class="text-sm text-[var(--student-document-text-secondary)]">
                                         No se ha cargado ningún documento
                                     </p>
                                 </div>
                             @endif
-                        </div>
 
-                        {{-- Botón de descarga compacto --}}
-                        @if($quickReviewPreviewUrl)
-                            <a 
-                                href="{{ $quickReviewPreviewUrl }}"
-                                download="{{ $quickReviewDoc->student_file_name }}"
-                                class="
-                                    inline-flex items-center justify-center gap-2
-                                    px-4 py-2.5
-                                    text-white text-sm font-semibold
-                                    rounded-lg
-                                    shadow-sm
-                                    transition-all duration-200
-                                    hover:-translate-y-0.5
-                                    hover:shadow-lg
-                                "
-                                style="
-                                    background: linear-gradient(
-                                        135deg,
-                                        var(--color-hero-accent-primary) 0%,
-                                        var(--color-hero-accent-secondary) 100%
-                                    );
-                                "
-                                onmouseover="this.style.filter='brightness(1.1)'"
-                                onmouseout="this.style.filter='brightness(1)'"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                </svg>
-                                Descargar documento
-                            </a>
                         @endif
-
                     </div>
+                </div>
 
-                    {{-- Columna derecha: Acciones (ancho fijo optimizado) --}}
-                    <div class="flex flex-col gap-3 overflow-y-auto min-h-0">
-                        
-                        {{-- Comentarios optimizado --}}
-                        <div class="bg-[var(--student-document-bg-card)] rounded-xl p-3 border border-[var(--student-document-border-content)] flex-1 flex flex-col min-h-0">
-
-                            {{-- Label principal --}}
-                            <label class="block text-sm font-semibold text-[var(--student-document-text-primary)] mb-1 flex items-center gap-1.5 flex-shrink-0">
+                {{-- Columna derecha: Acciones --}}
+                <div class="flex flex-col gap-3 overflow-y-auto min-h-0">
+                    
+                    {{-- NUEVO: Subir archivo individual (solo si es admin_only + is_individual) --}}
+                    @if($quickReviewDoc->file->upload_mode === 'admin_only' && $quickReviewDoc->file->is_individual)
+                        <div class="bg-[var(--student-document-bg-card)] rounded-xl p-3 border border-[var(--student-document-border-content)]">
+                            <label class="block text-sm font-semibold text-[var(--student-document-text-primary)] mb-2 flex items-center gap-1.5">
                                 <svg class="w-3.5 h-3.5 text-[var(--student-document-progress-indicador)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                 </svg>
-                                Observaciones
+                                Subir Documento 
                             </label>
 
-                            {{-- Aviso de uso --}}
-                            <p class="text-sm text-[var(--student-document-text-secondary)] mb-2">
-                                Este comentario solo se mostrará si decides rechazar el documento.
-                            </p>
+                            @if($currentIndividualUpload)
+                                {{-- Ya existe un archivo --}}
+                                <div class="mb-2 p-2 rounded-lg border border-[var(--student-document-border-content)] bg-[var(--student-document-bg-content)] flex items-center justify-between">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-medium text-[var(--student-document-text-primary)] truncate">
+                                            {{ $currentIndividualUpload->name_file }}
+                                        </p>
+                                        <p class="text-xs text-[var(--student-document-text-secondary)]">
+                                            {{ $currentIndividualUpload->created_at->diffForHumans() }}
+                                        </p>
+                                    </div>
+                                    <button
+                                        wire:click="deleteIndividualFile"
+                                        wire:confirm="¿Eliminar este archivo?"
+                                        class="ml-2 p-1.5 rounded hover:bg-red-100 text-red-600"
+                                        title="Eliminar archivo"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endif
 
-                            {{-- Textarea --}}
-                            <textarea 
-                                wire:model.defer="quickReviewComments"
-                                placeholder="Escribe aquí..."
-                                class="
-                                    w-full flex-1 px-2.5 py-2
-                                    bg-[var(--student-document-bg-content)]
-                                    border rounded-lg
-                                    text-[var(--student-document-text-primary)]
-                                    text-sm
-                                    resize-none
-                                    min-h-0
-                                    focus:outline-none
-                                    focus:ring-1
+                            {{-- Input de archivo --}}
+                            <div class="space-y-2">
+                                <input
+                                    type="file"
+                                    wire:model="individualUploadFile"
+                                    accept=".pdf,.doc,.docx"
+                                    class="
+                                        w-full text-sm
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-lg file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:cursor-pointer
+                                        cursor-pointer
+                                    "
+                                    style="
+                                        color: var(--student-document-text-primary);
+                                        file:bg-gradient-to-r file:from-[var(--color-hero-accent-primary)] file:to-[var(--color-hero-accent-secondary)];
+                                        file:text-white;
+                                    "
+                                >
+                                @error('individualUploadFile')
+                                    <p class="text-sm flex items-center gap-2" style="color: #ee6e6c;">
+                                        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
 
-                                    @error('quickReviewComments')
-                                        border-[var(--student-document-border-content)]
-                                        focus:ring-[var(--student-document-progress-indicador)]
-                                    @else
-                                        border-[var(--student-document-border-content)]
-                                        focus:ring-[var(--student-document-progress-indicador)]
-                                    @enderror
-                                "
-                            ></textarea>
-
-                            @error('quickReviewComments')
-                                <p class="mt-2 text-sm flex items-center gap-2" style="color: #ee6e6c;">
-                                    <!-- Triángulo relleno con ! -->
-                                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $message }}
-                                </p>
-                            @enderror
+                            @if($individualUploadFile)
+                                <flux:button
+                                    wire:click="uploadIndividualFile"
+                                    wire:loading.attr="disabled"
+                                    class="w-full mt-2 bg-[var(--modal-btn-approve)]! text-[var(--modal-btn-approve-text)]!"
+                                >
+                                    <span wire:loading.remove wire:target="uploadIndividualFile">
+                                        Subir Archivo
+                                    </span>
+                                    <span wire:loading wire:target="uploadIndividualFile">
+                                        Subiendo...
+                                    </span>
+                                </flux:button>
+                            @endif
                         </div>
+                    @endif
+
+                    {{-- Comentarios (siempre visibles) --}}
+                    <div class="bg-[var(--student-document-bg-card)] rounded-xl p-3 border border-[var(--student-document-border-content)] flex-1 flex flex-col min-h-0">
+                        <label class="block text-sm font-semibold text-[var(--student-document-text-primary)] mb-1 flex items-center gap-1.5 flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-[var(--student-document-progress-indicador)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                            </svg>
+                            Observaciones
+                        </label>
+
+                        <p class="text-sm text-[var(--student-document-text-secondary)] mb-2">
+                            Este comentario es visible para el estudiante.
+                        </p>
+
+                        <textarea 
+                            wire:model.defer="quickReviewComments"
+                            placeholder="Escribe aquí..."
+                            class="
+                                w-full flex-1 px-2.5 py-2
+                                bg-[var(--student-document-bg-content)]
+                                border rounded-lg
+                                text-[var(--student-document-text-primary)]
+                                text-sm
+                                resize-none
+                                min-h-0
+                                focus:outline-none
+                                focus:ring-1
+                                border-[var(--student-document-border-content)]
+                                focus:ring-[var(--student-document-progress-indicador)]
+                            "
+                        ></textarea>
+
+                        @error('quickReviewComments')
+                            <p class="mt-2 text-sm flex items-center gap-2" style="color: #ee6e6c;">
+                                <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                {{ $message }}
+                            </p>
+                        @enderror
+
+                        {{-- Botón para guardar comentarios sin cambiar estado --}}
+                        <flux:button
+                            wire:click="saveComments"
+                            variant="ghost"
+                            size="sm"
+                            class="mt-2"
+                        >
+                            Guardar
+                        </flux:button>
+                    </div>
+
+                    {{-- Fecha límite personalizada (solo si NO es admin_only) --}}
+                    @if($quickReviewDoc->file->upload_mode !== 'admin_only')
+                        @php
+                            $periodStart = optional($quickReviewDoc->file->period)->start_date;
+                            $periodEnd   = optional($quickReviewDoc->file->period)->end_date;
+                        @endphp
 
                         <div class="bg-[var(--student-document-bg-card)] rounded-xl p-2.5 border border-[var(--student-document-border-content)] flex flex-col min-h-0">
                             <flux:field>
@@ -2407,121 +2960,102 @@
                                     size="sm"
                                     wire:model="editingDates.{{ $quickReviewDoc->id }}"
                                     wire:change="updateDocumentDate({{ $quickReviewDoc->id }})"
-                                    min="{{ $quickReviewDoc->file?->limit_date ? \Carbon\Carbon::parse($quickReviewDoc->file->limit_date)->format('Y-m-d') : '' }}"
+
+                                    {{-- rango permitido --}}
+                                    min="{{ $periodStart ? \Carbon\Carbon::parse($periodStart)->format('Y-m-d') : '' }}"
+                                    max="{{ $periodEnd ? \Carbon\Carbon::parse($periodEnd)->format('Y-m-d') : '' }}"
+
                                     style="background-color: var(--student-document-bg-content); 
                                         color: var(--student-document-text-primary);
                                         font-size: 0.95rem;"
                                     class="w-full px-4 py-2 rounded-xl transition-all"
                                 />
-
                             </flux:field>
                         </div>
+                    @endif
 
 
+                    {{-- Botones de acción --}}
+                    <div class="space-y-3 flex-shrink-0">
+                        {{-- Aprobar y Rechazar --}}
+                        @if($quickReviewDoc->file->upload_mode !== 'admin_only' && $quickReviewDoc->student_file_path)
+                            @if($quickReviewDoc->student_file_path || $currentIndividualUpload)
+                                <div class="grid grid-cols-2 gap-3">
+                                    <flux:button 
+                                        wire:click="quickApproveDocument"
+                                        class="
+                                            w-full
+                                            bg-[var(--modal-btn-approve)]!
+                                            text-[var(--modal-btn-approve-text)]!
+                                            font-semibold
+                                            flex items-center justify-center gap-2
+                                            rounded-lg
+                                            border border-transparent
+                                            shadow-sm shadow-[var(--modal-btn-primary-shadow)]!
+                                            transition-all duration-200
+                                            hover:-translate-y-0.5
+                                            hover:shadow-lg
+                                        "
+                                        onmouseover="this.style.filter='brightness(1.1)'"
+                                        onmouseout="this.style.filter='brightness(1)'"
+                                    >
+                                        Aprobar
+                                    </flux:button>
 
-                        {{-- Botones de acción compactos (Estilo Elegante, hover sutil) --}}
-                        <div class="space-y-3 flex-shrink-0">
-
-                            {{-- Contenedor para Aprobar y Rechazar en línea --}}
-                            <div class="grid grid-cols-2 gap-3">
-
-                                {{-- Aprobar --}}
-                                <flux:button 
-                                    wire:click="quickApproveDocument"
-                                    class="
-                                        w-full
-                                        bg-[var(--modal-btn-approve)]!
-                                        text-[var(--modal-btn-approve-text)]!
-                                        font-semibold
-                                        flex items-center justify-center gap-2
-                                        rounded-lg
-                                        border border-transparent
-                                        shadow-sm shadow-[var(--modal-btn-primary-shadow)]!
-                                        transition-all duration-200
-                                        hover:-translate-y-0.5
-                                        hover:shadow-lg
-                                    "
-                                    onmouseover="this.style.filter='brightness(1.1)'"
-                                    onmouseout="this.style.filter='brightness(1)'"
-                                >
-                                    Aprobar
-                                </flux:button>
-
-                                {{-- Rechazar --}}
-                                <flux:button 
-                                    wire:click="quickRejectDocument"
-                                    class="
-                                        w-full
-                                        bg-[var(--modal-btn-reject)]!
-                                        text-[var(--modal-btn-reject-text)]!
-                                        font-semibold
-                                        flex items-center justify-center gap-2
-                                        rounded-lg
-                                        border border-transparent
-                                        shadow-sm shadow-[var(--modal-btn-primary-shadow)]!
-                                        transition-all duration-200
-                                        hover:-translate-y-0.5
-                                        hover:shadow-lg
-                                    "
-                                    onmouseover="this.style.filter='brightness(1.1)'"
-                                    onmouseout="this.style.filter='brightness(1)'"
-                                >
-                                    Rechazar
-                                </flux:button>
-
-                            </div>
-
-                            {{-- Cerrar --}}
-                            <flux:button 
-                                wire:click="closeQuickReview"
-                                class="
-                                    w-full
-                                    bg-[var(--modal-btn-close)]!
-                                    text-[var(--modal-btn-close-text)]!
-                                    font-medium
-                                    flex items-center justify-center gap-2
-                                    rounded-lg
-                                    border border-transparent
-                                    shadow-sm shadow-[var(--modal-btn-close-shadow)]!
-                                    transition-all duration-200
-                                    hover:-translate-y-0.5
-                                    hover:shadow-lg
-                                "
-                                onmouseover="this.style.filter='brightness(1.05)'"
-                                onmouseout="this.style.filter='brightness(1)'"
-                            >
-                                Cerrar
-                            </flux:button>
-
-                        </div>
-
-
-                        {{-- Navegación entre documentos compacta --}}
-                        @if($nextPendingDoc || $previousPendingDoc)
-                            <flux:separator />
-                            <div class="flex gap-2 flex-shrink-0">
-                                <flux:button 
-                                    wire:click="navigateToPreviousDoc"
-                                    variant="ghost"
-                                    size="sm"
-                                    :disabled="!$previousPendingDoc"
-                                    class="flex-1">
-                                    ← Anterior
-                                </flux:button>
-                                <flux:button 
-                                    wire:click="navigateToNextDoc"
-                                    variant="ghost"
-                                    size="sm"
-                                    :disabled="!$nextPendingDoc"
-                                    class="flex-1">
-                                    Siguiente →
-                                </flux:button>
-                            </div>
+                                    <flux:button 
+                                        wire:click="quickRejectDocument"
+                                        class="
+                                            w-full
+                                            bg-[var(--modal-btn-reject)]!
+                                            text-[var(--modal-btn-reject-text)]!
+                                            font-semibold
+                                            flex items-center justify-center gap-2
+                                            rounded-lg
+                                            border border-transparent
+                                            shadow-sm shadow-[var(--modal-btn-primary-shadow)]!
+                                            transition-all duration-200
+                                            hover:-translate-y-0.5
+                                            hover:shadow-lg
+                                        "
+                                        onmouseover="this.style.filter='brightness(1.1)'"
+                                        onmouseout="this.style.filter='brightness(1)'"
+                                    >
+                                        Rechazar
+                                    </flux:button>
+                                </div>
+                            @endif
                         @endif
                     </div>
+
+                    {{-- Navegación entre documentos --}}
+                    @if($nextPendingDoc || $previousPendingDoc)
+                        <flux:separator />
+                        <div class="flex gap-2 flex-shrink-0">
+                            <flux:button 
+                                wire:click="navigateToPreviousDoc"
+                                variant="ghost"
+                                size="sm"
+                                :disabled="!$previousPendingDoc"
+                                class="flex-1">
+                                ← Anterior
+                            </flux:button>
+                            <flux:button 
+                                wire:click="navigateToNextDoc"
+                                variant="ghost"
+                                size="sm"
+                                :disabled="!$nextPendingDoc"
+                                class="flex-1">
+                                Siguiente →
+                            </flux:button>
+                        </div>
+                    @endif
                 </div>
+            </div>
         </div>
         @endif
     </flux:modal>
+    
+
+    
 
 </div>

@@ -6,6 +6,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
+
+use App\Services\StudentDocumentsWord;
+
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
@@ -17,6 +20,7 @@ use App\Models\Campus;
 use App\Models\Career;
 use App\Models\File;
 use App\Models\Document;
+use App\Models\FileStudentUpload;
 
 class PeriodDetail extends Component
 {
@@ -49,6 +53,20 @@ class PeriodDetail extends Component
     public $editingDocumentId = null;
     public $previewPath = null;
     public $previewName = null;
+    public $isIndividual = false;
+
+    public $documentFirman;       // nuevo
+    public $documentObservations; // nuevo
+    public $documentUploadMode = 'bidirectional'; // nuevo
+
+    public $start_date;
+    public $end_date;
+
+    public $isUploadModeChangeModalOpen = false; // Para abrir/cerrar modal
+    public $pendingUploadModeChangeFile = null; // Guarda temporalmente el documento que cambiará
+
+    public $removeDocumentFile = false;
+    public $removeExampleFile = false;
 
     /** ========================= Revisión de Documentos - NUEVAS PROPIEDADES ========================= */
     public $searchRevision = '';
@@ -62,21 +80,25 @@ class PeriodDetail extends Component
     public $quickReviewPreviewUrl = null;
     public $nextPendingDoc = null;
     public $previousPendingDoc = null;
-    
+
+    // NUEVO: Para subir archivo individual en admin_only
+    public $individualUploadFile = null;
+    public $currentIndividualUpload = null; // Almacena el FileStudentUpload actual
+        
     // Propiedades para edición inline
     public $editingComments = [];
     public $editingDates = [];
-
     public $searchDocuments = '';
-
     public $statusFilterStudents = null;
-
     public $showQuickReviewModal = false;
 
     protected $updatesQueryString = ['search', 'searchRevision'];
 
     public $deleteDocumentId = null;
     public $isDeleteDocumentModalOpen = false;
+
+    public $adminBaseWord = null;     // Word (descarga)
+    public $adminExamplePdf = null;   // PDF (preview)
 
 
     protected $queryString = [
@@ -113,6 +135,8 @@ class PeriodDetail extends Component
     public function loadPeriod()
     {
         $this->period = Period::with(['semesters', 'files'])->findOrFail($this->periodId);
+        $this->start_date = $this->period->start_date;
+        $this->end_date   = $this->period->end_date;
     }
 
     public function setTab($tab)
@@ -163,7 +187,7 @@ class PeriodDetail extends Component
 
     /** ========================= NUEVOS MÉTODOS - Revisión Rápida ========================= */
     
-    public function quickReviewDocument($docId)
+    /*public function quickReviewDocument($docId)
     {
          // 🔥 limpiar errores y validaciones previas
         $this->resetValidation();
@@ -190,9 +214,9 @@ class PeriodDetail extends Component
         $this->findNavigationDocs();
 
         $this->showQuickReviewModal = true;
-    }
+    }*/
 
-    protected function findNavigationDocs()
+    /*protected function findNavigationDocs()
     {
         if (!$this->quickReviewDoc) return;
 
@@ -215,6 +239,130 @@ class PeriodDetail extends Component
 
         // Documento anterior
         $this->previousPendingDoc = $studentDocs[$currentIndex - 1] ?? null;
+    }*/
+
+    /*public function quickReviewDocument($docId)
+    {
+        // 🔥 limpiar errores y validaciones previas
+        $this->resetValidation();
+        $this->resetErrorBag();
+
+        // Obtener el documento
+        $this->quickReviewDoc = Document::with(['student.career', 'file'])->find($docId);
+
+        if (!$this->quickReviewDoc) {
+            session()->flash('error', 'El documento no está disponible para revisión');
+            return;
+        }
+
+        // Si tiene archivo, generamos la URL de preview, si no, queda null
+        $this->quickReviewPreviewUrl = $this->quickReviewDoc->student_file_path
+            ? Storage::url($this->quickReviewDoc->student_file_path)
+            : null;
+
+        // Comentarios existentes
+        $this->quickReviewComments = $this->quickReviewDoc->comments ?? '';
+
+        // Inicializar fecha para el input
+        $this->editingDates[$docId] = $this->quickReviewDoc->custom_limit_date
+            ? \Carbon\Carbon::parse($this->quickReviewDoc->custom_limit_date)->format('Y-m-d')
+            : ($this->quickReviewDoc->file?->limit_date
+                ? \Carbon\Carbon::parse($this->quickReviewDoc->file->limit_date)->format('Y-m-d')
+                : null);
+
+        // Encontrar documentos siguiente y anterior pendientes (entregados y no entregados)
+        $this->findNavigationDocs();
+
+        // Mostrar modal
+        $this->showQuickReviewModal = true;
+    }*/
+
+    public function quickReviewDocument($docId)
+    {
+        $this->resetValidation();
+        $this->resetErrorBag();
+
+        $this->quickReviewDoc = Document::with(['student.career', 'file'])->find($docId);
+
+        if (!$this->quickReviewDoc) {
+            session()->flash('error', 'El documento no está disponible para revisión');
+            return;
+        }
+
+        $file = $this->quickReviewDoc->file;
+        
+        // Determinar la URL de preview según el upload_mode
+        if ($file->upload_mode === 'admin_only' && $file->is_individual) {
+            // Buscar archivo individual subido
+            $this->currentIndividualUpload = FileStudentUpload::where('file_id', $file->id)
+                ->where('student_id', $this->quickReviewDoc->student_id)
+                ->first();
+            
+            $this->quickReviewPreviewUrl = $this->currentIndividualUpload 
+                ? Storage::url($this->currentIndividualUpload->file_path)
+                : null;
+        } elseif ($file->upload_mode === 'admin_only' && ! $file->is_individual) {
+            // 🔹 PDF de ejemplo → preview
+            $this->adminExamplePdf = $file->example_path
+                ? [
+                    'url'  => Storage::url($file->example_path),
+                    'name' => $file->example_name_file,
+                ]
+                : null;
+
+            // 🔹 Word base → descarga
+            $this->adminBaseWord = $file->file_path
+                ? [
+                    'url'  => Storage::url($file->file_path),
+                    'name' => $file->name_file,
+                ]
+                : null;
+
+            // ⚠️ No usar quickReviewPreviewUrl aquí
+            $this->quickReviewPreviewUrl = null;
+        } else {
+            // user_only o bidirectional: mostrar archivo del estudiante
+            $this->quickReviewPreviewUrl = $this->quickReviewDoc->student_file_path
+                ? Storage::url($this->quickReviewDoc->student_file_path)
+                : null;
+        }
+
+        // Comentarios existentes (siempre disponibles)
+        $this->quickReviewComments = $this->quickReviewDoc->comments ?? '';
+
+        // Inicializar fecha solo si NO es admin_only
+        if ($file->upload_mode !== 'admin_only') {
+            $this->editingDates[$docId] = $this->quickReviewDoc->custom_limit_date
+                ? \Carbon\Carbon::parse($this->quickReviewDoc->custom_limit_date)->format('Y-m-d')
+                : ($file->limit_date
+                    ? \Carbon\Carbon::parse($file->limit_date)->format('Y-m-d')
+                    : null);
+        }
+
+        $this->findNavigationDocs();
+        $this->showQuickReviewModal = true;
+    }
+
+    protected function findNavigationDocs()
+    {
+        if (!$this->quickReviewDoc) return;
+
+        $currentStudentId = $this->quickReviewDoc->student_id;
+        $currentDocId     = $this->quickReviewDoc->id;
+
+        // 🔥 Usar EXACTAMENTE el mismo orden que la vista
+        $allDocs = $this->getStudentDocuments($currentStudentId)->values();
+
+        // Índice del documento actual
+        $currentIndex = $allDocs->search(
+            fn ($doc) => $doc->id === $currentDocId
+        );
+
+        // Documento siguiente
+        $this->nextPendingDoc = $allDocs[$currentIndex + 1] ?? null;
+
+        // Documento anterior
+        $this->previousPendingDoc = $allDocs[$currentIndex - 1] ?? null;
     }
 
     public function navigateToNextDoc()
@@ -234,6 +382,79 @@ class PeriodDetail extends Component
         }
         return false;
     }
+
+
+    /** ========================= NUEVO: Upload de archivo individual ========================= */
+    
+    public function uploadIndividualFile()
+    {
+        if (!$this->quickReviewDoc || !$this->individualUploadFile) return;
+
+        $this->validate([
+            'individualUploadFile' => 'required|file|mimes:pdf,doc,docx|max:' . ($this->quickReviewDoc->file->max_size ?? 10240),
+        ], [
+            'individualUploadFile.required' => 'Debes seleccionar un archivo',
+            'individualUploadFile.mimes' => 'El archivo debe ser PDF, DOC o DOCX',
+            'individualUploadFile.max' => 'El archivo excede el tamaño máximo permitido',
+        ]);
+
+        $file = $this->quickReviewDoc->file;
+        
+        // Eliminar archivo anterior si existe
+        if ($this->currentIndividualUpload && $this->currentIndividualUpload->file_path) {
+            Storage::disk('public')->delete($this->currentIndividualUpload->file_path);
+        }
+
+        // Subir nuevo archivo
+        $path = $this->individualUploadFile->store('files/individual_uploads', 'public');
+        $fileName = $this->individualUploadFile->getClientOriginalName();
+
+        // Crear o actualizar registro
+        FileStudentUpload::updateOrCreate(
+            [
+                'file_id' => $file->id,
+                'student_id' => $this->quickReviewDoc->student_id,
+            ],
+            [
+                'file_path' => $path,
+                'name_file' => $fileName,
+            ]
+        );
+
+        $this->dispatch('notify', type: 'success', message: 'Archivo subido correctamente');
+        
+        // Recargar el documento para actualizar la preview
+        $this->quickReviewDocument($this->quickReviewDoc->id);
+        $this->individualUploadFile = null;
+    }
+
+    public function deleteIndividualFile()
+    {
+        if (!$this->currentIndividualUpload) return;
+
+        if ($this->currentIndividualUpload->file_path) {
+            Storage::disk('public')->delete($this->currentIndividualUpload->file_path);
+        }
+
+        $this->currentIndividualUpload->delete();
+        $this->currentIndividualUpload = null;
+        $this->quickReviewPreviewUrl = null;
+
+        $this->dispatch('notify', type: 'info', message: 'Archivo eliminado correctamente');
+    }
+
+    public function saveComments()
+    {
+        if (!$this->quickReviewDoc) return;
+
+        $this->quickReviewDoc->update([
+            'comments' => $this->quickReviewComments,
+        ]);
+
+        $this->dispatch('notify', type: 'info', message: 'Comentarios guardados correctamente');
+    }
+
+
 
     public function quickApproveDocument()
     {
@@ -281,7 +502,6 @@ class PeriodDetail extends Component
 
     public function closeQuickReview()
     {
-         // 🔥 limpiar errores y validaciones previas
         $this->resetValidation();
         $this->resetErrorBag();
 
@@ -290,13 +510,19 @@ class PeriodDetail extends Component
         $this->quickReviewPreviewUrl = null;
         $this->nextPendingDoc = null;
         $this->previousPendingDoc = null;
+        $this->individualUploadFile = null;
+        $this->currentIndividualUpload = null;
+
+        $this->adminBaseWord = null;
+        $this->adminExamplePdf = null;
+
 
         $this->showQuickReviewModal = false; 
     }
 
     /** ========================= MÉTODOS ANTERIORES - Mantener para compatibilidad ========================= */
     
-    public function updateDocumentDate($documentId)
+    /*public function updateDocumentDate($documentId)
     {
         $doc = Document::with('file')->findOrFail($documentId);
         
@@ -311,11 +537,33 @@ class PeriodDetail extends Component
 
         $doc->update(['custom_limit_date' => $customDate]);
         session()->flash('message', "Fecha actualizada correctamente");
+    }*/
+
+    public function updateDocumentDate($documentId)
+    {
+        $doc = Document::with('file')->findOrFail($documentId);
+        
+        // No permitir cambio de fecha si es admin_only
+        if ($doc->file->upload_mode === 'admin_only') {
+            return;
+        }
+        
+        $generalDate = $doc->file->limit_date ? \Carbon\Carbon::parse($doc->file->limit_date) : null;
+        $customDate = $this->editingDates[$documentId] 
+            ? \Carbon\Carbon::parse($this->editingDates[$documentId]) 
+            : null;
+
+        if ($generalDate && $customDate && $customDate->lessThanOrEqualTo($generalDate)) {
+            $customDate = null;
+        }
+
+        $doc->update(['custom_limit_date' => $customDate]);
+        session()->flash('message', "Fecha actualizada correctamente");
     }
 
     public function exportStudentPDF($studentId)
     {
-        $student = Student::with(['career', 'period', 'documents.file'])->findOrFail($studentId);
+        /*$student = Student::with(['career', 'period', 'documents.file'])->findOrFail($studentId);
         
         $documents = $student->documents->filter(function($doc) use ($student) {
             return $doc->file && $doc->file->period_id == $student->period_id;
@@ -329,7 +577,23 @@ class PeriodDetail extends Component
         return response()->streamDownload(
             fn () => print($pdf->output()),
             "Seguimiento_{$student->control_number}.pdf"
-        );
+        );*/
+
+         $student = Student::with(['career', 'period', 'documents.file'])
+        ->findOrFail($studentId);
+
+        $documents = $student->documents->filter(function ($doc) use ($student) {
+            return $doc->file && $doc->file->period_id == $student->period_id;
+        });
+
+        // Generar Word
+        $wordService = new StudentDocumentsWord();
+        $fileName = $wordService->generate($student, $documents);
+
+        return response()->download(
+            storage_path('app/public/' . $fileName),
+            "Seguimiento_{$student->control_number}.docx"
+        )->deleteFileAfterSend();
     }
 
     public function exportExcel()
@@ -338,6 +602,9 @@ class PeriodDetail extends Component
         $fileName = "estudiantes_periodo_{$this->period->name}_{$date}.xlsx";
         return Excel::download(new StudentsExport($this->careerFilter, $this->periodId, $this->searchRevision), $fileName);
     }
+
+
+
 
     /** ========================= Estudiantes (código existente) ========================= */
     
@@ -468,102 +735,310 @@ class PeriodDetail extends Component
         $this->reset(['showRejectModal', 'selectedStudent', 'rejectionReason']);
     }
 
+
+
+
     /** ========================= Documentos Base (código existente) ========================= */
     
     public function createDocument()
     {
-        $this->validate(
-            [
-                'documentName'     => ['required', 'string', Rule::unique('files', 'name')->where(fn ($q) => $q->where('period_id', $this->periodId))],
-                'documentDeadline' => 'required|date',
-                'documentFile'     => 'required|file|mimes:doc,docx',
-                'documentExample'  => 'nullable|file|mimes:pdf',
-                'maxSize'          => 'required|integer|min:1',
-            ],
-            [
-                'documentName.required'     => 'Debes escribir el nombre del documento',
-                'documentName.unique'       => 'Ya existe un documento con este nombre en el periodo',
+        // Reglas base
+        $rules = [
+            'documentName'        => ['required', 'string', Rule::unique('files', 'name')->where(fn($q) => $q->where('period_id', $this->periodId))],
+            'documentFile'        => 'nullable|file|mimes:doc,docx',
+            'documentExample'     => 'nullable|file|mimes:pdf',
+            'maxSize'             => 'required|integer|min:1|max:20480',
+            'documentUploadMode'  => 'required|in:user_only,admin_only,bidirectional',
+            'documentFirman'      => 'nullable|string',
+            'documentObservations' => 'nullable|string',
+            'isIndividual'        => 'required_if:documentUploadMode,admin_only|boolean',
+        ];
 
-                'documentDeadline.required' => 'Debes seleccionar una fecha límite',
+        // Mensajes base
+        $messages = [
+            'documentName.required' => 'Debes escribir el nombre del documento',
+            'documentName.unique'   => 'Ya existe un documento con este nombre en el periodo',
+            'documentUploadMode.in' => 'El modo de carga seleccionado no es válido',
+            'maxSize.required'      => 'Debes establecer un tamaño máximo',
+            'maxSize.integer'       => 'El tamaño máximo debe ser un número entero',
+            'maxSize.min'           => 'El tamaño máximo debe ser al menos 1 KB',
+            'maxSize.max'           => 'El tamaño máximo no puede exceder 20 MB',
+            'isIndividual.required_if' => 'Debes indicar si el documento es individual',
+        ];
 
-                'documentFile.required'     => 'Debes subir el archivo del documento base',
-                'documentFile.mimes'        => 'El archivo debe ser Word',
+        // Validación condicional: si no es solo admin, la fecha límite es obligatoria
+        if ($this->documentUploadMode !== 'admin_only') {
+            $rules['documentDeadline'] = "required|date|after_or_equal:{$this->start_date}|before_or_equal:{$this->end_date}";
+            $messages = array_merge($messages, [
+                'documentDeadline.required' => 'Debes establecer una fecha límite',
+                'documentDeadline.date'     => 'La fecha límite no es válida',
+                'documentDeadline.after_or_equal' => 'La fecha límite no puede ser anterior al inicio del periodo',
+                'documentDeadline.before_or_equal' => 'La fecha límite no puede ser posterior al fin del periodo',
+            ]);
+        }
 
-                'maxSize.required'          => 'Debes indicar el tamaño máximo permitido para los estudiantes',
-                'maxSize.min' => 'El tamaño máximo debe ser mayor a 0',
-            ]
-        );
+        // Validar
+        $this->validate($rules, $messages);
 
-        $filePath = $this->documentFile->store('files', 'public');
-        $examplePath = $this->documentExample ? $this->documentExample->store('files/examples', 'public') : null;
+        // Archivos: solo se suben si NO es documento individual
+        if (!($this->documentUploadMode === 'admin_only' && $this->isIndividual)) {
+            $filePath = $this->documentFile ? $this->documentFile->store('files', 'public') : null;
+            $examplePath = $this->documentExample ? $this->documentExample->store('files/examples', 'public') : null;
+        } else {
+            $filePath = null;
+            $examplePath = null;
+        }
 
+        // Crear documento
         File::create([
             'period_id'         => $this->periodId,
             'name'              => $this->documentName,
-            'limit_date'        => $this->documentDeadline,
+            'limit_date'        => $this->documentUploadMode !== 'admin_only' ? $this->documentDeadline : null,
             'file_path'         => $filePath,
-            'name_file'         => $this->documentFile->getClientOriginalName(),
+            'name_file'         => $this->documentFile?->getClientOriginalName(),
             'example_path'      => $examplePath,
             'example_name_file' => $this->documentExample?->getClientOriginalName(),
             'max_size'          => $this->maxSize,
+            'firman'            => $this->documentFirman,
+            'observations'      => $this->documentObservations,
+            'upload_mode'       => $this->documentUploadMode ?? 'bidirectional',
+            'is_individual'     => $this->isIndividual ?? false,
         ]);
 
         $this->dispatch('notify', type: 'success', message: 'Documento creado correctamente');
 
-        $this->reset(['documentName', 'documentDeadline', 'documentFile', 'documentExample', 'maxSize']);
+        // Reset de variables
+        $this->reset([
+            'documentName',
+            'documentDeadline',
+            'documentFile',
+            'documentExample',
+            'maxSize',
+            'documentFirman',
+            'documentObservations',
+            'documentUploadMode',
+            'isIndividual',
+        ]);
+
         $this->loadPeriod();
     }
 
     public function editDocument($id)
     {
         $file = File::findOrFail($id);
-        $this->documentId       = $file->id;
-        $this->documentName     = $file->name;
-        $this->documentDeadline = $file->limit_date;
-        $this->maxSize          = $file->max_size;
-        $this->documentFile    = null;
-        $this->documentExample = null;
-        $this->editingDocumentId = $id;
+
+        $this->documentId           = $file->id;
+        $this->documentName         = $file->name;
+        $this->documentDeadline     = $file->limit_date;
+        $this->maxSize              = $file->max_size;
+        $this->documentFirman       = $file->firman;
+        $this->documentObservations = $file->observations;
+        $this->documentUploadMode   = $file->upload_mode;
+        $this->isIndividual         = $file->is_individual;
+
+        // Limpiamos los archivos para poder reemplazarlos si se desea
+        $this->documentFile         = null;
+        $this->documentExample      = null;
+        
+        // Resetear flags de eliminación
+        $this->removeDocumentFile   = false;
+        $this->removeExampleFile    = false;
+
+        $this->editingDocumentId    = $id;
     }
 
     public function cancelEditDocument()
     {
-        $this->reset(['documentId', 'documentName', 'documentDeadline', 'documentFile', 'documentExample', 'maxSize', 'editingDocumentId']);
+        $this->reset([
+            'documentId',
+            'documentName',
+            'documentDeadline',
+            'documentFile',
+            'documentExample',
+            'maxSize',
+            'documentFirman',
+            'documentObservations',
+            'documentUploadMode',
+            'isIndividual',
+            'removeDocumentFile',
+            'removeExampleFile',
+            'editingDocumentId'
+        ]);
     }
 
     public function saveDocument()
     {
-        if ($this->documentId) {
-            $this->validate([
-                'documentName' => ['required', Rule::unique('files', 'name')->where(fn ($q) => $q->where('period_id', $this->periodId))->ignore($this->documentId)],
-                'documentDeadline' => 'nullable|date',
-                'documentFile'     => 'nullable|file|max:' . $this->maxSize . '|mimes:pdf,doc,docx',
-                'documentExample'  => 'nullable|file|max:' . $this->maxSize . '|mimes:pdf',
-            ]);
+        $rules = [
+            'documentName'       => ['required', Rule::unique('files', 'name')->where(fn ($q) => $q->where('period_id', $this->periodId))->ignore($this->documentId)],
+            'documentFile'       => 'nullable|file|mimes:doc,docx',
+            'documentExample'    => 'nullable|file|mimes:pdf',
+            'maxSize'            => 'required|integer|min:1|max:20480',
+            'documentUploadMode' => 'required|in:user_only,admin_only,bidirectional',
+            'documentFirman'     => 'nullable|string',
+            'documentObservations'=> 'nullable|string',
+            'isIndividual'       => 'required_if:documentUploadMode,admin_only|boolean',
+        ];
 
+        // Validación condicional de fecha límite
+        if ($this->documentUploadMode !== 'admin_only') {
+            $rules['documentDeadline'] = "required|date|after_or_equal:{$this->start_date}|before_or_equal:{$this->end_date}";
+        }
+
+        $messages = [
+            'documentName.required' => 'Debes escribir el nombre del documento',
+            'documentName.unique'   => 'Ya existe un documento con este nombre en el periodo',
+            'documentDeadline.required' => 'Debes establecer una fecha límite',
+            'documentDeadline.date'     => 'La fecha límite no es válida',
+            'documentDeadline.after_or_equal' => 'La fecha límite no puede ser anterior al inicio del periodo',
+            'documentDeadline.before_or_equal' => 'La fecha límite no puede ser posterior al fin del periodo',
+            'documentUploadMode.in' => 'El modo de carga seleccionado no es válido',
+            'maxSize.required' => 'Debes establecer un tamaño máximo',
+            'maxSize.integer'  => 'El tamaño máximo debe ser un número entero',
+            'maxSize.min'      => 'El tamaño máximo debe ser al menos 1 KB',
+            'maxSize.max'      => 'El tamaño máximo no puede exceder 20 MB',
+            'isIndividual.required_if' => 'Debes indicar si el documento es individual',
+        ];
+
+        $this->validate($rules, $messages);
+
+        if ($this->documentId) {
             $file = File::findOrFail($this->documentId);
 
-            if ($this->documentFile) {
-                if ($file->file_path) Storage::disk('public')->delete($file->file_path);
-                $file->file_path = $this->documentFile->store('files', 'public');
-                $file->name_file = $this->documentFile->getClientOriginalName();
+            // Revisar si cambió el upload_mode
+            if ($file->upload_mode !== $this->documentUploadMode) {
+                // Abrir modal para avisar al admin
+                $this->isUploadModeChangeModalOpen = true;
+                $this->pendingUploadModeChangeFile = $file;
+                return; // Detener la actualización hasta que confirme
             }
 
-            if ($this->documentExample) {
-                if ($file->example_path) Storage::disk('public')->delete($file->example_path);
-                $file->example_path = $this->documentExample->store('files/examples', 'public');
-                $file->example_name_file = $this->documentExample->getClientOriginalName();
+            // Actualizar campos básicos siempre
+            $file->name           = $this->documentName;
+            $file->limit_date     = $this->documentUploadMode !== 'admin_only' ? $this->documentDeadline : null;
+            $file->max_size       = $this->maxSize;
+            $file->firman         = $this->documentFirman;
+            $file->observations   = $this->documentObservations;
+            $file->upload_mode    = $this->documentUploadMode ?? 'bidirectional';
+            $file->is_individual  = $this->isIndividual ?? false;
+
+            // Manejar archivos según el modo
+            // Si es admin_only + individual, eliminar archivos existentes y no subir nuevos
+            if ($this->documentUploadMode === 'admin_only' && $this->isIndividual) {
+                if ($file->file_path) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->file_path = null;
+                    $file->name_file = null;
+                }
+                if ($file->example_path) {
+                    Storage::disk('public')->delete($file->example_path);
+                    $file->example_path = null;
+                    $file->example_name_file = null;
+                }
+            } else {
+                // Manejar eliminación de archivos si el usuario lo marcó
+                if ($this->removeDocumentFile && $file->file_path) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->file_path = null;
+                    $file->name_file = null;
+                }
+                
+                if ($this->removeExampleFile && $file->example_path) {
+                    Storage::disk('public')->delete($file->example_path);
+                    $file->example_path = null;
+                    $file->example_name_file = null;
+                }
+                
+                // Subir nuevos archivos si se proporcionaron
+                if ($this->documentFile) {
+                    if ($file->file_path) Storage::disk('public')->delete($file->file_path);
+                    $file->file_path = $this->documentFile->store('files', 'public');
+                    $file->name_file = $this->documentFile->getClientOriginalName();
+                }
+
+                if ($this->documentExample) {
+                    if ($file->example_path) Storage::disk('public')->delete($file->example_path);
+                    $file->example_path = $this->documentExample->store('files/examples', 'public');
+                    $file->example_name_file = $this->documentExample->getClientOriginalName();
+                }
             }
 
-            $file->name       = $this->documentName;
-            $file->limit_date = $this->documentDeadline;
-            $file->max_size   = $this->maxSize;
             $file->save();
 
             $this->dispatch('notify', type: 'info', message: 'Documento actualizado correctamente');
         } else {
             $this->createDocument();
             return;
+        }
+
+        $this->cancelEditDocument();
+        $this->loadPeriod();
+    }
+
+    public function confirmUploadModeChange()
+    {
+        if ($this->pendingUploadModeChangeFile) {
+            $file = $this->pendingUploadModeChangeFile;
+
+            // Actualizar TODOS los campos del formulario
+            $file->name           = $this->documentName;
+            $file->limit_date     = $this->documentUploadMode !== 'admin_only' ? $this->documentDeadline : null;
+            $file->max_size       = $this->maxSize;
+            $file->firman         = $this->documentFirman;
+            $file->observations   = $this->documentObservations;
+            $file->upload_mode    = $this->documentUploadMode;
+            $file->is_individual  = $this->isIndividual ?? false;
+
+            // Eliminar archivos existentes
+            if ($file->file_path) {
+                Storage::disk('public')->delete($file->file_path);
+                $file->file_path = null;
+                $file->name_file = null;
+            }
+            if ($file->example_path) {
+                Storage::disk('public')->delete($file->example_path);
+                $file->example_path = null;
+                $file->example_name_file = null;
+            }
+
+            // Si NO es admin_only + individual, subir los archivos nuevos si los hay
+            if (!($this->documentUploadMode === 'admin_only' && $this->isIndividual)) {
+                if ($this->documentFile) {
+                    $file->file_path = $this->documentFile->store('files', 'public');
+                    $file->name_file = $this->documentFile->getClientOriginalName();
+                }
+
+                if ($this->documentExample) {
+                    $file->example_path = $this->documentExample->store('files/examples', 'public');
+                    $file->example_name_file = $this->documentExample->getClientOriginalName();
+                }
+            }
+
+            $file->save();
+
+            // 🔹 Sincronizar todos los documentos asociados a este File
+            $documents = Document::where('file_id', $file->id)->get();
+
+            foreach ($documents as $doc) {
+                // Limpiar archivos del estudiante
+                $doc->student_file_path = null;
+                $doc->student_file_name = null;
+
+                // Resetear status según el nuevo upload_mode
+                if ($file->upload_mode === 'admin_only') {
+                    $doc->status = 'revisado';
+                } else {
+                    $doc->status = 'en_revision';
+                }
+
+                $doc->save();
+            }
+
+
+            $this->dispatch('notify', type: 'info', message: 'Modo de carga actualizado correctamente.');
+
+            // Limpiar estado
+            $this->isUploadModeChangeModalOpen = false;
+            $this->pendingUploadModeChangeFile = null;
         }
 
         $this->cancelEditDocument();
@@ -587,11 +1062,9 @@ class PeriodDetail extends Component
             $file->delete();
             $this->loadPeriod();
 
-            // ✅ Notificación tipo toast
             $this->dispatch('notify', type: 'error', message: 'Documento eliminado correctamente');
         }
 
-        // Cerrar modal
         $this->isDeleteDocumentModalOpen = false;
         $this->deleteDocumentId = null;
     }
@@ -602,9 +1075,72 @@ class PeriodDetail extends Component
         $this->previewName = $name;
     }
 
+    public function getStudentDocuments($studentId)
+    {
+        return Document::query()
+            ->where('student_id', $studentId)
+            ->whereHas('file', fn ($q) => $q->where('period_id', $this->periodId))
+            ->join('files', 'files.id', '=', 'documents.file_id')
+            ->orderByRaw('documents.student_file_path IS NULL') 
+            ->orderBy('files.limit_date', 'asc')
+            ->orderBy('files.id', 'asc')
+            ->select('documents.*')
+            ->get();
+    }
+
+    public function updatedDocumentUploadMode($value)
+    {
+        if ($this->editingDocumentId) return;
+
+        // Limpiar archivos siempre que cambiemos de modo
+        $this->documentFile = null;
+        $this->documentExample = null;
+
+        if ($value === 'admin_only') {
+            $this->documentDeadline = null;
+        }
+
+        if ($value !== 'admin_only') {
+            $this->isIndividual = false;
+        }
+    }
+
+    public function updatedIsIndividual($value)
+    {
+        if ($this->editingDocumentId) return;
+
+        // Limpiar archivos si desmarcamos el checkbox
+        if (!$value) {
+            $this->documentFile = null;
+            $this->documentExample = null;
+        }
+    }
+
+    public function removeExistingDocumentFile()
+    {
+        $this->removeDocumentFile = true;
+    }
+
+    public function removeExistingExampleFile()
+    {
+        $this->removeExampleFile = true;
+    }
+
+    public function cancelRemoveDocumentFile()
+    {
+        $this->removeDocumentFile = false;
+    }
+
+    public function cancelRemoveExampleFile()
+    {
+        $this->removeExampleFile = false;
+    }
+
+
+
     /** ========================= Render ========================= */
     
-    public function render()
+    /*public function render()
     {
         $students = Student::with(['campus', 'career', 'semester'])
         ->where('period_id', $this->periodId)
@@ -736,5 +1272,145 @@ class PeriodDetail extends Component
             'semesters' => $this->period->semesters,
             'studentsRevision' => $studentsRevision,
         ]);
+    }*/
+
+    public function render()
+    {
+        $students = Student::with(['campus', 'career', 'semester'])
+            ->where('period_id', $this->periodId)
+            ->when($this->statusFilterStudents, function($q) {
+                switch($this->statusFilterStudents) {
+                    case 'pending':
+                        $q->where('status', 'pendiente');
+                        break;
+                    case 'approved':
+                        $q->where('status', 'aprobado');
+                        break;
+                    case 'rejected':
+                        $q->where('status', 'rechazado');
+                        break;
+                }
+            })
+            ->where(function ($q) {
+                $q->where('name', 'like', "%{$this->search}%")
+                    ->orWhere('last_name_paterno', 'like', "%{$this->search}%")
+                    ->orWhere('last_name_materno', 'like', "%{$this->search}%")
+                    ->orWhere('control_number', 'like', "%{$this->search}%");
+            })
+            ->orderBy('name')
+            ->paginate(10);
+
+        $paginatedFiles = $this->period->files()
+            ->when($this->searchDocuments, fn($q) => 
+                $q->where('name', 'like', '%' . $this->searchDocuments . '%')
+            )
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'filesPage');
+
+        $students->getCollection()->transform(function ($student) {
+            match ($student->status) {
+                'aprobado' => (
+                    $student->status_label = 'Aprobado'
+                ) && (
+                    $student->status_style = 'background-color: var(--status-icon-bg-approved); color: var(--status-icon-color-approved); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
+                ),
+                'rechazado' => (
+                    $student->status_label = 'Rechazado'
+                ) && (
+                    $student->status_style = 'background-color: var(--status-icon-bg-rejected); color: var(--status-icon-color-rejected); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
+                ),
+                default => (
+                    $student->status_label = 'Pendiente'
+                ) && (
+                    $student->status_style = 'background-color: var(--status-icon-bg-pending); color: var(--status-icon-color-pending); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
+                ),
+            };
+            return $student;
+        });
+
+        $studentsRevision = Student::with(['career', 'documents' => function($q) {
+            $q->whereHas('file', function($query) {
+                $query->where('period_id', $this->periodId);
+            });
+        }])
+        ->where('period_id', $this->periodId)
+        ->where('status', 'aprobado')
+        ->when($this->careerFilter, fn($q) => $q->where('career_id', $this->careerFilter))
+        ->when($this->statusFilter, function($q) {
+            switch($this->statusFilter) {
+                case 'pending':
+                    $q->whereHas('documents', function($query) {
+                        $query->whereNotNull('student_file_path')
+                              ->where(function($q) {
+                                  $q->where('status', 'en_revision')
+                                    ->orWhereNull('status');
+                              });
+                    });
+                    break;
+                case 'approved':
+                    $q->whereHas('documents', function($query) {
+                        $query->where('status', 'revisado');
+                    });
+                    break;
+                case 'rejected':
+                    $q->whereHas('documents', function($query) {
+                        $query->where('status', 'rechazado');
+                    });
+                    break;
+            }
+        })
+        ->when($this->searchRevision, function($q) {
+            $q->where(function($query) {
+                $query->where('name', 'like', "%{$this->searchRevision}%")
+                      ->orWhere('last_name_paterno', 'like', "%{$this->searchRevision}%")
+                      ->orWhere('last_name_materno', 'like', "%{$this->searchRevision}%")
+                      ->orWhere('control_number', 'like', "%{$this->searchRevision}%");
+            });
+        })
+        ->orderBy('name')
+        ->paginate(20, ['*'], 'revisionPage');
+
+        $studentsRevision->getCollection()->transform(function ($student) {
+            $periodDocs = $student->documents->filter(function ($doc) {
+                return $doc->file
+                    && $doc->file->period_id == $this->periodId
+                    && $doc->file->upload_mode !== 'admin_only'
+                    && $doc->student_file_path; // SOLO entregados por el alumno
+            });
+
+            $student->delivered = $periodDocs->count();
+
+            $student->total = File::where('period_id', $this->periodId)
+                ->where('upload_mode', '!=', 'admin_only')
+                ->count();
+
+            $student->approved_count = $periodDocs
+                ->where('status', 'revisado')
+                ->count();
+
+            $student->pending_count = $periodDocs->filter(function ($doc) {
+                return $doc->status === 'en_revision' || is_null($doc->status);
+            })->count();
+
+            $student->rejected_count = $periodDocs
+                ->where('status', 'rechazado')
+                ->count();
+
+            return $student;
+        });
+
+
+        return view('livewire.dashboard.period-detail', [
+            'students'  => $students,
+            'paginatedFiles' => $paginatedFiles,
+            'campuses'  => Campus::all(),
+            'careers'   => Career::all(),
+            'semesters' => $this->period->semesters,
+            'studentsRevision' => $studentsRevision,
+        ]);
     }
+
+
+
+    
 }

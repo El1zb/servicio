@@ -48,18 +48,6 @@
                     {{ __('Administradores') }}
                 </flux:navlist.item>
 
-                <flux:navlist.item 
-                    :href="route('admin.welcome-section')" 
-                    wire:navigate
-                    class="
-                        text-[var(--settings-item-text)]
-                        hover:text-[var(--settings-item-text-hover)]
-                        hover:bg-[var(--settings-item-bg-hover)]!
-                    "
-                >
-                    {{ __('Sitio') }}
-                </flux:navlist.item>
-
             @endif
         </flux:navlist>
     </div>
