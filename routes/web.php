@@ -6,14 +6,13 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Appearance;
 use Illuminate\Support\Facades\Route;
 
-use App\Livewire\Campuses\Crud as CampusesCrud;
+//use App\Livewire\Campuses\Crud as CampusesCrud;
+use App\Livewire\Campuses\Index as CampusesIndex;
 use App\Livewire\Careers\Crud as CareersCrud;
 use App\Livewire\Semesters\Crud as SemestersCrud;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
 use App\Livewire\Admin\WelcomeSection as WelcomeSection;
 use App\Livewire\Dashboard\Index as DashboardIndex;
-//use App\Livewire\Dashboard\Index\Index as DashboardIndex;
-//use App\Livewire\Dashboard\PeriodDetail;  
 use App\Livewire\Dashboard\Period\PeriodDetail;
 use App\Http\Controllers\WelcomeController;
 
@@ -40,7 +39,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('dashboard', DashboardIndex::class)->name('dashboard');
 
-        Route::get('campuses', CampusesCrud::class)->name('campuses.index');
+        //Route::get('campuses', CampusesCrud::class)->name('campuses.index');
+        Route::get('campuses', CampusesIndex::class)->name('campuses.index');
         Route::get('careers', CareersCrud::class)->name('careers.index');    
         Route::get('semesters', SemestersCrud::class)->name('semesters.index');
         Route::get('admin/create-admin', CreateAdmin::class)->name('admin.create-admin');

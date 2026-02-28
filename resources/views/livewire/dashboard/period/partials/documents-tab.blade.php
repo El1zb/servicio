@@ -10,24 +10,12 @@
             style="background: linear-gradient(135deg, var(--period-detail-card-header-bg) 0%, var(--period-detail-card-header-bg-2) 100%);
                    border-bottom: 1px solid var(--period-detail-border);">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
-                    style="background: linear-gradient(135deg, var(--period-detail-brand-primary) 0%, var(--period-detail-brand-secondary) 100%);
-                           color: var(--period-detail-text-icon);">
-                    <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        @if($editingDocumentId)
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        @else
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        @endif
-                    </svg>
-                </div>
                 <div class="flex-1 min-w-0">
                     <h2 class="text-base sm:text-xl font-bold truncate" style="color: var(--period-detail-text-primary);">
                         {{ $editingDocumentId ? 'Editar Documento Base' : 'Crear Nuevo Documento Base' }}
                     </h2>
                     <p class="text-xs sm:text-sm mt-0.5 truncate" style="color: var(--period-detail-text-secondary);">
-                        {{ $editingDocumentId ? 'Actualiza la información del documento' : 'Los estudiantes deberán subir este documento' }}
+                        {{ $editingDocumentId ? 'Actualiza la información del documento' : 'Se le asignará este documento a los estudiantes' }}
                     </p>
                 </div>
             </div>
