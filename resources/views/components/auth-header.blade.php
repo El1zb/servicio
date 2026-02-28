@@ -11,14 +11,14 @@
 ])>
     <flux:heading
         size="xl"
-        class="font-extrabold text-[var(--student-profile-text-primary)]"
+        class="font-extrabold text-[var(--color-text-header-primary)]"
     >
         {{ $title }}
     </flux:heading>
 
     @if($description)
         <flux:subheading
-            class="text-[var(--student-profile-text-secondary)]"
+            class="text-[var(--color-text-header-secondary)]"
         >
             {{ $description }}
         </flux:subheading>

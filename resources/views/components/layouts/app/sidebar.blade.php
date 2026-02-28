@@ -3,31 +3,58 @@
     <head>
         @include('partials.head')
         
-        <!-- 🎯 CRITICAL: Aplicar estado INMEDIATAMENTE (blocking script) -->
         <script>
-            // Este script DEBE ejecutarse de forma síncrona ANTES del render
             (function() {
                 const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
                 if (collapsed) {
-                    // Aplicar clase al html ANTES de que el CSS se procese
                     document.documentElement.classList.add('sidebar-collapsed');
                 }
             })();
         </script>
         
         <style>
+            /* ===========================
+               VARIABLES SIDEBAR
+            =========================== */
             :root {
-                --sidebar-width: 280px;
+                --sidebar-width: 255px;
                 --sidebar-collapsed-width: 80px;
                 --transition-speed: 300ms;
+
+                --sidebar-bg: #0a0a0a;
+                --sidebar-bg-alt: #0a0a0a;
+                --sidebar-border: #191919;
+
+                --sidebar-title-text: #ffffff;
+                --sidebar-subtitle-text: #d6d6d6;
+                --sidebar-item-text: #e6e6e6;
+
+                --sidebar-item-bg-active: #1b1b1b;
+                --sidebar-item-text-active: #f0f6fc;
+
+                --sidebar-item-bg-hover: #1b1b1b;
+                --sidebar-item-text-hover: #f0f6fc;
+
+                --sidebar-bg-user: #0a0a0a;
+                --sidebar-logo-user: #f0f6fc;
+                --sidebar-logo-letra-user: #0d1117;
+                --sidebar-email-user: #8b949e;
+                --sidebar-divisor: rgba(255, 255, 255, 0.08);
             }
 
-            /* 🎯 Estado por defecto - SIN transiciones durante carga inicial */
+            /* ===========================
+               TRANSICIONES
+            =========================== */
             body.livewire-navigating * {
                 transition: none !important;
+                animation: none !important;
             }
 
-            /* 🎯 Aplicar estado colapsado desde CSS puro */
+            html.sidebar-collapsed .sidebar-container,
+            html.sidebar-collapsed .main-content {
+                transition: none;
+            }
+
             html.sidebar-collapsed .sidebar-container {
                 width: var(--sidebar-collapsed-width);
             }
@@ -36,6 +63,17 @@
                 margin-left: var(--sidebar-collapsed-width);
             }
 
+            .sidebar-container:not(.navigating) {
+                transition: width var(--transition-speed) ease;
+            }
+
+            .main-content:not(.navigating) {
+                transition: margin-left var(--transition-speed) ease;
+            }
+
+            /* ===========================
+               SIDEBAR BASE
+            =========================== */
             .sidebar-container {
                 width: var(--sidebar-width);
                 position: fixed;
@@ -45,6 +83,7 @@
                 z-index: 40;
                 overflow: visible;
                 transition: width var(--transition-speed) ease;
+                border-right: 1px solid var(--sidebar-border);
             }
 
             .sidebar-container.collapsed {
@@ -61,16 +100,15 @@
                 flex-direction: column;
             }
 
-            .sidebar-content::-webkit-scrollbar {
-                width: 6px;
-            }
-
+            .sidebar-content::-webkit-scrollbar { width: 6px; }
             .sidebar-content::-webkit-scrollbar-thumb {
                 background: rgba(255, 255, 255, 0.1);
                 border-radius: 3px;
             }
 
-            /* Botón de toggle */
+            /* ===========================
+               BOTÓN TOGGLE DESKTOP
+            =========================== */
             .sidebar-toggle-btn {
                 position: absolute;
                 right: -16px;
@@ -78,8 +116,8 @@
                 width: 32px;
                 height: 32px;
                 border-radius: 50%;
-                background: var(--sidebar-bg-user);
-                border: 2px solid var(--sidebar-bg);
+                background: var(--sidebar-bg);
+                border: 2px solid var(--sidebar-border);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -105,6 +143,81 @@
                 transform: rotate(180deg);
             }
 
+            /* ===========================
+               LOGO
+            =========================== */
+            .logo-container {
+                padding: 16px 14px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all var(--transition-speed) ease;
+                border-bottom: 1px solid var(--sidebar-border);
+                overflow: hidden;
+            }
+
+            .sidebar-container.collapsed .logo-container {
+                justify-content: center;
+                padding: 16px 10px;
+                gap: 0;
+            }
+
+            .logo-initials {
+                display: none;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                flex-shrink: 0;
+            }
+
+            .sidebar-container.collapsed .logo-initials {
+                display: flex;
+            }
+
+            .logo-initials-main {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--sidebar-title-text);
+                letter-spacing: 0.02em;
+                line-height: 1;
+            }
+
+            .logo-initials-sub {
+                font-size: 8px;
+                font-weight: 600;
+                color: var(--sidebar-subtitle-text);
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+
+            .logo-text-block {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                opacity: 1;
+                overflow: hidden;
+                white-space: nowrap;
+                transition: opacity var(--transition-speed) ease,
+                            width var(--transition-speed) ease;
+            }
+
+            .sidebar-container.collapsed .logo-text-block {
+                opacity: 0;
+                width: 0;
+            }
+
+            .logo-app-name {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--sidebar-title-text);
+                letter-spacing: 0.01em;
+                line-height: 1;
+            }
+
+            /* ===========================
+               NAV ITEMS
+            =========================== */
             .nav-item {
                 position: relative;
                 display: flex;
@@ -148,7 +261,7 @@
                 transform: translateY(-50%);
                 width: 3px;
                 height: 60%;
-                background: var(--sidebar-item-text);
+                background: var(--sidebar-item-text-active);
                 border-radius: 0 4px 4px 0;
             }
 
@@ -169,69 +282,13 @@
                 overflow: hidden;
             }
 
-            .logo-container {
-                padding: 24px 20px;
-                display: flex;
-                align-items: center;
-                gap: 16px;
-                transition: all var(--transition-speed) ease;
-            }
-
-            .sidebar-container.collapsed .logo-container {
-                justify-content: center;
-                padding: 24px 10px;
-            }
-
-            .logo-icon {
-                width: 64px;
-                height: 64px;
-                background: white;
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                overflow: hidden;
-                flex-shrink: 0;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-                transition: all var(--transition-speed) ease;
-            }
-
-            .sidebar-container.collapsed .logo-icon {
-                width: 48px;
-                height: 48px;
-            }
-
-            .logo-icon img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .logo-icon span {
-                color: #1e293b;
-                font-weight: 700;
-                font-size: 18px;
-            }
-
-            .logo-text {
-                font-size: 18px;
-                font-weight: 700;
-                color: white;
-                line-height: 1.3;
-                opacity: 1;
-                transition: opacity var(--transition-speed) ease;
-            }
-
-            .sidebar-container.collapsed .logo-text {
-                opacity: 0;
-                width: 0;
-                overflow: hidden;
-            }
-
+            /* ===========================
+               USER MENU
+            =========================== */
             .user-menu-container {
                 margin-top: auto;
                 padding: 16px;
-                position: relative;
+                position: relative; /* ← necesario para el dropdown absolute en móvil */
             }
 
             .user-menu {
@@ -245,12 +302,13 @@
                 justify-content: center;
             }
 
-            .sidebar-container.collapsed .user-menu {
-                padding: 10px;
-            }
-
             .user-menu:hover {
                 background: var(--sidebar-item-bg-hover);
+                transform: translateY(-2px);
+            }
+
+            .sidebar-container.collapsed .user-menu:hover {
+                background: var(--sidebar-bg-user);
                 transform: translateY(-2px);
             }
 
@@ -311,6 +369,9 @@
                 white-space: nowrap;
             }
 
+            /* ===========================
+               DROPDOWN USUARIO (desktop)
+            =========================== */
             .user-dropdown {
                 position: fixed;
                 bottom: 100px;
@@ -318,6 +379,7 @@
                 width: calc(var(--sidebar-width) - 32px);
                 background: var(--sidebar-bg-user);
                 border-radius: 12px;
+                border: 1px solid var(--sidebar-border);
                 padding: 8px;
                 opacity: 0;
                 visibility: hidden;
@@ -358,7 +420,7 @@
 
             .dropdown-item:hover {
                 background: var(--sidebar-item-bg-hover);
-                color: white;
+                color: var(--sidebar-item-text-hover);
                 transform: translateX(4px);
             }
 
@@ -373,227 +435,269 @@
                 margin: 8px 0;
             }
 
-            /* 🎯 SOLUCIÓN: Aplicar margin-left INSTANTÁNEAMENTE sin transición */
+            /* ===========================
+               MAIN CONTENT
+            =========================== */
             .main-content {
                 margin-left: var(--sidebar-width);
                 background-color: var(--color-bg-all);
                 color: var(--text-section-title);
                 min-height: 100vh;
-                /* ❌ REMOVEMOS la transición del margin-left */
             }
 
             .sidebar-container.collapsed ~ .main-content {
                 margin-left: var(--sidebar-collapsed-width);
             }
 
-            @media (max-width: 1024px) {
-                .sidebar-toggle-btn {
-                    display: none;
-                }
-
-                .sidebar-container {
-                    transform: translateX(-100%);
-                    width: 100vw;
-                    transition: transform var(--transition-speed) ease;
-                }
-
-                .sidebar-container.collapsed {
-                    width: 100vw;
-                }
-
-                .sidebar-container.mobile-open {
-                    transform: translateX(0);
-                }
-
-                .main-content {
-                    margin-left: 0 !important;
-                }
-
-                .mobile-overlay {
-                    position: fixed;
-                    inset: 0;
-                    background: rgba(0, 0, 0, 0.6);
-                    z-index: 39;
-                    display: none;
-                    backdrop-filter: blur(2px);
-                }
-
-                .mobile-overlay.show {
-                    display: block;
-                }
-
-                .logo-container {
-                    padding: 32px 24px;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                }
-
-                .logo-icon {
-                    width: 72px;
-                    height: 72px;
-                }
-
-                .logo-text {
-                    font-size: 20px;
-                    opacity: 1 !important;
-                    width: auto !important;
-                }
-
-                .nav-item {
-                    padding: 16px 20px;
-                    margin: 6px 16px;
-                    font-size: 16px;
-                    border-radius: 12px;
-                    justify-content: flex-start !important;
-                }
-
-                .nav-item-icon {
-                    width: 24px;
-                    height: 24px;
-                }
-
-                .nav-item-text {
-                    opacity: 1 !important;
-                    width: auto !important;
-                }
-
-                .user-menu-container {
-                    position: sticky;
-                    bottom: 0;
-                    background: linear-gradient(to top, var(--sidebar-bg) 70%, transparent);
-                    padding: 20px;
-                    margin-top: auto;
-                }
-
-                .user-menu {
-                    padding: 14px;
-                    border-radius: 14px;
-                }
-
-                .user-avatar {
-                    width: 48px;
-                    height: 48px;
-                    font-size: 18px;
-                }
-
-                .user-details {
-                    opacity: 1 !important;
-                    width: auto !important;
-                }
-
-                .user-name {
-                    font-size: 15px;
-                }
-
-                .user-email {
-                    font-size: 13px;
-                }
-
-                .user-dropdown {
-                    width: calc(100vw - 48px) !important;
-                    left: 24px !important;
-                    bottom: 110px !important;
-                    max-width: 400px;
-                    margin: 0 auto;
-                    right: 24px !important;
-                }
-
-                .mobile-close-btn {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 44px;
-                    height: 44px;
-                    border-radius: 12px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border: none;
-                    cursor: pointer;
-                    transition: all 200ms ease;
-                    margin-left: auto;
-                }
-
-                .mobile-close-btn:hover {
-                    background: rgba(255, 255, 255, 0.15);
-                    transform: scale(1.05);
-                }
-
-                .mobile-close-btn svg {
-                    width: 24px;
-                    height: 24px;
-                    color: white;
-                }
-            }
-
+            /* ===========================
+               MOBILE HEADER
+            =========================== */
             .mobile-header {
                 display: none;
                 position: sticky;
                 top: 0;
                 z-index: 30;
-                background: rgb(15, 23, 42);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 16px 20px;
-            }
-
-            @media (max-width: 1024px) {
-                .mobile-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 16px;
-                }
+                background: var(--sidebar-bg);
+                border-bottom: 1px solid var(--sidebar-border);
+                padding: 0 16px;
+                height: 60px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
             }
 
             .mobile-toggle {
                 width: 40px;
                 height: 40px;
-                border-radius: 8px;
-                background: rgba(255, 255, 255, 0.05);
-                border: none;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid var(--sidebar-border);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
+                flex-shrink: 0;
+                transition: background 200ms ease;
+            }
+
+            .mobile-toggle:hover {
+                background: rgba(255, 255, 255, 0.1);
             }
 
             .mobile-toggle svg {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
                 color: white;
             }
 
-            /* 🎯 Desactivar transiciones durante navegación Livewire */
-            body.livewire-navigating,
-            body.livewire-navigating * {
-                transition: none !important;
-                animation: none !important;
+            /* Título centrado en el header móvil */
+            .mobile-header-title {
+                flex: 1;
+                text-align: center;
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--sidebar-title-text);
+                letter-spacing: 0.01em;
+                pointer-events: none;
             }
 
-            /* 🎯 El sidebar y main-content NO deben tener transición en el margin/width durante carga */
-            html.sidebar-collapsed .sidebar-container,
-            html.sidebar-collapsed .main-content {
-                transition: none;
+            /* Avatar en el header móvil */
+            .mobile-header-avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: var(--sidebar-logo-user);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--sidebar-logo-letra-user);
+                font-weight: 600;
+                font-size: 14px;
+                flex-shrink: 0;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                cursor: pointer;
             }
 
-            /* Solo aplicar transiciones cuando el usuario interactúa manualmente */
-            .sidebar-container:not(.navigating) {
-                transition: width var(--transition-speed) ease;
+            /* ===========================
+               RESPONSIVE MÓVIL
+            =========================== */
+            @media (max-width: 1024px) {
+                .mobile-header { display: flex; }
+
+                .sidebar-toggle-btn { display: none; }
+
+                /* ── CRÍTICO: resetear TODO estado colapsado en móvil ────────────
+                   Cuando el sidebar está colapsado en desktop (80px) y luego
+                   se redimensiona a móvil, hereda el ancho de 80px y queda
+                   chiquito. Hay que sobreescribir con !important todo. ────── */
+                .sidebar-container,
+                .sidebar-container.collapsed {
+                    transform: translateX(-100%);
+                    width: min(300px, 85vw) !important;
+                    max-width: 300px !important;
+                    transition: transform var(--transition-speed) ease !important;
+                    box-shadow: none;
+                }
+
+                .sidebar-container.mobile-open,
+                .sidebar-container.collapsed.mobile-open {
+                    transform: translateX(0) !important;
+                    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.7);
+                }
+
+                /* html.sidebar-collapsed en <html> tampoco debe afectar móvil */
+                html.sidebar-collapsed .sidebar-container {
+                    width: min(300px, 85vw) !important;
+                }
+                html.sidebar-collapsed .main-content {
+                    margin-left: 0 !important;
+                }
+
+                /* Revertir visualmente todos los estados "collapsed" dentro del sidebar */
+                .sidebar-container.collapsed .nav-item {
+                    justify-content: flex-start !important;
+                    padding: 13px 16px !important;
+                }
+                .sidebar-container.collapsed .nav-item-text {
+                    opacity: 1 !important;
+                    width: auto !important;
+                    overflow: visible !important;
+                }
+                .sidebar-container.collapsed .logo-container {
+                    justify-content: flex-start !important;
+                    padding: 20px 18px 16px !important;
+                    gap: 10px !important;
+                }
+                .sidebar-container.collapsed .logo-text-block {
+                    opacity: 1 !important;
+                    width: auto !important;
+                }
+                .sidebar-container.collapsed .logo-initials {
+                    display: none !important;
+                }
+                .sidebar-container.collapsed .user-info {
+                    justify-content: flex-start !important;
+                }
+                .sidebar-container.collapsed .user-details {
+                    opacity: 1 !important;
+                    width: auto !important;
+                    overflow: visible !important;
+                }
+
+                .main-content { margin-left: 0 !important; }
+
+                /* Overlay */
+                .mobile-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.65);
+                    z-index: 39;
+                    display: none;
+                    backdrop-filter: blur(3px);
+                    -webkit-backdrop-filter: blur(3px);
+                }
+                .mobile-overlay.show { display: block; }
+
+                /* Logo: nunca mostrar iniciales colapsadas en móvil */
+                .logo-container {
+                    padding: 20px 18px 16px;
+                    gap: 10px;
+                }
+                .logo-initials { display: none !important; }
+                .logo-text-block {
+                    opacity: 1 !important;
+                    width: auto !important;
+                }
+
+                /* Botón X de cerrar sidebar */
+                .mobile-close-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 8px;
+                    background: rgba(255, 255, 255, 0.08);
+                    border: 1px solid var(--sidebar-border);
+                    cursor: pointer;
+                    transition: background 200ms ease;
+                    flex-shrink: 0;
+                }
+                .mobile-close-btn:hover { background: rgba(255, 255, 255, 0.14); }
+                .mobile-close-btn svg { width: 18px; height: 18px; color: white; }
+
+                /* Nav items en móvil */
+                .nav-item {
+                    padding: 13px 16px;
+                    margin: 3px 10px;
+                    font-size: 15px;
+                    border-radius: 10px;
+                    justify-content: flex-start !important;
+                    gap: 14px;
+                }
+                .nav-item-icon { width: 22px; height: 22px; }
+                .nav-item-text {
+                    opacity: 1 !important;
+                    width: auto !important;
+                    overflow: visible !important;
+                }
+
+                /* User menu en el sidebar móvil */
+                .user-menu-container {
+                    position: sticky;
+                    bottom: 0;
+                    background: linear-gradient(to top, var(--sidebar-bg) 75%, transparent);
+                    padding: 10px 14px 18px;
+                    margin-top: auto;
+                }
+
+                .user-menu {
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    border: 1px solid var(--sidebar-border);
+                }
+
+                .user-avatar { width: 40px; height: 40px; font-size: 15px; }
+
+                .user-details {
+                    opacity: 1 !important;
+                    width: auto !important;
+                    overflow: visible !important;
+                }
+                .user-name { font-size: 14px; }
+                .user-email { font-size: 12px; }
+
+                /* Dropdown usuario: position absolute relativa al contenedor
+                   para evitar conflicto con el sidebar fixed+transform */
+                .user-dropdown {
+                    position: absolute !important;
+                    bottom: calc(100% + 6px) !important;
+                    left: 14px !important;
+                    right: 14px !important;
+                    width: auto !important;
+                    max-width: none !important;
+                }
             }
 
-            .main-content:not(.navigating) {
-                transition: margin-left var(--transition-speed) ease;
+            /* Pantallas muy pequeñas */
+            @media (max-width: 360px) {
+                .sidebar-container {
+                    width: 92vw;
+                    max-width: 92vw;
+                }
+                .nav-item { font-size: 14px; padding: 12px 14px; }
             }
-            
         </style>
     </head>
     <body class="min-h-screen">
 
-        <!-- Overlay móvil -->
         <div class="mobile-overlay" id="mobileOverlay"></div>
 
-        <!-- Sidebar -->
+        <!-- ═══ SIDEBAR ════════════════════════════════════════════════════ -->
         <aside class="sidebar-container" 
-        style="background: linear-gradient(to bottom, var(--sidebar-bg), var(--sidebar-bg-alt));" 
-        id="sidebar"
-        data-collapsed="false">
-            <!-- Botón de toggle para desktop -->
+               style="background: linear-gradient(to bottom, var(--sidebar-bg), var(--sidebar-bg-alt));" 
+               id="sidebar">
+
             <button class="sidebar-toggle-btn" onclick="toggleSidebarCollapse()">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -601,40 +705,30 @@
             </button>
 
             <div class="sidebar-content">
-                <!-- Botón de cerrar para móvil -->
-                <button class="mobile-close-btn lg:hidden" onclick="toggleMobileSidebar()" style="position: absolute; top: 20px; right: 20px; z-index: 50;">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
 
-               <!-- Logo -->
-                <div class="logo-container flex items-center gap-4">
-                    @php
-                        $welcome = \App\Models\WelcomeSection::find(1);
-                    @endphp
-
-                    <div class="logo-icon w-16 h-16 rounded-md bg-white flex items-center justify-center overflow-hidden shadow-sm">
-                        @if($welcome && $welcome->logo)
-                            <img src="{{ asset('storage/' . $welcome->logo) }}" 
-                                alt="{{ $welcome->abreviatura ?? 'ITSCO' }}" 
-                                class="w-full h-full object-contain">
-                        @else
-                            <span class="text-black font-bold text-lg">{{ $welcome->abreviatura ?? 'ITSCO' }}</span>
-                        @endif
+                <!-- ── ENCABEZADO CON BOTÓN X EN MÓVIL ─────────────── -->
+                <div class="logo-container">
+                    {{-- Colapsado (solo desktop): iniciales --}}
+                    <div class="logo-initials">
+                        <span class="logo-initials-main">SS</span>
+                        <span class="logo-initials-sub">ITSCO</span>
                     </div>
 
-                    <div class="flex flex-col text-left logo-text">
-                        <span class="text-xl font-extrabold text-[var(--sidebar-title-text)] leading-snug">
-                            Servicio Social
-                        </span>
-                        <span class="text-sm font-medium text-[var(--sidebar-subtitle-text)]">
-                            ITSCO
-                        </span>
+                    {{-- Expandido: nombre --}}
+                    <div class="logo-text-block" style="flex: 1;">
+                        <span class="logo-app-name">Servicio Social</span>
+                        <span style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sidebar-subtitle-text); line-height: 1;">ITSCO</span>
                     </div>
+
+                    {{-- Botón X — solo visible en móvil --}}
+                    <button class="mobile-close-btn lg:hidden" onclick="toggleMobileSidebar()">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
-                <!-- Navigation -->
+                <!-- ── NAVEGACIÓN ───────────────────────────────────── -->
                 <nav class="py-4">
                     @if(auth()->user()->hasRole('admin'))
                         <a href="{{ route('dashboard') }}" 
@@ -696,13 +790,10 @@
                     @endif
                 </nav>
 
-                <!-- User Menu Desktop -->
+                <!-- ── USER MENU ────────────────────────────────────── -->
                 <div class="user-menu-container">
-                    <!-- Dropdown -->
                     <div class="user-dropdown" id="userDropdown">
-                        <a href="{{ route('settings.profile') }}" 
-                           class="dropdown-item"
-                           wire:navigate>
+                        <a href="{{ route('settings.profile') }}" class="dropdown-item" wire:navigate>
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -723,7 +814,6 @@
                         </form>
                     </div>
 
-                    <!-- User Info Button -->
                     <div class="user-menu" onclick="toggleUserDropdown()">
                         <div class="user-info">
                             <div class="user-avatar">{{ auth()->user()->initials() }}</div>
@@ -734,81 +824,85 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </aside>
 
-        <!-- Mobile Header -->
+        <!-- ═══ MOBILE HEADER ══════════════════════════════════════════════ -->
         <header class="mobile-header">
-            <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+            {{-- Botón hamburger --}}
+            <button class="mobile-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
 
-            <div style="flex: 1;"></div>
+            {{-- Título centrado --}}
+            <span class="mobile-header-title">Servicio Social</span>
 
-            <flux:dropdown position="top" align="end">
-                <div class="user-avatar" style="width: 40px; height: 40px; cursor: pointer;">
-                    {{ auth()->user()->initials() }}
-                </div>
-
-                <flux:menu class="!bg-[var(--sidebar-bg)]">
-                    <div style="padding: 12px;">
-                        <div class="user-name">{{ auth()->user()->name }}</div>
-                        <div class="user-email">{{ auth()->user()->email }}</div>
+            {{-- Avatar con dropdown de Flux — wire:ignore evita crashes SPA --}}
+            <div wire:ignore>
+                <flux:dropdown position="bottom" align="end">
+                    <div class="mobile-header-avatar">
+                        {{ auth()->user()->initials() }}
                     </div>
 
-                    <flux:menu.separator class="border-[var(--sidebar-border)]" />
+                    <flux:menu style="background: var(--sidebar-bg); border: 1px solid var(--sidebar-border); min-width: 200px;">
+                        <div style="padding: 10px 14px 8px;">
+                            <div style="font-size: 13px; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ auth()->user()->name }}
+                            </div>
+                            <div style="font-size: 11px; color: var(--sidebar-email-user); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ auth()->user()->email }}
+                            </div>
+                        </div>
 
-                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
-                        {{ __('Configuración') }}
-                    </flux:menu.item>
+                        <flux:menu.separator style="border-color: var(--sidebar-border);" />
 
-                    <flux:menu.separator class="border-[var(--sidebar-border)]" />
-
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Cerrar Sesión') }}
+                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                            {{ __('Configuración') }}
                         </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
+
+                        <flux:menu.separator style="border-color: var(--sidebar-border);" />
+
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                                {{ __('Cerrar Sesión') }}
+                            </flux:menu.item>
+                        </form>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
         <main class="main-content">
             {{ $slot }}
         </main>
 
         <script>
-            // 🎯 APLICAR ESTADO INMEDIATAMENTE (antes de cualquier render)
+            // ─── Estado inicial del sidebar (sin flash) ──────────────────────────
             (function() {
                 const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
                 if (collapsed) {
                     document.documentElement.classList.add('sidebar-collapsed');
                     const sidebar = document.getElementById('sidebar');
-                    if (sidebar) {
-                        sidebar.classList.add('collapsed');
-                    }
+                    if (sidebar) sidebar.classList.add('collapsed');
                 }
             })();
 
-            let userDropdownOpen = false;
-            let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (typeof userDropdownOpen === 'undefined') var userDropdownOpen = false;
+            if (typeof sidebarCollapsed === 'undefined') {
+                var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            }
 
+            // ─── Funciones del sidebar ───────────────────────────────────────────
             function toggleSidebarCollapse() {
                 const sidebar = document.getElementById('sidebar');
                 sidebarCollapsed = !sidebarCollapsed;
-                
-                if (sidebarCollapsed) {
-                    sidebar.classList.add('collapsed');
-                    document.documentElement.classList.add('sidebar-collapsed');
-                } else {
-                    sidebar.classList.remove('collapsed');
-                    document.documentElement.classList.remove('sidebar-collapsed');
-                }
-                
+                sidebar.classList.toggle('collapsed', sidebarCollapsed);
+                document.documentElement.classList.toggle('sidebar-collapsed', sidebarCollapsed);
                 localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
             }
 
@@ -821,64 +915,82 @@
             function toggleMobileSidebar() {
                 const sidebar = document.getElementById('sidebar');
                 const overlay = document.getElementById('mobileOverlay');
-                
+                const isOpening = !sidebar?.classList.contains('mobile-open');
+
                 sidebar?.classList.toggle('mobile-open');
                 overlay?.classList.toggle('show');
+
+                // Al abrir en móvil: remover 'collapsed' visualmente para que
+                // se vea expandido, pero recordar el estado para restaurarlo al cerrar
+                if (isOpening && sidebar?.classList.contains('collapsed')) {
+                    sidebar.dataset.wasCollapsed = 'true';
+                } else if (!isOpening && sidebar?.dataset.wasCollapsed === 'true') {
+                    delete sidebar.dataset.wasCollapsed;
+                }
             }
 
-            // Cerrar dropdown al hacer clic fuera
+            // ─── Cerrar dropdown al hacer click fuera ───────────────────────────
             document.addEventListener('click', function(event) {
                 const userMenu = document.querySelector('.user-menu');
                 const dropdown = document.getElementById('userDropdown');
-                
                 if (userDropdownOpen && !userMenu?.contains(event.target) && !dropdown?.contains(event.target)) {
                     toggleUserDropdown();
                 }
             });
 
-            // Cerrar sidebar móvil al hacer clic en overlay
-            document.getElementById('mobileOverlay')?.addEventListener('click', toggleMobileSidebar);
+            // ─── Overlay cierra el sidebar móvil ────────────────────────────────
+            function bindOverlay() {
+                const overlay = document.getElementById('mobileOverlay');
+                if (overlay) {
+                    const fresh = overlay.cloneNode(true);
+                    overlay.parentNode.replaceChild(fresh, overlay);
+                    fresh.addEventListener('click', toggleMobileSidebar);
+                }
+            }
+            bindOverlay();
 
-            // 🎯 EVENTOS DE LIVEWIRE - Prevenir flash visual
+            // ─── Livewire SPA hooks ──────────────────────────────────────────────
             document.addEventListener('livewire:navigating', function() {
-                // Desactivar TODAS las transiciones durante navegación
                 document.body.classList.add('livewire-navigating');
-                
-                // Mantener el estado actual visible
-                const currentCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-                if (currentCollapsed) {
-                    document.documentElement.classList.add('sidebar-collapsed');
-                }
-            });
 
-            document.addEventListener('livewire:navigated', function() {
-                // Reaplicar estado INMEDIATAMENTE después de navegación
-                const savedState = localStorage.getItem('sidebarCollapsed') === 'true';
-                const sidebar = document.getElementById('sidebar');
-                
-                if (savedState) {
-                    sidebar?.classList.add('collapsed');
+                // Preservar estado colapsado
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
                     document.documentElement.classList.add('sidebar-collapsed');
-                } else {
-                    sidebar?.classList.remove('collapsed');
-                    document.documentElement.classList.remove('sidebar-collapsed');
                 }
-                
-                // Cerrar elementos abiertos
-                if (sidebar?.classList.contains('mobile-open')) {
-                    sidebar.classList.remove('mobile-open');
-                    document.getElementById('mobileOverlay')?.classList.remove('show');
-                }
-                
+
+                // Cerrar dropdown del sidebar
                 if (userDropdownOpen) {
                     userDropdownOpen = false;
                     document.getElementById('userDropdown')?.classList.remove('show');
                 }
-                
-                // Reactivar transiciones después de 50ms
-                setTimeout(() => {
-                    document.body.classList.remove('livewire-navigating');
-                }, 50);
+
+                // Cerrar cualquier panel de Flux abierto (dropdown móvil)
+                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+            });
+
+            document.addEventListener('livewire:navigated', function() {
+                // Restaurar sidebar
+                const savedState = localStorage.getItem('sidebarCollapsed') === 'true';
+                const sidebar = document.getElementById('sidebar');
+                sidebar?.classList.toggle('collapsed', savedState);
+                document.documentElement.classList.toggle('sidebar-collapsed', savedState);
+
+                // Cerrar sidebar móvil
+                if (sidebar?.classList.contains('mobile-open')) {
+                    sidebar.classList.remove('mobile-open');
+                    document.getElementById('mobileOverlay')?.classList.remove('show');
+                }
+
+                // Reset dropdown sidebar
+                if (userDropdownOpen) {
+                    userDropdownOpen = false;
+                    document.getElementById('userDropdown')?.classList.remove('show');
+                }
+
+                // Re-enlazar overlay (Livewire puede haberlo reemplazado)
+                bindOverlay();
+
+                setTimeout(() => document.body.classList.remove('livewire-navigating'), 50);
             });
         </script>
 

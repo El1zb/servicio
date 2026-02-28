@@ -12,14 +12,22 @@ use App\Livewire\Semesters\Crud as SemestersCrud;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
 use App\Livewire\Admin\WelcomeSection as WelcomeSection;
 use App\Livewire\Dashboard\Index as DashboardIndex;
-use App\Livewire\Dashboard\PeriodDetail;
+//use App\Livewire\Dashboard\Index\Index as DashboardIndex;
+//use App\Livewire\Dashboard\PeriodDetail;  
+use App\Livewire\Dashboard\Period\PeriodDetail;
 use App\Http\Controllers\WelcomeController;
 
 
 use App\Livewire\Students\Profile as StudentsProfile;
 use App\Livewire\StudentDocuments\Crud as StudentDocumentsCrud;
 
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+//Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
+})->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
