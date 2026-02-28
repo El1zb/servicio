@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Route;
 
 //use App\Livewire\Campuses\Crud as CampusesCrud;
 use App\Livewire\Campuses\Index as CampusesIndex;
-use App\Livewire\Careers\Crud as CareersCrud;
-use App\Livewire\Semesters\Crud as SemestersCrud;
+use App\Livewire\Careers\Index as CareersIndex;
+//use App\Livewire\Careers\Crud as CareersCrud;
+//use App\Livewire\Semesters\Crud as SemestersCrud;
+use App\Livewire\Semesters\Index as SemestersIndex;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
 use App\Livewire\Admin\WelcomeSection as WelcomeSection;
 use App\Livewire\Dashboard\Index as DashboardIndex;
@@ -41,8 +43,10 @@ Route::middleware(['auth'])->group(function () {
 
         //Route::get('campuses', CampusesCrud::class)->name('campuses.index');
         Route::get('campuses', CampusesIndex::class)->name('campuses.index');
-        Route::get('careers', CareersCrud::class)->name('careers.index');    
-        Route::get('semesters', SemestersCrud::class)->name('semesters.index');
+        //Route::get('careers', CareersCrud::class)->name('careers.index');    
+        Route::get('careers', CareersIndex::class)->name('careers.index');
+        //Route::get('semesters', SemestersCrud::class)->name('semesters.index');
+        Route::get('semesters', SemestersIndex::class)->name('semesters.index');
         Route::get('admin/create-admin', CreateAdmin::class)->name('admin.create-admin');
         //Route::get('admin/welcome-section', WelcomeSection::class)->name('admin.welcome-section');
         Route::get('periods/{id}', PeriodDetail::class)->name('periods.detail');
