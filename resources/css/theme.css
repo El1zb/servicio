@@ -431,11 +431,23 @@
 --student-document-calendar-bg-header-2: #ebedf1;
 --student-document-calendar-button-date-hover: #E8EDFF;
 
+
+
 --student-document-calendar-approved: #059669;
 --student-document-calendar-review: #2563EB;
 --student-document-calendar-rejected: #DC2626;
 --student-document-calendar-pending: #D97706;
 --student-document-calendar-expired: #6B7280;
+
+--student-document-alert-bg: var(--student-document-calendar-bg);
+--student-document-alert-button-date-hover: #E8EDFF;
+--student-document-alert-approved-border: #059669;
+--student-document-alert-review-border: #2563EB;
+--student-document-alert-rejected-border: #DC2626;
+--student-document-alert-pending-border: #D97706;
+--student-document-alert-expired-border: #6B7280;
+
+
 
 --student-document-calendar-selected-day-bg: rgba(37, 99, 235, 0.15);
 --student-document-calendar-selected-day-border: #2563EB;
@@ -447,13 +459,6 @@
 --student-document-calendar-selected-day-content-text-hover: #4B5563;
 --student-document-calendar-selected-day-content-card: var(--student-document-bg-content);
 
---student-document-alert-bg: var(--student-document-calendar-bg);
---student-document-alert-button-date-hover: #E8EDFF;
---student-document-alert-approved-border: #059669;
---student-document-alert-review-border: #2563EB;
---student-document-alert-rejected-border: #DC2626;
---student-document-alert-pending-border: #D97706;
---student-document-alert-expired-border: #6B7280;
 
 --student-document-validation-bg: #FFFFFF;
 --student-document-validation-no-perfil: rgba(5, 150, 105, 0.3);
@@ -464,7 +469,7 @@
 /* ===========================
    Botones MODAL
    =========================== */
---modal-bg: #FFFFFF;
+
 --modal-text-primary: #0A1628;
 --modal-text-secondary: #64748B;
 
@@ -546,218 +551,124 @@
 
 
 
+   /* ===========================
+   COLORES SIDEBAR
+   =========================== */
+
+   --sidebar-bg:                        #273764;
+   --sidebar-bg-alt:                    #273764;
+   --sidebar-border:                    #384770;
+
+   --sidebar-title-text:                #ffffff;
+   --sidebar-subtitle-text:             #C5C2C9;
+   --sidebar-item-text:                 #E1E3E9;
+
+   --sidebar-item-bg-active:            #e9ebf0;
+   --sidebar-item-text-active:          #273764;
+
+   --sidebar-item-bg-hover:             #34436D;
+   --sidebar-item-text-hover:           #ffffff;
+
+   --sidebar-bg-user:                   #273764;
+   --sidebar-logo-user:                 #525F83;
+   --sidebar-logo-letra-user:           #E1E3E9;
+   --sidebar-email-user:                #C5C2C9;
+   --sidebar-divisor:                   rgba(255, 255, 255, 0.12);
 
 
+   /* ===========================
+      GLOBAL
+      =========================== */
+
+   --color-bg-all:                      #efeff1;
+   --color-text-header-primary:         #0A1628;
+   --color-text-header-secondary:       #64748B;
+   --modal-bg:                          #FFFFFF;
 
 
+   /* ===========================
+      INDEX
+      =========================== */
 
+   /* Fondos */
+   --index-bg:                          #F7F9FB;
 
+   /* Tarjetas */
+   --index-card-bg:                     #FFFFFF;
+   --index-card-header-bg:              #eff1f3;
+   --index-card-header-bg-2:            #eff1f3;
+   --index-card-header-approved-bg:     #eff1f3;
+   --index-card-header-approved-bg-2:   #eff1f3;
 
+   /* Contenido interno */
+   --index-content-bg:                  #F8FAFC;
 
-
-
-
-   
-
-   --color-bg-all: #efeff1;
-
-   --color-text-header-primary: #0A1628;
-   --color-text-header-secondary: #64748B;
-
-
-  /* ===========================
-     COLORES PRIMARIOS
-     =========================== */
-  --color-primary: #2D7A4F;
-  --color-primary-hover: #1F5537;
-  --color-primary-light: #E8F5ED;
-
-  /* ===========================
-     COLORES SECUNDARIOS
-     =========================== */
-  --color-secondary: #1E5A8E;
-  --color-secondary-hover: #144166;
-  --color-secondary-light: #E3F2FD;
-
-  /* ===========================
-     FONDOS
-     =========================== */
-  --color-background: #F8F9FA;
-  --color-surface: #1e282c;
-  --color-surface-elevated: #FFFFFF;
-
-  /* ===========================
-     MODO CLARO DASHBOARD
-     =========================== */
-     --color-surface: #1e282c; /* fondo de la barra lateral */
-     --color-border: #DEE2E6; /* borde de la barra lateral */
-     --color-surface-active-bg: #2A3539; /* un poco más claro que el surface para resaltar */
-     --color-surface-active-text: #A8C0C4; /* texto contrastante sobre el fondo activo */
-
-  /* ===========================
-     COLOR NEUTRAL PROFUNDO
-     =========================== */
-  --color-neutral-deep: #212b36; /* Para fondos o elementos destacados en modo claro */
-
-  /* ===========================
-     TEXTO
-     =========================== */
-  --color-text-primary: #1A1D23;
-  --color-text-secondary: #5C6670;
-  --color-text-muted: #6C757D;
-  --color-text-inverse: #FFFFFF;
-
-  /* ===========================
-     BORDES Y DIVISORES
-     =========================== */
-  
-  --color-divider: #E9ECEF;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-
-  /* ===========================
-     ESTADOS
-     =========================== */
-  --color-success: #28A745;
-  --color-warning: #F0AD4E;
-  --color-error:   #DC3545;
-  --color-info:    #17A2B8;
-
-  /* ===========================
-     SOMBRAS
-     =========================== */
-  --shadow-xs: 0 1px 1px rgb(0 0 0 / 0.03);
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /* ===========================
-     COLORES SIDEBAR
-     =========================== */
-     
-
-   --sidebar-bg: #273764;
-   --sidebar-bg-alt: #273764;
-   --sidebar-border: #384770;
+   /* Bordes */
+   --index-border:                      #DDE2E8;
 
    /* Textos */
-   --sidebar-title-text: #ffffff;
-   --sidebar-subtitle-text: #C5C2C9;            
+   --index-text-primary:                #0A1628;
+   --index-text-secondary:              #64748B;
 
-   --sidebar-item-text: #E1E3E9;              
+   /* Estados — Aprobado */
+   --index-status-approved-bg:          rgba(5, 150, 105, 0.1);
+   --index-status-approved-icon:        rgb(4, 120, 87);
 
-   /* Item activo */
-   --sidebar-item-bg-active: #e9ebf0;          /* azul más oscuro que el fondo */
-   --sidebar-item-text-active: #273764;        /* blanco puro */
+   /* Estados — Normal / Review */
+   --index-status-normal-bg:            rgba(37, 99, 235, 0.1);
+   --index-status-normal-icon:          rgb(29, 78, 216);
 
-   /* Hover */
-   --sidebar-item-bg-hover: #34436D;           /* azul oscuro intermedio */
-   --sidebar-item-text-hover: #ffffff;
+   /* Estados — Rechazado */
+   --index-status-rejected-bg:          rgba(220, 38, 38, 0.1);
+   --index-status-rejected-icon:        rgb(185, 28, 28);
+   --index-status-rejected-border:      rgba(220, 38, 38, 0.45);
 
-   /* Usuario abajo */
-   --sidebar-bg-user: #273764;                 /* más oscuro que el sidebar */
-   --sidebar-logo-user: #525F83;               /* avatar texto blanco */
-   --sidebar-logo-letra-user: #E1E3E9;         /* letra con el azul institucional */
+   /* Estados — Pendiente */
+   --index-status-pending:              #D97706;
 
-   --sidebar-email-user: #C5C2C9;              /* azul pálido legible */
-   --sidebar-divisor: rgba(255, 255, 255, 0.12);
+   /* Iconos */
+   --index-icon-bg:                     rgba(33, 53, 97, 0.1);
+   --index-icon-text:                   #000;
 
-   --color-bg-all: #efeff1;
+   /* Acento */
+   --index-accent:                      #2563EB;
 
-   --color-text-header-primary: #0A1628;
-   --color-text-header-secondary: #64748B;
+   /* Marca */
+   --index-brand-primary:               #213561;
+   --index-brand-secondary:             #273c6a;
 
-  /* ───────────────────────────────────────────────
-       FONDOS DE PÁGINA / SECCIÓN Claro
-       Antes: --student-document-bg
-    ─────────────────────────────────────────────── */
-    --index-bg:                         #F7F9FB;
+   /* Botón primario */
+   --index-btn-primary-bg:              #173a85;
+   --index-btn-primary-text:            #FFFFFF;
+   --index-btn-primary-shadow:          rgba(37, 99, 235, 0.15);
+   --index-btn-primary-hover:           #183576;
 
-    /* ───────────────────────────────────────────────
-       TARJETAS
-       Antes: --student-document-bg-card
-    ─────────────────────────────────────────────── */
-    --index-card-bg:                    #FFFFFF;
-    --index-card-header-bg:             #eff1f3;
-    --index-card-header-bg-2:           #eff1f3;
-   --index-card-header-approved-bg:    #eff1f3;
-    --index-card-header-approved-bg-2:  #eff1f3;
+   /* Botón cancelar */
+   --index-btn-cancel-bg:               #6B7280;
+   --index-btn-cancel-text:             #FFFFFF;
+   --index-btn-cancel-hover:            #4B5563;
 
-    --index-content-bg:                 #F8FAFC;
-    --index-border:                     #DDE2E8;
+   /* Botón eliminar */
+   --index-btn-danger-bg:               #ef4444;
+   --index-btn-danger-bg-2:             #dc2626;
+   --index-btn-danger-text:             #FFFFFF;
 
-    --index-text-primary:               #0A1628;
-    --index-text-secondary:             #64748B;
+   /* Textos modal */
+   --index-modal-text-primary:          #0A1628;
+   --index-modal-text-secondary:        #64748B;
 
-    --index-status-approved-bg:         rgba(5, 150, 105, 0.1);
-    --index-status-approved-icon:       rgb(4, 120, 87);
-
-    --index-status-normal-bg:           rgba(37, 99, 235, 0.1);
-    --index-status-normal-icon:         rgb(29, 78, 216);
-
-    --index-status-rejected-bg:         rgba(220, 38, 38, 0.1);
-    --index-status-rejected-icon:       rgb(185, 28, 28);
-    --index-status-rejected-border:     rgba(220, 38, 38, 0.45);
-
-   --index-status-pending:             #D97706;
-
-    --index-icon-bg:                    rgba(33, 53, 97, 0.1);
-    --index-icon-text:                  #1a2a4d;
-
-    --index-accent:                     #2563EB;
-
-    --index-brand-primary:              #213561;
-    --index-brand-secondary:            #273c6a;
-
-    --index-btn-primary-bg:             #173a85;
-    --index-btn-primary-text:           #FFFFFF;
-    --index-btn-primary-shadow:         rgba(37, 99, 235, 0.15);
-    --index-btn-primary-hover:          #183576;
-
-    --index-btn-cancel-bg:              #6B7280;
-    --index-btn-cancel-text:            #FFFFFF;
-    --index-btn-cancel-hover:           #4B5563;
-
-    --index-btn-danger-bg:              #ef4444;
-    --index-btn-danger-bg-2:            #dc2626;
-    --index-btn-danger-text:            #FFFFFF;
-
-    --index-modal-text-primary:         #0A1628;
-    --index-modal-text-secondary:       #64748B;
-
-    --index-modal-bg:                   #FFFFFF;
+   /* Fondo modal */
+   --index-modal-bg:                    #FFFFFF;
 
 
+   /* ===========================
+      PERIOD DETAIL
+      =========================== */
 
-
-
-
-    /* ── Fondos de página / sección ── */
+   /* Fondos */
    --period-detail-bg:                              #F7F9FB;
 
-   /* ── Tarjetas ── */
+   /* Tarjetas */
    --period-detail-card-bg:                         #FFFFFF;
    --period-detail-card-header-bg:                  #eff1f3;
    --period-detail-card-header-bg-2:                #eff1f3;
@@ -765,117 +676,119 @@
    --period-detail-card-header-approved-bg-2:       #eff1f3;
    --period-detail-card-indicator-bg:               #CDD3DC;
 
-   /* ── Contenido interno de tarjeta ── */
+   /* Contenido interno */
    --period-detail-content-bg:                      #F8FAFC;
 
-   /* ── Bordes ── */
+   /* Bordes */
    --period-detail-border:                          #DDE2E8;
 
-   /* ── Textos ── */
+   /* Textos */
    --period-detail-text-primary:                    #0A1628;
    --period-detail-text-secondary:                  #64748B;
 
-   /* ── Acento / indicador de progreso ── */
+   /* Acento */
    --period-detail-accent:                          #000;
 
-   /* ── Acentos institucionales (gradientes, avatares, iconos de header) ── */
+   /* Marca */
    --period-detail-brand-primary:                   #212121;
    --period-detail-brand-secondary:                 #212121;
-   --period-detail-brand-check:                   #212121;
-      --period-detail-text-icon: #fff;
+   --period-detail-brand-check:                     #212121;
+   --period-detail-text-icon:                       #fff;
 
-   /* ── Iconos genéricos (stats cards) ── */
+   /* Iconos */
    --period-detail-icon-bg:                         rgba(33, 53, 97, 0.1);
    --period-detail-icon-text:                       #1a2a4d;
 
-   /* ── Estado: aprobado (verde) ── */
+   /* Estados — Aprobado */
    --period-detail-status-approved-border:          rgba(5, 150, 105, 0.45);
    --period-detail-status-approved-icon-bg:         rgba(5, 150, 105, 0.15);
    --period-detail-status-approved-icon-color:      rgb(4, 120, 87);
    --period-detail-status-approved-bg:              rgba(5, 150, 105, 0.1);
    --period-detail-status-approved-text:            rgb(4, 120, 87);
 
-   /* ── Estado: normal / review (azul) ── */
+   /* Estados — Normal / Review */
    --period-detail-status-normal-bg:                rgba(37, 99, 235, 0.1);
    --period-detail-status-normal-text:              rgb(29, 78, 216);
 
-   /* ── Estado: rechazado (rojo) ── */
+   /* Estados — Rechazado */
    --period-detail-status-rejected-bg:              rgba(220, 38, 38, 0.1);
    --period-detail-status-rejected-text:            rgb(185, 28, 28);
    --period-detail-status-rejected-border:          rgba(239, 68, 68, 0.4);
 
-   /* ── Estado: pendiente (amarillo) ── */
-   --period-detail-status-pending:                  #D97706;
+   /* Estados — Pendiente */
+   --period-detail-status-pending:                  #D97706; 
 
-   /* ── Botones de archivo (word / pdf / view / replace) ── */
+   /* Botón texto */
    --period-detail-btn-text:                        #000;
 
-   /* ── Botón primario (acción principal azul) ─────────────────
-         equivale a index-accent como fondo                           */
-      /* ── Botón primario ── */
---period-detail-btn-primary-bg:              #213561;
---period-detail-btn-primary-text:            #ffffff;
---period-detail-btn-primary-hover:           #1a2a4d;
---period-detail-btn-primary-shadow:          rgba(33, 53, 97, 0.25);
+   /* Botón primario */
+   --period-detail-btn-primary-bg:                  #213561;
+   --period-detail-btn-primary-text:                #ffffff;
+   --period-detail-btn-primary-hover:               #1a2a4d;
+   --period-detail-btn-primary-shadow:              rgba(33, 53, 97, 0.25);
 
---period-detail-btn-view-perfil-bg:          #213561;
---period-detail-btn-view-perfil-hover:       #1a2a4d;
---period-detail-btn-view-perfil-text:        #ffffff;
---period-detail-btn-view-perfil-text-hover:  #ffffff;
+   /* Botón ver perfil */
+   --period-detail-btn-view-perfil-bg:              #213561;
+   --period-detail-btn-view-perfil-hover:           #1a2a4d;
+   --period-detail-btn-view-perfil-text:            #ffffff;
+   --period-detail-btn-view-perfil-text-hover:      #ffffff;
 
-/* ── Botón cancelar / cerrar ── */
---period-detail-btn-cancel-bg:               #e2e8f0;
---period-detail-btn-cancel-text:             #334155;
---period-detail-btn-cancel-hover:            #cbd5e1;
---period-detail-btn-cancel-shadow:           rgba(33, 53, 97, 0.15);
+   /* Botón cancelar */
+   --period-detail-btn-cancel-bg:                   #e2e8f0;
+   --period-detail-btn-cancel-text:                 #334155;
+   --period-detail-btn-cancel-hover:                #cbd5e1;
+   --period-detail-btn-cancel-shadow:               rgba(33, 53, 97, 0.15);
 
-/* ── Botón aprobar (verde) ── */
---period-detail-btn-approve-bg:              #059669;
---period-detail-btn-approve-text:            #ffffff;
---period-detail-btn-approve-hover:           #047857;
+   /* Botón aprobar */
+   --period-detail-btn-approve-bg:                  #059669;
+   --period-detail-btn-approve-text:                #ffffff;
+   --period-detail-btn-approve-hover:               #047857;
 
-/* ── Botón rechazar (rojo) ── */
---period-detail-btn-reject-bg:               #DC2626;
---period-detail-btn-reject-text:             #ffffff;
---period-detail-btn-reject-hover:            #B91C1C;
+   /* Botón rechazar */
+   --period-detail-btn-reject-bg:                   #DC2626;
+   --period-detail-btn-reject-text:                 #ffffff;
+   --period-detail-btn-reject-hover:                #B91C1C;
 
-/* ── Botón cerrar / neutral ── */
---period-detail-btn-close-bg:                #e2e8f0;
---period-detail-btn-close-text:              #334155;
---period-detail-btn-close-hover:             #cbd5e1;
+   /* Botón cerrar */
+   --period-detail-btn-close-bg:                    #e2e8f0;
+   --period-detail-btn-close-text:                  #334155;
+   --period-detail-btn-close-hover:                 #cbd5e1;
 
-/* ── Botones de acción pequeños (word / pdf / edit / delete / genérico) ── */
---period-detail-btn-word-bg:                 rgba(33, 53, 97, 0.08);
---period-detail-btn-word-hover:              rgba(33, 53, 97, 0.15);
---period-detail-btn-word-text:               #213561;
+   /* Botón Word */
+   --period-detail-btn-word-bg:                     rgba(33, 53, 97, 0.08);
+   --period-detail-btn-word-hover:                  rgba(33, 53, 97, 0.15);
+   --period-detail-btn-word-text:                   #213561;
 
---period-detail-btn-pdf-bg:                  rgba(33, 53, 97, 0.08);
---period-detail-btn-pdf-hover:               rgba(33, 53, 97, 0.15);
---period-detail-btn-pdf-text:                #213561;
+   /* Botón PDF */
+   --period-detail-btn-pdf-bg:                      rgba(33, 53, 97, 0.08);
+   --period-detail-btn-pdf-hover:                   rgba(33, 53, 97, 0.15);
+   --period-detail-btn-pdf-text:                    #213561;
 
---period-detail-btn-edit-bg:                 rgba(33, 53, 97, 0.08);
---period-detail-btn-edit-hover:              rgba(33, 53, 97, 0.15);
---period-detail-btn-edit-text:               #213561;
+   /* Botón editar */
+   --period-detail-btn-edit-bg:                     rgba(33, 53, 97, 0.08);
+   --period-detail-btn-edit-hover:                  rgba(33, 53, 97, 0.15);
+   --period-detail-btn-edit-text:                   #213561;
 
---period-detail-btn-delete-bg:               rgba(220, 38, 38, 0.08);
---period-detail-btn-delete-hover:            rgba(220, 38, 38, 0.15);
---period-detail-btn-delete-text:             #B91C1C;
+   /* Botón eliminar */
+   --period-detail-btn-delete-bg:                   rgba(220, 38, 38, 0.08);
+   --period-detail-btn-delete-hover:                rgba(220, 38, 38, 0.15);
+   --period-detail-btn-delete-text:                 #B91C1C;
 
---period-detail-btn-bg-g:                    rgba(33, 53, 97, 0.08);
---period-detail-btn-hover-g:                 rgba(33, 53, 97, 0.15);
---period-detail-btn-text-g:                  #213561;
+   /* Botón genérico */
+   --period-detail-btn-bg-g:                        rgba(33, 53, 97, 0.08);
+   --period-detail-btn-hover-g:                     rgba(33, 53, 97, 0.15);
+   --period-detail-btn-text-g:                      #213561;
 
-/* ── Fila/sección expandida ── */
---period-detail-expanded-bg:                 #eff1f3;
+   /* Expanded */
+   --period-detail-expanded-bg:                     #eff1f3;
 
-
-
-
-
-
-
-
-
+   /* ===========================
+   PROFILE CARDS (light mode)
+   =========================== */
+   --profile-card-bg:              var(--index-card-bg);
+   --profile-card-border:          var(--index-border);
+   --profile-card-shadow:          rgba(0, 0, 0, 0.08);
+   --profile-card-shadow-hover:    rgba(0, 0, 0, 0.12);
 }
 
 /* =====================================================
@@ -883,275 +796,6 @@
    ===================================================== */
 @layer theme {
   .dark {
-
-   --color-bg-all: #161b22;
-/* ===========================
-     TEMA OSCURO ELEGANTE PREMIUM
-     =========================== */
-
-   /* ===========================
-      SECCION HEADER WELCOME
-      =========================== */
-   --color-header-bg-1: #0b0f16;
-   --color-header-bg-2: #0a0e13;
-   --color-border-header: rgba(100, 120, 150, 0.15);
-
-   --text-logo-header-1: #F0F4F8;
-   --text-logo-header-2: #C5D1E0;
-
-   --color-header-bg: #171e2d;
-   --color-header-bg-hover: #19233b;
-   --text-header: #E8EEF5;
-
-   --text-login-header: #D0DAE8;
-
-   /* ===========================
-      SECCION HERO
-      =========================== */
-
-   /* Fondos hero - profundos y refinados */
-   --color-hero-bg-1: #0A0F1C; /* negro con tinte azul marino */
-   --color-hero-bg-2: #0D1321; /* azul marino profundo */
-   --color-hero-bg-accent: #12192B; /* acento azul oscuro */
-   --color-border-hero: rgba(120, 140, 170, 0.12); /* borde plateado-azulado */
-
-   /* Acentos institucionales - azul slate elegante */
-   --color-hero-accent-primary: #4d76ac; /* azul slate medio */
-   --color-hero-accent-secondary: #5078b0; /* azul acero claro */
-   --color-hero-accent-light: #8BA4C7; /* azul suave luminoso */
-
-   /* Badge institucional premium */
-   --color-badge-bg: rgba(90, 123, 165, 0.10); /* fondo azul translúcido */
-   --color-badge-border: rgba(139, 164, 199, 0.25); /* borde azul suave */
-   --color-badge-text: #B5C9E0; /* texto azul claro premium */
-   --color-badge-icon: #8BA4C7; /* icono azul refinado */
-
-   /* Textos del hero - premium y sofisticados */
-   --text-hero-title: #EDF2F7; /* blanco cálido azulado */
-   --text-hero-highlight: #678abc; /* azul elegante para destacar */
-   --text-hero-subtitle: #C5D1E0; /* gris azulado premium */
-   --text-hero-body: #95A5B8; /* gris azulado medio */
-   --text-hero-muted: #6B7A8F; /* gris azulado suave */
-
-   /* Botones institucionales premium */
-   --color-btn-primary: #3c78c7; /* azul slate elegante */
-   --color-btn-primary-hover: #1f4371; /* hover más profundo */
-   --color-btn-primary-shadow: rgba(90, 123, 165, 0.35);
-   --text-btn-primary: #FFFFFF;
-
-   --color-btn-secondary: transparent;
-   --color-btn-secondary-hover: rgba(90, 123, 165, 0.10);
-   --color-btn-secondary-border: rgba(139, 164, 199, 0.35);
-   --color-btn-secondary-border-hover: #8BA4C7;
-   --text-btn-secondary: #B5C9E0;
-
-   /* Efectos decorativos premium */
-   --color-hero-grid: rgba(90, 123, 165, 0.04); /* grid sutil */
-   --color-hero-glow-subtle: rgba(139, 164, 199, 0.07); /* glow refinado */
-   --color-hero-divider: rgba(120, 140, 170, 0.10); /* separadores elegantes */
-
-   /* Cards y elementos hero premium */
-   --color-hero-card-bg: rgba(18, 25, 43, 0.65); /* fondo translúcido elegante */
-   --color-hero-card-border: rgba(139, 164, 199, 0.18);
-   --color-hero-card-hover: rgba(18, 25, 43, 0.90); /* hover sofisticado */
-
-   /* ===========================
-      SECCION MAIN QUE ES
-      =========================== */
-   /* Fondo de sección premium */
-   --color-section-bg: #0C1118;
-
-   /* Cards premium */
-   --color-card-bg: #13181F;
-   --color-card-border: #1D2531;
-   --color-card-border-hover: #2A3644;
-   --color-card-shadow: rgba(0, 0, 0, 0.50);
-   --color-card-shadow-hover: rgba(90, 123, 165, 0.18);
-
-   /* Iconos de cards */
-   --color-icon-bg: rgba(90, 123, 165, 0.12);
-   --color-icon-text: #8BA4C7;
-
-   /* Textos de sección */
-   --text-section-title: #EDF2F7;
-   --text-section-subtitle: #C5D1E0;
-   --text-card-title: #D8E1EC;
-   --text-card-body: #95A5B8;
-
-   /* ===========================
-      SECCION MAIN OBJETIVO
-      =========================== */
-   /* Fondo premium con tinte azul */
-   --color-objetivo-bg: #0D1321;
-   --color-objetivo-border: #15202F;
-
-   /* Card central destacada */
-   --color-objetivo-card-bg: #13181F;
-   --color-objetivo-card-border: rgba(139, 164, 199, 0.22);
-   --color-objetivo-card-shadow: rgba(90, 123, 165, 0.18);
-
-   /* Acento del icono principal */
-   --color-objetivo-icon-bg: #5A7BA5;
-   --color-objetivo-icon-text: #FFFFFF;
-
-   /* Checks de lista */
-   --color-objetivo-check: #8BA4C7;
-
-   /* Textos de objetivo */
-   --text-objetivo-title: #EDF2F7;
-   --text-objetivo-subtitle: #C5D1E0;
-   --text-objetivo-body: #D8E1EC;
-
-   /* ===========================
-      SECCION MAIN REQUISITOS
-      =========================== */
-   /* Fondo de sección premium */
-   --color-requisitos-bg: #0C1118;
-
-   /* Cards de requisitos */
-   --color-requisitos-card-bg: #13181F;
-   --color-requisitos-card-border: #1D2531;
-   --color-requisitos-card-border-hover: #2A3644;
-   --color-requisitos-card-shadow: rgba(0, 0, 0, 0.50);
-   --color-requisitos-card-shadow-hover: rgba(90, 123, 165, 0.18);
-
-   /* Iconos de requisitos */
-   --color-requisitos-icon-bg: rgba(90, 123, 165, 0.12);
-   --color-requisitos-icon-text: #8BA4C7;
-
-   /* Textos de requisitos */
-   --text-requisitos-title: #EDF2F7;
-   --text-requisitos-subtitle: #C5D1E0;
-   --text-requisitos-card-title: #D8E1EC;
-   --text-requisitos-card-body: #95A5B8;
-
-   /* ===========================
-      SECCION MAIN CREDITOS
-      =========================== */
-   /* Fondo premium con tinte azul */
-   --color-duracion-bg: #0D1321;
-   --color-duracion-border: #15202F;
-
-   /* Cards de estadísticas */
-   --color-duracion-card-bg: #13181F;
-   --color-duracion-card-border: #1D2531;
-   --color-duracion-card-border-highlight: #5A7BA5;
-   --color-duracion-card-shadow: rgba(90, 123, 165, 0.18);
-
-   /* Iconos de estadísticas */
-   --color-duracion-icon-bg: rgba(90, 123, 165, 0.12);
-   --color-duracion-icon-text: #8BA4C7;
-
-   /* Números destacados */
-   --color-duracion-number: #8BA4C7;
-
-   /* Textos de duración */
-   --text-duracion-title: #EDF2F7;
-   --text-duracion-subtitle: #C5D1E0;
-   --text-duracion-label: #95A5B8;
-
-   /* ===========================
-      SECCION MAIN QUE PERMITE
-      =========================== */
-   /* Fondo de sección premium */
-   --color-plataforma-bg: #0C1118;
-
-   /* Cards de funcionalidades */
-   --color-plataforma-card-bg: #13181F;
-   --color-plataforma-card-border: #1D2531;
-   --color-plataforma-card-border-hover: #2A3644;
-   --color-plataforma-card-shadow: rgba(0, 0, 0, 0.50);
-   --color-plataforma-card-shadow-hover: rgba(90, 123, 165, 0.18);
-
-   /* Iconos de funcionalidades */
-   --color-plataforma-icon-bg: rgba(90, 123, 165, 0.12);
-   --color-plataforma-icon-text: #8BA4C7;
-
-   /* Textos de sección */
-   --text-plataforma-title: #EDF2F7;
-   --text-plataforma-subtitle: #C5D1E0;
-   --text-plataforma-card-title: #D8E1EC;
-   --text-plataforma-card-body: #95A5B8;
-
-   /* ===========================
-      SECCION MAIN CTA
-      =========================== */
-   /* Fondo premium con tinte azul */
-   --color-cta-bg: #0D1321;
-   --color-cta-border: #15202F;
-
-   /* Card CTA principal */
-   --color-cta-card-bg: #13181F;
-   --color-cta-card-border: rgba(139, 164, 199, 0.22);
-   --color-cta-card-shadow: rgba(90, 123, 165, 0.22);
-
-   /* Botón primario */
-   --color-cta-btn-primary: #3c78c7;
-   --color-cta-btn-primary-hover: #1f4371;
-   --color-cta-btn-primary-shadow: rgba(90, 123, 165, 0.35);
-   --text-cta-btn-primary: #FFFFFF;
-
-   /* Botón secundario */
-   --color-cta-btn-secondary: transparent;
-   --color-cta-btn-secondary-hover: rgba(90, 123, 165, 0.10);
-   --color-cta-btn-secondary-border: #3c78c7;
-   --text-cta-btn-secondary: #B5C9E0;
-   --text-cta-btn-secondary-hover: #FFFFFF;
-
-   /* Textos de CTA */
-   --text-cta-title: #EDF2F7;
-   --text-cta-body: #C5D1E0;
-
-   /* ===========================
-      SECCION FOOTER
-      =========================== */
-   /* Fondo del footer - premium profundo */
-   --color-footer-bg: #050811;
-   --color-footer-bg-secondary: #0A0F1C;
-
-   /* Bordes */
-   --color-footer-border: #13181F;
-   --color-footer-divider: rgba(139, 164, 199, 0.10);
-
-   /* Textos del footer */
-   --text-footer-primary: #EDF2F7;
-   --text-footer-secondary: #95A5B8;
-   --text-footer-muted: #6B7A8F;
-
-   /* Links del footer */
-   --color-footer-link: #95A5B8;
-   --color-footer-link-hover: #B5C9E0;
-
-   /* Acentos */
-   --color-footer-accent: #6B8BB8;
-   --color-footer-accent-hover: #8BA4C7;
-
-   
-
-   /* ===========================
-     COLORES SETTINGS
-     =========================== */
-     --settings-item-text: #F8FAFF;
-     --settings-item-text-hover: #FFFFFF;
-     --settings-item-bg-hover:  rgba(255,255,255,0.06);                                                                          
-
-     /* ===========================
-     Botones SETTINGS
-     =========================== */
-    --settings-btn-primary: #F8FAFF;
-    --settings-btn-primary-hover: #FFFFFF;
-    --settings-btn-primary-shadow: rgba(33, 53, 97, 0.25);
-    --settings-btn-primary-text: #000000;
-
-    --settings-btn-danger: #DC2626; /* rojo principal */
-   --settings-btn-danger-hover: #B91C1C; /* rojo más oscuro al hover */
-   --settings-btn-danger-shadow: rgba(220, 38, 38, 0.25); /* sombra roja semi-transparente */
-   --settings-btn-danger-text: #FFFFFF; /* texto blanco */
-
-   --settings-btn-cancel: #dfe1e3; /* fondo principal */
-   --settings-btn-cancel-hover: #c6c8ca; /* fondo al hover */
-   --settings-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
-   --settings-btn-cancel-text: #000000; /* color de letra */
 
    /* ===========================
     Perfil Estudiante
@@ -1279,43 +923,6 @@
    --student-document-validation-negative: rgba(232, 45, 45, 0.4);  
    --student-document-validation-icon: #f2f2f2;
 
-   /* ===========================
-     Botones MODAL
-     =========================== */
-      --modal-bg: #1c2128;
-      --modal-text-primary: #e6edf3;
-      --modal-text-secondary: #a5afbd;
-
-      --modal-btn-primary: #F8FAFF;
-      --modal-btn-primary-hover: #FFFFFF;
-      --modal-btn-primary-shadow: rgba(33, 53, 97, 0.25);
-      --modal-btn-primary-text: #000000;
-
-      --modal-btn-cancel: #6e7074; /* fondo principal */
-      --modal-btn-cancel-hover: #56585d; /* fondo al hover */
-      --modal-btn-cancel-shadow: rgba(33, 53, 97, 0.25); /* sombra */
-      --modal-btn-cancel-text: #ffffff; /* color de letra */
-
-      --icon-document-student-modal-dowload-bg: #0b1117;
-      --icon-document-student-modal-dowload-icon: #242930;
-
-      --icon-document-student-modal-comment-bg: #3c78c7;
-      --icon-document-student-modal-comment-icon: #ffffff;
-
-      --document-student-modal-border: #666d77;
-      --document-student-modal-bg-comment: #242930;
-      --document-student-modal-border-comment: #2c323a;
-
-      --modal-btn-document-descargar: #3c78c7; 
-      --modal-btn-document-descargar-text: #ffffff;
-      --modal-btn-document-descargar-shadow: rgba(33, 53, 97, 0.25); 
-      --modal-btn-document-descargar-hover: #295ea2;
-
-      --modal-btn-document-cerrar: #dee2eb; 
-      --modal-btn-document-cerrar-text: #000000;
-      --modal-btn-document-cerrar-shadow: rgba(33, 53, 97, 0.25); 
-      --modal-btn-document-cerrar-hover: #c8cbd3;
-
       /* ===========================
     TOAST notifications
      =========================== */
@@ -1327,411 +934,248 @@
       --toast-notification-text-primary: #e6edf3;
       --toast-notification-text-secondary: #a5afbd;
 
-      /* ===========================
-      Botón Aprobar / Rechazar / Cerrar (Elegante)
-      =========================== */
 
-   /* Botón Aprobar - Verde Elegante Intenso */
-   --modal-btn-approve: #059669;             /* Verde más oscuro y fuerte */
-   --modal-btn-approve-hover: #047857;       /* Hover un poco más profundo */
-   --modal-btn-approve-text: #FFFFFF;        /* Texto blanco */
-
-   /* Botón Rechazar - Rojo Elegante Intenso */
-   --modal-btn-reject: #DC2626;              /* Rojo intenso, más visible */
-   --modal-btn-reject-hover: #B91C1C;        /* Hover más oscuro */
-   --modal-btn-reject-text: #FFFFFF;         /* Texto blanco */
-
-   /* Botón Cerrar - Gris Neutro Elegante */
-   --modal-btn-close: #475569;                /* gris slate medio */
-   --modal-btn-close-hover: #334155;          /* gris más oscuro en hover */
-   --modal-btn-close-text: #F1F5F9;           /* texto gris muy claro */
-   
-
-
-
-
-
-
-
-
-   
-
-   /* ===========================
-    ALERTS, checar si se eliminan a futuro
-     =========================== */
-    --alert-success-bg: rgba(6, 95, 70, 0.20);
-   --alert-success-border: rgba(16, 185, 129, 0.55);
-   --alert-success-text: rgb(103, 223, 175);
-    
-
-
-
-
-
-
-
-    /* ===========================
-   COLORES PRIMARIOS (AHORA AZUL)
-   =========================== */
-   --color-primary: #1D4ED8;               /* azul intenso principal */
-   --color-primary-hover: #2563EB;         /* azul más brillante para hover */
-   --color-primary-light: #0F172A;         /* azul muy oscuro para fondos/overlay */
-   --color-primary-light-gradient: #3B82F6; /* azul suave para gradientes */
-
-   /* ===========================
-      COLORES SECUNDARIOS
-      =========================== */
-   --color-secondary: #3B82F6;             /* azul medio para elementos secundarios */
-   --color-secondary-hover: #60A5FA;       /* azul claro para hover */
-   --color-secondary-light: #1E293B;       /* azul muy oscuro para fondos secundarios */
-   --color-secondary-light-gradient: #60A5FA; /* azul claro para gradientes */
-
-
-    /* ===========================
-       FONDOS
-       =========================== */
-    --color-background: #0F1419;
-    --color-surface: #1A1F2E;
-    --color-surface-elevated: #101727;
-
-    /* ===========================
-       COLOR NEUTRAL PROFUNDO
-       =========================== */
-    --color-neutral-deep: #2C3A50; /* Para fondos o elementos destacados en modo oscuro */
-
-    /* ===========================
-       TEXTO
-       =========================== */
-    --color-text-primary: #E8EBF0;
-    --color-text-secondary: #9CA3AF;
-    --color-text-muted: #6B7280;
-    --color-text-inverse: #0F1419;
-
-    /* ===========================
-       BORDES Y DIVISORES
-       =========================== */
-    --color-border: #374151;
-    --color-divider: #2D3748;
-
-    /* ===========================
-       ESTADOS
-       =========================== */
-    --color-success: #34D058;
-    --color-warning: #FFB020;
-    --color-error:   #F85149;
-    --color-info:    #58A6FF;
-
-    /* ===========================
-       SOMBRAS
-       =========================== */
-    --shadow-xs: 0 1px 1px rgb(0 0 0 / 0.25);
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
 
 
     /*NUEVO*/
+   /* ===========================
+   COLORES SIDEBAR
+   =========================== */
+
+   --sidebar-bg:                       #0a0a0a;
+   --sidebar-bg-alt:                   #0a0a0a;
+   --sidebar-border:                   #191919;
+
+   --sidebar-title-text:               #ffffff;
+   --sidebar-subtitle-text:            #d6d6d6;
+   --sidebar-item-text:                #e6e6e6;
+
+   --sidebar-item-bg-active:           #1b1b1b;
+   --sidebar-item-text-active:         #f0f6fc;
+
+   --sidebar-item-bg-hover:            #1b1b1b;
+   --sidebar-item-text-hover:          #f0f6fc;
+
+   --sidebar-bg-user:                  #0a0a0a;
+   --sidebar-logo-user:                #f0f6fc;
+   --sidebar-logo-letra-user:          #0d1117;
+   --sidebar-email-user:               #8b949e;
+   --sidebar-divisor:                  rgba(255, 255, 255, 0.08);
 
 
+   /* ===========================
+      GLOBAL
+      =========================== */
+
+   --color-bg-all:                     #0a0a0a;
+   --color-text-header-primary:        #e6edf3;
+   --color-text-header-secondary:      #a5afbd;
+   --modal-bg:                         #111111;
 
 
+   /* ===========================
+      INDEX
+      =========================== */
 
+   /* Fondos */
+   --index-bg:                         #111111;
 
+   /* Tarjetas */
+   --index-card-bg:                    #111111;
+   --index-card-header-bg:             #1a1a1a;
+   --index-card-header-bg-2:           #1a1a1a;
+   --index-card-header-approved-bg:    #1a1a1a;
+   --index-card-header-approved-bg-2:  #1a1a1a;
 
-   
-   
-      /* ===========================
-     COLORES SIDEBAR
-     =========================== */
-     
+   /* Contenido interno */
+   --index-content-bg:                 #1a1a1a;
 
-   --sidebar-bg: #0a0a0a;                        
-   --sidebar-bg-alt: #0a0a0a;                    /* variante más oscura */
-   --sidebar-border: #191919;  /* borde sutil */
+   /* Bordes */
+   --index-border:                     #191919;
 
    /* Textos */
-   --sidebar-title-text: #ffffff;                /* blanco suave para título */
-   --sidebar-subtitle-text: #d6d6d6;             /* gris medio */
-
-   --sidebar-item-text: #e6e6e6;                 /* iconos/texto inactivo */
-
-   /* Item activo */
-   --sidebar-item-bg-active: #1b1b1b;            /* seleccionado oscuro */
-   --sidebar-item-text-active: #f0f6fc;          /* texto/icono activo blanco */
-
-   /* Hover */
-   --sidebar-item-bg-hover: #1b1b1b;             /* hover sutil */
-   --sidebar-item-text-hover: #f0f6fc;           /* texto hover blanco */
-
-
-   --sidebar-bg-user: #0a0a0a;
-   --sidebar-logo-user: #f0f6fc;
-   --sidebar-logo-letra-user: #0d1117;
-
-   --sidebar-email-user: #8b949e;
-   --sidebar-divisor: rgba(255, 255, 255, 0.08);
-
-
-
-      --color-bg-all: #0a0a0a;
-      --color-text-header-primary: #e6edf3;
-      --color-text-header-secondary: #a5afbd;
-
-
-      --modal-bg: #111111;
-      /* ───────────────────────────────────────────────
-           FONDOS DE PÁGINA / SECCIÓN Oscuro
-        ─────────────────────────────────────────────── */
-        --index-bg:#111111;
-
-        /* ───────────────────────────────────────────────
-           TARJETAS
-        ─────────────────────────────────────────────── */
-        --index-card-bg:                    #111111;
-        --index-card-header-bg:             #1a1a1a;
-        --index-card-header-bg-2:           #1a1a1a;
-        --index-card-header-approved-bg:    #1a1a1a;
-        --index-card-header-approved-bg-2:  #1a1a1a;
-
-        /* ───────────────────────────────────────────────
-           CONTENIDO INTERNO DE TARJETA
-        ─────────────────────────────────────────────── */
-        --index-content-bg:                 #1a1a1a;
-
-        /* ───────────────────────────────────────────────
-           BORDES
-        ─────────────────────────────────────────────── */
-        --index-border:                     #191919;
-
-        /* ───────────────────────────────────────────────
-           TEXTOS
-        ─────────────────────────────────────────────── */
-        --index-text-primary:               #e6edf3;
-        --index-text-secondary:             #ffffff;
-
-        /* ───────────────────────────────────────────────
-           ESTADOS — APROBADO
-        ─────────────────────────────────────────────── */
-        --index-status-approved-bg:         rgba(16, 185, 129, 0.1);
-        --index-status-approved-icon:       rgb(52, 211, 153);
-
-        /* ───────────────────────────────────────────────
-           ESTADOS — NORMAL / REVIEW
-        ─────────────────────────────────────────────── */
-        --index-status-normal-bg:           rgba(59, 130, 246, 0.1);
-        --index-status-normal-icon:         rgb(96, 165, 250);
-
-        /* ───────────────────────────────────────────────
-           ESTADOS — RECHAZADO
-        ─────────────────────────────────────────────── */
-        --index-status-rejected-bg:         rgba(239, 68, 68, 0.1);
-        --index-status-rejected-icon:       rgb(248, 113, 113);
-        --index-status-rejected-border:     rgba(239, 68, 68, 0.4);
-
-        /* ───────────────────────────────────────────────
-           ESTADOS — PENDIENTE
-        ─────────────────────────────────────────────── */
-        --index-status-pending:             #e7d232;
-
-        /* ───────────────────────────────────────────────
-           ICONOS GENÉRICOS
-        ─────────────────────────────────────────────── */
-        --index-icon-bg:                    rgba(90, 123, 165, 0.12);
-        --index-icon-text:                  #8BA4C7;
-
-        /* ───────────────────────────────────────────────
-           INDICADOR / ACENTO AZUL
-        ─────────────────────────────────────────────── */
-        --index-accent:                     #3c78c7;
-
-        /* ───────────────────────────────────────────────
-           ACENTOS INSTITUCIONALES
-        ─────────────────────────────────────────────── */
-        --index-brand-primary:              #4d76ac;
-        --index-brand-secondary:            #5078b0;
-
-        /* ───────────────────────────────────────────────
-           BOTÓN PRINCIPAL
-        ─────────────────────────────────────────────── */
-        --index-btn-primary-bg:             #ffffff;
-        --index-btn-primary-text:           #000000;
-        --index-btn-primary-shadow:         rgba(33, 53, 97, 0.25);
-        --index-btn-primary-hover:          #e6e6e6;
-
-        /* ───────────────────────────────────────────────
-           BOTÓN CANCELAR / CERRAR
-        ─────────────────────────────────────────────── */
-        --index-btn-cancel-bg:              #475569;
-        --index-btn-cancel-text:            #F1F5F9;
-        --index-btn-cancel-hover:           #334155;
-
-        /* ───────────────────────────────────────────────
-           BOTÓN ELIMINAR (fijo, igual en ambos modos)
-        ─────────────────────────────────────────────── */
-        --index-btn-danger-bg:              #ef4444;
-        --index-btn-danger-bg-2:            #dc2626;
-        --index-btn-danger-text:            #FFFFFF;
-
-        /* ───────────────────────────────────────────────
-           TEXTOS EN MODAL
-        ─────────────────────────────────────────────── */
-        --index-modal-text-primary:         #e6edf3;
-        --index-modal-text-secondary:       #a5afbd;
-
-        /* ───────────────────────────────────────────────
-           FONDO MODAL
-        ─────────────────────────────────────────────── */
-        --index-modal-bg:                   #1c2128;
-
-
-
-
-
-        /* =============================================================
-         PERIOD-DETAIL — alineados con la paleta del index
-         ============================================================= */
-
-      /* ── Fondos de página / sección ──────────────────────────────
-         index-bg = #111111  →  period-detail-bg igual                */
-      --period-detail-bg:                              #111111;
-
-      /* ── Tarjetas ───────────────────────────────────────────────
-         index-card-bg = #111111  (superficie principal de tarjeta)
-         index-content-bg = #1a1a1a  (interior / cabeceras)           */
-      --period-detail-card-bg:                         #111111;
-      --period-detail-card-header-bg:                  #1a1a1a;
-      --period-detail-card-header-bg-2:                #1a1a1a;
-      --period-detail-card-header-approved-bg:         #1a1a1a;
-      --period-detail-card-header-approved-bg-2:       #1a1a1a;
-      --period-detail-card-indicator-bg:               #2a2a2a;   /* hover / indicador sutil */
-
-      /* ── Contenido interno de tarjeta ───────────────────────────
-         equivale a index-content-bg                                  */
-      --period-detail-content-bg:                      #1a1a1a;
-
-      /* ── Bordes ─────────────────────────────────────────────────
-         equivale a index-border                                      */
-      --period-detail-border:                          #191919;
-
-      /* ── Textos ─────────────────────────────────────────────────
-         index-text-primary  = #e6edf3  (valores / títulos)
-         index-text-secondary = #ffffff (labels, badges secundarios)  */
-      --period-detail-text-primary:                    #e6edf3;
-      --period-detail-text-secondary:                  #8b949e;   /* secundario real: gris suave, no blanco puro */
-
-      /* ── Acento / indicador de progreso ─────────────────────────
-         equivale a index-accent                                      */
-      --period-detail-accent:                          #ffffff;
-
-      /* ── Acentos institucionales ────────────────────────────────
-         equivale a index-brand-primary / secondary                   */
-      --period-detail-brand-primary:                   #d6d6d6;
-      --period-detail-brand-secondary:                 #d6d6d6;
-      --period-detail-brand-check:                   #c7c7c7;
-      --period-detail-text-icon: #000;
-      
-
-      /* ── Iconos genéricos ───────────────────────────────────────
-         equivale a index-icon-bg / index-icon-text                   */
-      --period-detail-icon-bg:                         rgba(90, 123, 165, 0.12);
-      --period-detail-icon-text:                       #8BA4C7;
-
-      /* ── Estado: aprobado (verde) ───────────────────────────────
-         equivale a index-status-approved-*                           */
-      --period-detail-status-approved-border:          rgba(16, 185, 129, 0.4);
-      --period-detail-status-approved-icon-bg:         rgba(16, 185, 129, 0.1);
-      --period-detail-status-approved-icon-color:      rgb(52, 211, 153);
-      --period-detail-status-approved-bg:              rgba(16, 185, 129, 0.1);
-      --period-detail-status-approved-text:            rgb(52, 211, 153);
-
-      /* ── Estado: normal / review (azul) ────────────────────────
-         equivale a index-status-normal-*                             */
-      --period-detail-status-normal-bg:                rgba(59, 130, 246, 0.1);
-      --period-detail-status-normal-text:              rgb(96, 165, 250);
-
-      /* ── Estado: rechazado (rojo) ───────────────────────────────
-         equivale a index-status-rejected-*                           */
-      --period-detail-status-rejected-bg:              rgba(239, 68, 68, 0.1);
-      --period-detail-status-rejected-text:            rgb(248, 113, 113);
-      --period-detail-status-rejected-border:          rgba(239, 68, 68, 0.4);
-
-      /* ── Estado: pendiente (amarillo) ───────────────────────────
-         equivale a index-status-pending                              */
-      --period-detail-status-pending:                  #e7d232;
-
-      /* ── Botones de archivo (word / pdf / view / replace) ───────
-         estos son propios del detalle, sin equivalente en index      */
-      --period-detail-btn-text:                        #e6edf3;
-
-      /* ── Botón primario (acción principal azul) ─────────────────
-         equivale a index-accent como fondo                           */
-      --period-detail-btn-primary-bg:                  #ffffff;
-      --period-detail-btn-primary-text:                #000000;
-      --period-detail-btn-primary-hover:               #fafafa;
-      --period-detail-btn-primary-shadow:              rgba(33, 53, 97, 0.25);
-
-      --period-detail-btn-view-perfil-bg:             #202020;
-      --period-detail-btn-view-perfil-hover:          #202020;
-      --period-detail-btn-view-perfil-text:           #e6edf3;
-      --period-detail-btn-view-perfil-text-hover:     #e6edf3;
-
-      /* ── Botón cancelar / cerrar ────────────────────────────────
-         equivale a index-btn-cancel-*                                */
-      --period-detail-btn-cancel-bg:                   #475569;
-      --period-detail-btn-cancel-text:                 #F1F5F9;
-      --period-detail-btn-cancel-hover:                #334155;
-      --period-detail-btn-cancel-shadow:               rgba(33, 53, 97, 0.25);
-
-      /* ── Botón aprobar (verde) ──────────────────────────────────  */
-      --period-detail-btn-approve-bg:                  #059669;
-      --period-detail-btn-approve-text:                #FFFFFF;
-      --period-detail-btn-approve-hover:               #047857;
-
-      /* ── Botón rechazar (rojo) ──────────────────────────────────  */
-      --period-detail-btn-reject-bg:                   #DC2626;
-      --period-detail-btn-reject-text:                 #FFFFFF;
-      --period-detail-btn-reject-hover:                #B91C1C;
-
-      /* ── Botón cerrar / neutral (gris) ─────────────────────────
-         equivale a index-btn-cancel-*                                */
-      --period-detail-btn-close-bg:                    #475569;
-      --period-detail-btn-close-text:                  #F1F5F9;
-      --period-detail-btn-close-hover:                 #334155;
-
-      --period-detail-btn-word-bg: rgba(148, 163, 184, 0.08);
-      --period-detail-btn-word-hover: rgba(148, 163, 184, 0.15);
-      --period-detail-btn-word-text: rgba(148, 163, 184, 0.9);
-
-      --period-detail-btn-pdf-bg: rgba(148, 163, 184, 0.08);
-      --period-detail-btn-pdf-hover: rgba(148, 163, 184, 0.15);
-      --period-detail-btn-pdf-text: rgba(148, 163, 184, 0.9);
-
-      --period-detail-btn-edit-bg: rgba(148, 163, 184, 0.08);
-      --period-detail-btn-edit-hover: rgba(148, 163, 184, 0.15);
-      --period-detail-btn-edit-text: rgba(148, 163, 184, 0.9);
-
-      --period-detail-btn-delete-bg: rgba(148, 163, 184, 0.08);
-      --period-detail-btn-delete-hover: rgba(148, 163, 184, 0.15);
-      --period-detail-btn-delete-text: rgba(148, 163, 184, 0.9);
-
-      --period-detail-btn-bg-g: rgba(148, 163, 184, 0.08);
-      --period-detail-btn-hover-g: rgba(148, 163, 184, 0.15);
-      --period-detail-btn-text-g: rgba(148, 163, 184, 0.9);
-
-      --period-detail-expanded-bg: #0f0f0f;
-
-
-
-
-
-
-
-
-
-
-
-
-    
+   --index-text-primary:               #e6edf3;
+   --index-text-secondary:             #ffffff;
+
+   /* Estados — Aprobado */
+   --index-status-approved-bg:         rgba(16, 185, 129, 0.1);
+   --index-status-approved-icon:       rgb(52, 211, 153);
+
+   /* Estados — Normal / Review */
+   --index-status-normal-bg:           rgba(59, 130, 246, 0.1);
+   --index-status-normal-icon:         rgb(96, 165, 250);
+
+   /* Estados — Rechazado */
+   --index-status-rejected-bg:         rgba(239, 68, 68, 0.1);
+   --index-status-rejected-icon:       rgb(248, 113, 113);
+   --index-status-rejected-border:     rgba(239, 68, 68, 0.4);
+
+   /* Estados — Pendiente */
+   --index-status-pending:             #e7d232;
+
+   /* Iconos */
+   --index-icon-bg:                    rgba(90, 123, 165, 0.12);
+   --index-icon-text:                  #ffffff;
+
+   /* Acento */
+   --index-accent:                     #3c78c7;
+
+   /* Marca */
+   --index-brand-primary:              #1a1a1a;
+   --index-brand-secondary:            #1a1a1a;
+
+   /* Botón primario */
+   --index-btn-primary-bg:             #ffffff;
+   --index-btn-primary-text:           #000000;
+   --index-btn-primary-shadow:         rgba(33, 53, 97, 0.25);
+   --index-btn-primary-hover:          #e6e6e6;
+
+   /* Botón cancelar */
+   --index-btn-cancel-bg:              #475569;
+   --index-btn-cancel-text:            #F1F5F9;
+   --index-btn-cancel-hover:           #334155;
+
+   /* Botón eliminar */
+   --index-btn-danger-bg:              #ef4444;
+   --index-btn-danger-bg-2:            #dc2626;
+   --index-btn-danger-text:            #FFFFFF;
+
+   /* Textos modal */
+   --index-modal-text-primary:         #e6edf3;
+   --index-modal-text-secondary:       #a5afbd;
+
+   /* Fondo modal */
+   --index-modal-bg:                   #1c2128;
+
+
+   /* ===========================
+      PERIOD DETAIL
+      =========================== */
+
+   /* Fondos */
+   --period-detail-bg:                              #111111;
+
+   /* Tarjetas */
+   --period-detail-card-bg:                         #111111;
+   --period-detail-card-header-bg:                  #1a1a1a;
+   --period-detail-card-header-bg-2:                #1a1a1a;
+   --period-detail-card-header-approved-bg:         #1a1a1a;
+   --period-detail-card-header-approved-bg-2:       #1a1a1a;
+   --period-detail-card-indicator-bg:               #2a2a2a;
+
+   /* Contenido interno */
+   --period-detail-content-bg:                      #1a1a1a;
+
+   /* Bordes */
+   --period-detail-border:                          #191919;
+
+   /* Textos */
+   --period-detail-text-primary:                    #e6edf3;
+   --period-detail-text-secondary:                  #8b949e;
+
+   /* Acento */
+   --period-detail-accent:                          #ffffff;
+
+   /* Marca */
+   --period-detail-brand-primary:                   #d6d6d6;
+   --period-detail-brand-secondary:                 #d6d6d6;
+   --period-detail-brand-check:                     #c7c7c7;
+   --period-detail-text-icon:                       #000;
+
+   /* Iconos */
+   --period-detail-icon-bg:                         rgba(90, 123, 165, 0.12);
+   --period-detail-icon-text:                       #8BA4C7;
+
+   /* Estados — Aprobado */
+   --period-detail-status-approved-border:          rgba(16, 185, 129, 0.4);
+   --period-detail-status-approved-icon-bg:         rgba(16, 185, 129, 0.1);
+   --period-detail-status-approved-icon-color:      rgb(52, 211, 153);
+   --period-detail-status-approved-bg:              rgba(16, 185, 129, 0.1);
+   --period-detail-status-approved-text:            rgb(52, 211, 153);
+
+   /* Estados — Normal / Review */
+   --period-detail-status-normal-bg:                rgba(59, 130, 246, 0.1);
+   --period-detail-status-normal-text:              rgb(96, 165, 250);
+
+   /* Estados — Rechazado */
+   --period-detail-status-rejected-bg:              rgba(239, 68, 68, 0.1);
+   --period-detail-status-rejected-text:            rgb(248, 113, 113);
+   --period-detail-status-rejected-border:          rgba(239, 68, 68, 0.4);
+
+   /* Estados — Pendiente */
+   --period-detail-status-pending:                  #e7d232;
+
+   /* Botón texto */
+   --period-detail-btn-text:                        #e6edf3;
+
+   /* Botón primario */
+   --period-detail-btn-primary-bg:                  #ffffff;
+   --period-detail-btn-primary-text:                #000000;
+   --period-detail-btn-primary-hover:               #fafafa;
+   --period-detail-btn-primary-shadow:              rgba(33, 53, 97, 0.25);
+
+   /* Botón ver perfil */
+   --period-detail-btn-view-perfil-bg:              #202020;
+   --period-detail-btn-view-perfil-hover:           #202020;
+   --period-detail-btn-view-perfil-text:            #e6edf3;
+   --period-detail-btn-view-perfil-text-hover:      #e6edf3;
+
+   /* Botón cancelar */
+   --period-detail-btn-cancel-bg:                   #475569;
+   --period-detail-btn-cancel-text:                 #F1F5F9;
+   --period-detail-btn-cancel-hover:                #334155;
+   --period-detail-btn-cancel-shadow:               rgba(33, 53, 97, 0.25);
+
+   /* Botón aprobar */
+   --period-detail-btn-approve-bg:                  #059669;
+   --period-detail-btn-approve-text:                #FFFFFF;
+   --period-detail-btn-approve-hover:               #047857;
+
+   /* Botón rechazar */
+   --period-detail-btn-reject-bg:                   #DC2626;
+   --period-detail-btn-reject-text:                 #FFFFFF;
+   --period-detail-btn-reject-hover:                #B91C1C;
+
+   /* Botón cerrar */
+   --period-detail-btn-close-bg:                    #475569;
+   --period-detail-btn-close-text:                  #F1F5F9;
+   --period-detail-btn-close-hover:                 #334155;
+
+   /* Botón Word */
+   --period-detail-btn-word-bg:                     rgba(148, 163, 184, 0.08);
+   --period-detail-btn-word-hover:                  rgba(148, 163, 184, 0.15);
+   --period-detail-btn-word-text:                   rgba(148, 163, 184, 0.9);
+
+   /* Botón PDF */
+   --period-detail-btn-pdf-bg:                      rgba(148, 163, 184, 0.08);
+   --period-detail-btn-pdf-hover:                   rgba(148, 163, 184, 0.15);
+   --period-detail-btn-pdf-text:                    rgba(148, 163, 184, 0.9);
+
+   /* Botón editar */
+   --period-detail-btn-edit-bg:                     rgba(148, 163, 184, 0.08);
+   --period-detail-btn-edit-hover:                  rgba(148, 163, 184, 0.15);
+   --period-detail-btn-edit-text:                   rgba(148, 163, 184, 0.9);
+
+   /* Botón eliminar */
+   --period-detail-btn-delete-bg:                   rgba(148, 163, 184, 0.08);
+   --period-detail-btn-delete-hover:                rgba(148, 163, 184, 0.15);
+   --period-detail-btn-delete-text:                 rgba(148, 163, 184, 0.9);
+
+   /* Botón genérico */
+   --period-detail-btn-bg-g:                        rgba(148, 163, 184, 0.08);
+   --period-detail-btn-hover-g:                     rgba(148, 163, 184, 0.15);
+   --period-detail-btn-text-g:                      rgba(148, 163, 184, 0.9);
+
+   /* Expanded */
+   --period-detail-expanded-bg:                     #0f0f0f;
+
+   /* ===========================
+   PROFILE CARDS (dark mode)
+   =========================== */
+   --profile-card-bg:              #161616;
+   --profile-card-border:          #2a2a2a;
+   --profile-card-shadow:          rgba(0, 0, 0, 0.4);
+   --profile-card-shadow-hover:    rgba(0, 0, 0, 0.6);
   }
 }
 

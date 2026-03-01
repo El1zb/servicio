@@ -2,18 +2,15 @@
 <div class="w-full mb-8 rounded-xl shadow-sm p-6"
     style="background-color: var(--period-detail-bg);">
 
-    <button
-        wire:click="goBack"
-        class="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-all duration-200 group"
-        style="color: var(--period-detail-text-secondary);"
-    >
+    <a wire:navigate href="{{ route('dashboard') }}"
+        class="flex items-center gap-2 mb-6 transition-all duration-200 group"
+        style="color: var(--period-detail-text-secondary);">
         <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform"
             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 19l-7-7 7-7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
         <span class="font-medium" style="color: var(--period-detail-text-primary);">Volver a periodos</span>
-    </button>
+    </a>
 
     <div class="flex items-start justify-between w-full">
         <div class="flex-1">

@@ -19,7 +19,8 @@ use App\Livewire\Dashboard\Period\PeriodDocuments;
 use App\Livewire\Dashboard\Period\PeriodRevision;
 
 
-use App\Livewire\Students\Profile as StudentsProfile;
+//use App\Livewire\Students\Profile as StudentsProfile;
+use App\Livewire\Students\Profile\Index as StudentsProfile;
 use App\Livewire\StudentDocuments\Crud as StudentDocumentsCrud;
 
 //Route::get('/', [WelcomeController::class, 'index'])->name('home');
@@ -54,8 +55,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('periods/{id}', fn($id) => redirect()->route('periods.students', $id))
             ->name('periods.detail');
 
-        Route::get('periods/{id}/estudiantes', PeriodStudents::class)->name('periods.students');
-        Route::get('periods/{id}/documentos',  PeriodDocuments::class)->name('periods.documents');
+        Route::get('periods/{id}/students', PeriodStudents::class)->name('periods.students');
+        Route::get('periods/{id}/documents',  PeriodDocuments::class)->name('periods.documents');
         Route::get('periods/{id}/revision',    PeriodRevision::class)->name('periods.revision');
     });
 

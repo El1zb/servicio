@@ -5,49 +5,46 @@
                 :href="route('settings.profile')"
                 wire:navigate
                 class="
-                    text-[var(--settings-item-text)]
-                    hover:text-[var(--settings-item-text-hover)]
-                    hover:bg-[var(--settings-item-bg-hover)]!
+                    text-[var(--index-text-primary)]
+                    hover:text-[var(--period-detail-btn-text-g)]
+                    hover:bg-[var(--period-detail-btn-bg-g)]!
                 "
             >
                 {{ __('Perfil') }}
             </flux:navlist.item>
 
-
             <flux:navlist.item :href="route('settings.password')" wire:navigate
-            class="
-                    text-[var(--settings-item-text)]
-                    hover:text-[var(--settings-item-text-hover)]
-                    hover:bg-[var(--settings-item-bg-hover)]!
+                class="
+                    text-[var(--index-text-primary)]
+                    hover:text-[var(--period-detail-btn-text-g)]
+                    hover:bg-[var(--period-detail-btn-bg-g)]!
                 "
             >
                 {{ __('Contraseña') }}
             </flux:navlist.item>
 
             <flux:navlist.item :href="route('settings.appearance')" wire:navigate
-            class="
-                    text-[var(--settings-item-text)]
-                    hover:text-[var(--settings-item-text-hover)]
-                    hover:bg-[var(--settings-item-bg-hover)]!
+                class="
+                    text-[var(--index-text-primary)]
+                    hover:text-[var(--period-detail-btn-text-g)]
+                    hover:bg-[var(--period-detail-btn-bg-g)]!
                 "
             >
                 {{ __('Apariencia') }}
             </flux:navlist.item>
 
-            {{-- Solo mostrar este item si el usuario es admin --}}
             @if(auth()->user()->hasRole('admin'))
-                <flux:navlist.item 
-                    :href="route('admin.create-admin')" 
+                <flux:navlist.item
+                    :href="route('admin.create-admin')"
                     wire:navigate
                     class="
-                        text-[var(--settings-item-text)]
-                        hover:text-[var(--settings-item-text-hover)]
-                        hover:bg-[var(--settings-item-bg-hover)]!
+                        text-[var(--index-text-primary)]
+                        hover:text-[var(--period-detail-btn-text-g)]
+                        hover:bg-[var(--period-detail-btn-bg-g)]!
                     "
                 >
                     {{ __('Administradores') }}
                 </flux:navlist.item>
-
             @endif
         </flux:navlist>
     </div>

@@ -64,6 +64,17 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
+/* Radio segmented - botón activo en modo claro */
+:root:not(.dark) [data-flux-radio-segmented][data-checked] {
+    background-color: #f0f0f0 !important;
+    color: #000 !important;
+}
+
+/* Icono dentro del botón activo en modo claro */
+:root:not(.dark) [data-flux-radio-segmented][data-checked] [data-flux-icon] {
+    color: #000 !important;
+}
+
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */

@@ -3,17 +3,13 @@
     <!-- Decoración de fondo -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <!-- Gradiente superior derecho -->
-        <div class="absolute top-0 right-0 w-96 h-96 
-            bg-gradient-to-br from-[#1e2c4d]/20 to-transparent 
-            dark:from-[#3c78c7]/10 
-            rounded-full blur-3xl">
+        <div class="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl"
+            style="background: radial-gradient(circle, var(--index-icon-bg) 0%, transparent 70%)">
         </div>
 
         <!-- Gradiente inferior izquierdo -->
-        <div class="absolute bottom-0 left-0 w-96 h-96 
-            bg-gradient-to-tr from-[#263455]/20 to-transparent  
-            dark:from-[#5A7BA5]/10 
-            rounded-full blur-3xl">
+        <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl"
+            style="background: radial-gradient(circle, var(--index-icon-bg) 0%, transparent 70%)">
         </div>
     </div>
 
@@ -21,12 +17,12 @@
     <x-auth-header 
         :title="__('Bienvenido')" 
         :description="__('Ingresa tus credenciales para continuar')" 
-        class="text-center text-[var(--color-text-primary)]"
+        class="text-center text-[var(--index-text-primary)]"
     />
 
     <!-- Estado de la sesión -->
     <x-auth-session-status 
-        class="text-center text-[var(--color-success)] font-medium" 
+        class="text-center font-medium text-[var(--index-status-approved-text)]" 
         :status="session('status')" 
     />
 
@@ -42,6 +38,8 @@
             autofocus
             autocomplete="email"
             placeholder="correo@ejemplo.com"
+            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+                   
         />
 
         <!-- Contraseña -->
@@ -54,11 +52,13 @@
                 autocomplete="current-password"
                 :placeholder="__('Contraseña')"
                 viewable
+                style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+                   
             />
 
             @if (Route::has('password.request'))
                 <flux:link 
-                    class="absolute end-0 top-0 text-sm hover:underline" 
+                    class="absolute end-0 top-0 text-sm hover:underline text-[var(--index-accent)]" 
                     :href="route('password.request')" 
                     wire:navigate
                 >
@@ -71,7 +71,7 @@
         <flux:checkbox 
             wire:model="remember" 
             :label="__('Recuérdame')" 
-            class="text-[var(--color-text-secondary)] transition-colors duration-200"
+            class="text-[var(--index-text-secondary)] transition-colors duration-200"
         />
 
         <!-- Botón de login -->
@@ -83,10 +83,10 @@
                 class="group relative w-full h-12
                     max-w-[280px] mx-auto
                     rounded-[var(--radius-md)]
-                    bg-[var(--color-btn-primary)] text-[var(--text-btn-primary)]
-                    font-[var(--font-semibold)] text-[length:var(--text-base)]
-                    shadow-lg shadow-[var(--color-btn-primary-shadow)]
-                    hover:bg-[var(--color-btn-primary-hover)]
+                    bg-[var(--index-btn-primary-bg)] text-[var(--index-btn-primary-text)]
+                    font-semibold text-base
+                    shadow-lg shadow-[var(--index-btn-primary-shadow)]
+                    hover:bg-[var(--index-btn-primary-hover)]
                     hover:shadow-xl hover:-translate-y-0.5
                     transition-all duration-300
                     disabled:opacity-60 disabled:cursor-not-allowed">
@@ -105,19 +105,18 @@
                     {{ __('Validando...') }}
                 </span>
             </flux:button>
-
         </div>
 
     </form>
 
     <!-- Registro -->
     @if (Route::has('register'))
-        <div class="text-center text-sm text-[var(--color-text-secondary)] transition-colors duration-200">
+        <div class="text-center text-sm text-[var(--index-text-secondary)] transition-colors duration-200">
             <span>{{ __('¿No tienes una cuenta?') }}</span>
             <flux:link 
                 :href="route('register')" 
                 wire:navigate 
-                class="hover:underline transition-colors duration-200"
+                class="hover:underline transition-colors duration-200 text-[var(--index-accent)]"
             >
                 {{ __('Regístrate') }}
             </flux:link>
