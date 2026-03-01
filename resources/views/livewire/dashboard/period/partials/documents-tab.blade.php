@@ -399,8 +399,8 @@
                     class="w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     style="background: linear-gradient(135deg, var(--period-detail-brand-primary) 0%, var(--period-detail-brand-secondary) 100%);
                            color: var(--period-detail-text-icon);"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 25px -5px rgba(0, 0, 0, 0.3)';"
-                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.3)';">
+                    onmouseover="this.style.transform='translateY(-2px)'; "
+                    onmouseout="this.style.transform='translateY(0)';">
                     <span wire:loading.remove wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}">
                         {{ $editingDocumentId ? 'Guardar' : 'Crear Documento' }}
                     </span>
@@ -600,5 +600,9 @@
             </div>
         </div>
     @endif
+
+    @include('livewire.dashboard.period.modals.delete-document-modal')
+    @include('livewire.dashboard.period.modals.upload-mode-modal')
+    @include('livewire.dashboard.period.modals.preview-modal')
 
 </div>

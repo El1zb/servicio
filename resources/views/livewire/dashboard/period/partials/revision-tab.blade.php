@@ -41,10 +41,10 @@
                     <button
                         wire:click="exportExcel"
                         wire:loading.attr="disabled"
-                        class="px-4 sm:px-5 py-2.5 font-semibold rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                        class="px-4 sm:px-5 py-2.5 font-semibold rounded-lg disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
                         style="background: var(--period-detail-bg); color: var(--period-detail-btn-text);"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 25px -5px rgba(0, 0, 0, 0.3)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.3)';"
+                        onmouseover="this.style.transform='translateY(-2px)'; "
+                        onmouseout="this.style.transform='translateY(0)'; "
                     >
                         <span wire:loading.remove wire:target="exportExcel" class="flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,4 +301,5 @@
         </div>
     @endif
 
+    @include('livewire.dashboard.period.modals.quick-review-modal')
 </div>

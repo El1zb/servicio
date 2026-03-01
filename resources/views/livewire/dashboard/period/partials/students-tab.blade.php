@@ -190,4 +190,8 @@
     <div class="p-4" style="border-top: 1px solid var(--period-detail-border);">
         {{ $students->links() }}
     </div>
+
+    @include('livewire.dashboard.period.modals.student-modal')
+    @include('livewire.dashboard.period.modals.reject-modal')
+    @include('livewire.dashboard.period.modals.preview-modal')
 </div>

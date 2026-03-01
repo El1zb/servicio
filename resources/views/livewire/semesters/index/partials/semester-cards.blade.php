@@ -2,7 +2,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-4">
     @foreach($semesters as $semester)
         <div style="background-color: var(--index-card-bg); border: 1px solid var(--index-border); border-radius: 14px; overflow: hidden; transition: border-color 0.18s ease, box-shadow 0.18s ease; display: flex; flex-direction: column; height: 100%;"
-             onmouseover="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,0.25)'"
+             onmouseover="this.style.borderColor='var(--index-border)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,0.10)'"
              onmouseout="this.style.borderColor='var(--index-border)'; this.style.boxShadow='none'">
 
             {{-- Cuerpo --}}

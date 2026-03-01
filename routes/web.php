@@ -6,17 +6,17 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Appearance;
 use Illuminate\Support\Facades\Route;
 
-//use App\Livewire\Campuses\Crud as CampusesCrud;
 use App\Livewire\Campuses\Index as CampusesIndex;
 use App\Livewire\Careers\Index as CareersIndex;
-//use App\Livewire\Careers\Crud as CareersCrud;
-//use App\Livewire\Semesters\Crud as SemestersCrud;
 use App\Livewire\Semesters\Index as SemestersIndex;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
-use App\Livewire\Admin\WelcomeSection as WelcomeSection;
+//use App\Livewire\Admin\WelcomeSection as WelcomeSection;
 use App\Livewire\Dashboard\Index as DashboardIndex;
-use App\Livewire\Dashboard\Period\PeriodDetail;
-use App\Http\Controllers\WelcomeController;
+//use App\Livewire\Dashboard\Period\PeriodDetail;
+//use App\Http\Controllers\WelcomeController;
+use App\Livewire\Dashboard\Period\PeriodStudents;
+use App\Livewire\Dashboard\Period\PeriodDocuments;
+use App\Livewire\Dashboard\Period\PeriodRevision;
 
 
 use App\Livewire\Students\Profile as StudentsProfile;
@@ -49,7 +49,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('semesters', SemestersIndex::class)->name('semesters.index');
         Route::get('admin/create-admin', CreateAdmin::class)->name('admin.create-admin');
         //Route::get('admin/welcome-section', WelcomeSection::class)->name('admin.welcome-section');
-        Route::get('periods/{id}', PeriodDetail::class)->name('periods.detail');
+        //Route::get('periods/{id}', PeriodDetail::class)->name('periods.detail');
+
+        Route::get('periods/{id}', fn($id) => redirect()->route('periods.students', $id))
+            ->name('periods.detail');
+
+        Route::get('periods/{id}/estudiantes', PeriodStudents::class)->name('periods.students');
+        Route::get('periods/{id}/documentos',  PeriodDocuments::class)->name('periods.documents');
+        Route::get('periods/{id}/revision',    PeriodRevision::class)->name('periods.revision');
     });
 
     // 🔹 SECCIÓN ESTUDIANTES (accesible para cualquier usuario autenticado)

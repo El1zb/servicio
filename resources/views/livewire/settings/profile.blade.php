@@ -6,7 +6,7 @@
 
             {{-- Header --}}
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6" 
-                 style="background-color: var(--student-document-bg);">
+                 style="background-color: var(--index-card-bg);">
                 <div>
                     <x-auth-header
                         title="Perfil"
@@ -16,25 +16,8 @@
                 </div>
             </div>
 
-            {{-- Mensaje flash --}}
-            @if (session()->has('message'))
-                <div class="rounded-xl p-4 shadow-lg border flex items-center gap-3"
-                     style="background-color: var(--student-document-bg-content-status-approved); 
-                            border-color: var(--student-document-text-content-status-approved-icon);">
-                    <div class="flex-shrink-0">
-                        <svg class="w-5 h-5" style="color: var(--student-document-text-content-status-approved-icon);" 
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <p class="text-sm font-medium" style="color: var(--student-document-text-content-status-approved-icon);">
-                        {{ session('message') }}
-                    </p>
-                </div>
-            @endif
-
             {{-- Formulario Perfil --}}
-            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--student-document-bg);">
+            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--index-card-bg);">
                 <form wire:submit.prevent="updateProfileInformation" class="space-y-6 w-full">
 
                     {{-- Nombre --}}
@@ -46,6 +29,7 @@
                         autofocus 
                         autocomplete="name"
                         class="w-full"
+                        style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
                     />
 
                     {{-- Correo --}}
@@ -57,6 +41,7 @@
                             required 
                             autocomplete="email"
                             class="w-full"
+                            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
                         />
 
                         @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -86,21 +71,12 @@
                         <flux:button
                             type="submit"
                             wire:loading.attr="disabled"
-                            class="
-                                group relative
-                                inline-flex items-center justify-center
-                                px-6 py-2.5
-                                rounded-[var(--radius-md)]
-                                bg-[var(--modal-btn-document-descargar)]!
-                                text-[var(--modal-btn-document-descargar-text)]!
-                                shadow-lg shadow-[var(--modal-btn-document-descargar-shadow)]
-                                hover:bg-[var(--modal-btn-document-descargar-hover)]!
-                                hover:shadow-xl hover:-translate-y-0.5
-                                transition-all duration-300
-                                disabled:opacity-60 disabled:cursor-not-allowed
-                                gap-2
-                            "
-                        >
+                            class="group relative inline-flex items-center justify-center px-4 py-2
+                            rounded-[var(--radius-md)]
+                            bg-[var(--index-btn-primary-bg)]! text-[var(--index-btn-primary-text)]!
+                            shadow-lg shadow-[var(--index-btn-primary-shadow)]
+                            hover:bg-[var(--index-btn-primary-hover)]! hover:shadow-xl hover:-translate-y-0.5
+                            transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed gap-2">
                             {{ __('Guardar') }}
                         </flux:button>
                     </div>

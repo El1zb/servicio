@@ -21,25 +21,7 @@
                 --sidebar-collapsed-width: 80px;
                 --transition-speed: 300ms;
 
-                --sidebar-bg: #0a0a0a;
-                --sidebar-bg-alt: #0a0a0a;
-                --sidebar-border: #191919;
-
-                --sidebar-title-text: #ffffff;
-                --sidebar-subtitle-text: #d6d6d6;
-                --sidebar-item-text: #e6e6e6;
-
-                --sidebar-item-bg-active: #1b1b1b;
-                --sidebar-item-text-active: #f0f6fc;
-
-                --sidebar-item-bg-hover: #1b1b1b;
-                --sidebar-item-text-hover: #f0f6fc;
-
-                --sidebar-bg-user: #0a0a0a;
-                --sidebar-logo-user: #f0f6fc;
-                --sidebar-logo-letra-user: #0d1117;
-                --sidebar-email-user: #8b949e;
-                --sidebar-divisor: rgba(255, 255, 255, 0.08);
+                
             }
 
             /* ===========================

@@ -6,7 +6,7 @@
 
             {{-- Header --}}
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6" 
-                 style="background-color: var(--student-document-bg);">
+                 style="background-color: var(--index-card-bg);">
                 <div>
                     <x-auth-header
                         title="Apariencia"
@@ -17,8 +17,8 @@
             </div>
 
             {{-- Contenido Apariencia --}}
-            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--student-document-bg);">
-                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
+            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--index-card-bg);">
+                <flux:radio.group x-data variant="segmented" x-model="$flux.appearance" style="background-color: var(--index-card-bg); border: 1px solid var(--index-border);">
                     <flux:radio value="light" icon="sun">{{ __('Claro') }}</flux:radio>
                     <flux:radio value="dark" icon="moon">{{ __('Oscuro') }}</flux:radio>
                     <flux:radio value="system" icon="computer-desktop">{{ __('Sistema') }}</flux:radio>
