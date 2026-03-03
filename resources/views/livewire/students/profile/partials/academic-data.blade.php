@@ -29,7 +29,7 @@
                 label="Correo Institucional *"
                 type="email" inputmode="email"
                 placeholder="Ej. l225q0000@itsco.edu.mx" required
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" title="Ingresa un correo válido"
+                title="Ingresa un correo válido"
                 style="background-color: var(--profile-card-bg); color: var(--index-text-primary); border: 1px solid var(--profile-card-border);"
                 oninput="this.value = this.value.toLowerCase()"
             />

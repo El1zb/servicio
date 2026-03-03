@@ -18,7 +18,7 @@
             </p>
 
             @if($student->rejection_reason)
-                <div class="bg-[var(--index-content-bg)] border border-[var(--index-status-rejected-border)] p-4 rounded-lg mb-4">
+                <div class="bg-[var(--index-content-bg)]  p-4 rounded-lg mb-4">
                     <p class="text-xs font-semibold text-[var(--index-status-rejected-icon)] uppercase tracking-wide mb-2">
                         Motivo del Rechazo
                     </p>

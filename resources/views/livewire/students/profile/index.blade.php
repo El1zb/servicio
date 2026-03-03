@@ -3,7 +3,7 @@
             bg-[var(--index-bg)]
             rounded-2xl
             shadow-[0_12px_40px_rgba(0,0,0,0.12)]
-            max-w-7xl mx-auto">
+            max-w-7xl w-full mx-auto">
 
     @include('livewire.students.profile.partials.header')
 

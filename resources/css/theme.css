@@ -789,6 +789,8 @@
    --profile-card-border:          var(--index-border);
    --profile-card-shadow:          rgba(0, 0, 0, 0.08);
    --profile-card-shadow-hover:    rgba(0, 0, 0, 0.12);
+
+   
 }
 
 /* =====================================================
@@ -1172,10 +1174,65 @@
    /* ===========================
    PROFILE CARDS (dark mode)
    =========================== */
-   --profile-card-bg:              #161616;
-   --profile-card-border:          #2a2a2a;
+   --profile-card-bg:              #0f0f0f;
+   --profile-card-border:          #1f1f1f;
    --profile-card-shadow:          rgba(0, 0, 0, 0.4);
    --profile-card-shadow-hover:    rgba(0, 0, 0, 0.6);
+
+
+
+
+   --bg-primary: #0d0d0d;        /* Fondo principal (negro profundo) */
+  --bg-secondary: #1a1a1a;      /* Fondo de tarjetas/items */
+  --bg-hover: #222222;          /* Fondo hover de elementos */
+  
+  --text-primary: #ffffff;      /* Texto principal (blanco) */
+  --text-secondary: #888888;    /* Texto secundario / subtítulos */
+  --text-muted: #555555;        /* Texto apagado (info adicional) */
+  
+  --accent: #ffffff;            /* Acento (iconos activos, contadores) */
+  --accent-dim: #3a3a3a;        /* Acento tenue (bordes, separadores) */
+  
+  --border: #2a2a2a;            /* Bordes de tarjetas */
+  --icon-color: #aaaaaa;        /* Color de iconos */
+  
+  --label-color: #666666;       /* Etiquetas en mayúsculas (ENTREGADOS, VER TODOS) */
+  --badge-bg: #1e1e1e;    
+
+
+
+  /*nuevo*/
+  --color-bg: #07080A;
+  --color-hover: #0C0D0F;
+  --color-border: #060709;
+  --color-border-hover: #191b1e;
+  --color-primary: #FAFDF8;
+  --color-secondary: #494B4B;
+  --color-text: #A5ABA7;
+
+  --color-nav: #595B55;
+  --color-nav-activate: #E5E8EA;
+
+  --color-bg-icon: #1F2022;
+
+  --color-indicator: #393939;
+
+  --color-card-bg: #0C0D0F;
+
+   --color-icon: #767779;
+   --color-icon-bg: #18191B;
+   --color-icon-bg-hover: #202224;
+   --color-icon-hover: #bebebe;
+
+   --font-weight-medium: 500;
+
+
+
+  
+  --color-card-hover: #121417;
+  
+  
+  
   }
 }
 

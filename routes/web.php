@@ -21,7 +21,8 @@ use App\Livewire\Dashboard\Period\PeriodRevision;
 
 //use App\Livewire\Students\Profile as StudentsProfile;
 use App\Livewire\Students\Profile\Index as StudentsProfile;
-use App\Livewire\StudentDocuments\Crud as StudentDocumentsCrud;
+//use App\Livewire\StudentDocuments\Crud as StudentDocumentsCrud;
+use App\Livewire\Students\Documents\Index as StudentDocumentsIndex;
 
 //Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('/', function () {
@@ -63,7 +64,8 @@ Route::middleware(['auth'])->group(function () {
     // 🔹 SECCIÓN ESTUDIANTES (accesible para cualquier usuario autenticado)
     Route::middleware(['auth'])->group(function () { 
         Route::get('students/profile', StudentsProfile::class)->name('students.profile'); 
-        Route::get('students/documents', StudentDocumentsCrud::class)->name('student-documents.index');   
+        //Route::get('students/documents', StudentDocumentsCrud::class)->name('student-documents.index');   
+        Route::get('students/documents', StudentDocumentsIndex::class)->name('student-documents.index');
     });
 
 
