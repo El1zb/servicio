@@ -9,14 +9,14 @@
 
             {{-- ── Header ── --}}
             <div class="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0"
-                style="border-bottom: 1px solid var(--period-detail-border); background-color: var(--period-detail-card-bg);">
+                style="border-bottom: 1px solid var(--color-border-hover); background-color: var(--color-card-bg);">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="min-w-0">
                         <h3 class="text-sm font-semibold leading-tight"
-                            style="color: var(--period-detail-text-primary);">
+                            style="color: var(--color-primary-2);">
                             Rechazar Estudiante
                         </h3>
-                        <p class="text-xs mt-0.5 truncate" style="color: var(--period-detail-text-secondary);">
+                        <p class="text-xs mt-0.5 truncate" style="color: var(--color-secondary);">
                             {{ $selectedStudent->name }}
                             {{ $selectedStudent->last_name_paterno }}
                             {{ $selectedStudent->last_name_materno }}
@@ -27,21 +27,21 @@
 
             {{-- ── Body ── --}}
             <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5"
-                style="background-color: var(--period-detail-card-bg);">
+                style="background-color: var(--color-card-bg);">
                 <div class="space-y-4">
 
                     {{-- Aviso --}}
                     <div class="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
-                        style="background-color: var(--period-detail-bg); border-color: var(--period-detail-border);">
+                        style="background-color: var(--color-icon-bg); border-color: var(--color-border-hover);">
                         <div class="flex items-start gap-3">
-                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: var(--period-detail-status-rejected-text);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: rgb(248,113,113);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <div class="flex-1 min-w-0">
                                 <p class="text-xs sm:text-sm font-semibold mb-0.5"
-                                    style="color: var(--period-detail-status-rejected-text);">Atención</p>
-                                <p class="text-xs leading-relaxed" style="color: var(--period-detail-text-secondary);">
+                                    style="color: rgb(248,113,113);">Atención</p>
+                                <p class="text-xs leading-relaxed" style="color: var(--color-secondary);">
                                     Esta acción rechazará el registro del estudiante. Por favor, proporciona un motivo detallado.
                                 </p>
                             </div>
@@ -50,15 +50,15 @@
 
                     {{-- Motivo --}}
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--period-detail-text-primary);">
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--color-primary-2);">
                             Motivo del rechazo
-                            <span style="color: var(--period-detail-status-rejected-text);">*</span>
+                            <span style="color: rgb(248,113,113);">*</span>
                         </label>
                         <textarea
                             class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border text-sm resize-none transition-all focus:ring-2 focus:ring-opacity-50"
-                            style="background-color: var(--period-detail-bg);
-                                   border-color: var(--period-detail-border);
-                                   color: var(--period-detail-text-primary);"
+                            style="background-color: var(--color-icon-bg);
+                                   border-color: var(--color-border-hover);
+                                   color: var(--color-primary-2);"
                             rows="5"
                             placeholder="Describe el motivo del rechazo de manera clara y profesional..."
                             wire:model="rejectionReason">
@@ -71,7 +71,7 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        <p class="mt-1.5 text-xs" style="color: var(--period-detail-text-secondary);">
+                        <p class="mt-1.5 text-xs" style="color: var(--color-secondary);">
                             Este motivo será visible para el estudiante.
                         </p>
                     </div>
@@ -81,19 +81,19 @@
 
             {{-- ── Footer ── --}}
             <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-2 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0"
-                style="border-top: 1px solid var(--period-detail-border); background-color: var(--period-detail-card-bg);">
+                style="border-top: 1px solid var(--color-border-hover); background-color: var(--color-card-bg);">
 
                 <button wire:click="$set('showRejectModal', false)"
                     class="w-full sm:w-auto px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:-translate-y-0.5 text-center"
-                    style="color: var(--period-detail-text-secondary); background-color: transparent;"
-                    onmouseover="this.style.color='var(--period-detail-text-primary)'; this.style.backgroundColor='var(--period-detail-border)'"
-                    onmouseout="this.style.color='var(--period-detail-text-secondary)'; this.style.backgroundColor='transparent'">
+                    style="color: var(--color-secondary); background-color: transparent;"
+                    onmouseover="this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'"
+                    onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent'">
                     Cancelar
                 </button>
 
                 <button wire:click="confirmReject"
                     class="w-full sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2"
-                    style="background-color: var(--period-detail-btn-reject-bg); color: var(--period-detail-btn-reject-text);"
+                    style="background-color: rgba(239,68,68,0.9); color: white;"
                     onmouseover="this.style.opacity='0.85'"
                     onmouseout="this.style.opacity='1'">
                     Confirmar

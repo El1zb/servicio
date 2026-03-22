@@ -108,10 +108,13 @@ trait ManagesDocuments
         $file       = $document->file;
         $uploadMode = $file->upload_mode;
 
-        // user_only → solo el archivo que subió el estudiante
+        // user_only → archivos del admin (Word + PDF) para que el estudiante los descargue
         if ($uploadMode === 'user_only') {
-            if ($document->student_file_path && Storage::disk('public')->exists($document->student_file_path)) {
-                $files[] = ['path' => $document->student_file_path, 'name' => $document->student_file_name, 'type' => 'student_upload'];
+            if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
+                $files[] = ['path' => $file->file_path, 'name' => $file->name_file, 'type' => 'admin_word'];
+            }
+            if ($file->example_path && Storage::disk('public')->exists($file->example_path)) {
+                $files[] = ['path' => $file->example_path, 'name' => $file->example_name_file, 'type' => 'admin_pdf'];
             }
             return $files;
         }
@@ -153,5 +156,10 @@ trait ManagesDocuments
         if ($bytes >= 1024 * 1024)        return round($bytes / (1024 * 1024), 2) . ' MB';
         if ($bytes >= 1024)               return round($bytes / 1024, 2) . ' KB';
         return $bytes . ' B';
+    }
+
+    public function effectiveDatePublic(Document $doc): ?\Carbon\Carbon
+    {
+        return $this->effectiveDate($doc);
     }
 }

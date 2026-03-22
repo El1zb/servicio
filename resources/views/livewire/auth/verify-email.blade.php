@@ -1,7 +1,7 @@
 <div class="mt-4 flex flex-col gap-6">
 
     <!-- Mensaje principal -->
-    <flux:text class="text-center text-[var(--index-text-primary)] leading-relaxed">
+    <flux:text class="text-center text-[var(--color-primary-2)] leading-relaxed">
         {{ __('Por favor verifica tu correo electrónico haciendo clic en el enlace que acabamos de enviarte.') }}
     </flux:text>
 
@@ -9,7 +9,7 @@
     @if (session('status') === 'verification-link-sent')
         <flux:text
             class="text-center font-medium
-                   text-[var(--index-status-approved-text)]
+                   text-[var(--color-primary)]
                    transition-colors duration-200"
         >
             {{ __('Se ha enviado un nuevo enlace de verificación al correo electrónico proporcionado.') }}
@@ -27,10 +27,10 @@
             class="group relative w-full h-12
                 max-w-[280px] mx-auto
                 rounded-[var(--radius-md)]
-                bg-[var(--index-btn-primary-bg)] text-[var(--index-btn-primary-text)]
+                bg-[var(--color-primary)]! text-[var(--color-bg)]!
                 font-semibold text-base
-                shadow-lg shadow-[var(--index-btn-primary-shadow)]
-                hover:bg-[var(--index-btn-primary-hover)]
+                shadow-lg shadow-[var(--color-border-hover)]
+                hover:bg-[var(--color-primary-2)]!
                 hover:shadow-xl hover:-translate-y-0.5
                 transition-all duration-300
                 disabled:opacity-60 disabled:cursor-not-allowed">
@@ -54,7 +54,7 @@
 
         <!-- Cerrar sesión -->
         <flux:link
-            class="text-sm text-[var(--index-text-secondary)]
+            class="text-sm text-[var(--color-secondary)]
                    hover:underline transition-colors duration-200
                    cursor-pointer"
             wire:click="logout"

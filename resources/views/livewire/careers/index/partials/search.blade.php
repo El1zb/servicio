@@ -2,8 +2,7 @@
 <div class="rounded-xl p-5">
     <div class="relative max-w-2xl">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                 style="color: var(--index-text-primary);">
+            <svg class="w-5 h-5 text-[var(--color-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
@@ -12,8 +11,9 @@
             type="text"
             placeholder="Buscar carreras..."
             wire:model.live="search"
-            class="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm transition-all"
-            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+            class="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]
+                   bg-[var(--color-card-bg)] text-[var(--color-primary-2)] border border-[var(--color-border-hover)]
+                   placeholder:text-[var(--color-secondary)]"
         />
     </div>
 </div>

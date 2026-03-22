@@ -50,7 +50,7 @@ trait ManagesSemesters
             [
                 'name' => [
                     'required', 'string', 'min:1',
-                    Rule::unique('semesters', 'name')->ignore($this->semesterId),
+                    Rule::unique('semesters', 'name')->ignore($this->semesterId)->whereNull('deleted_at'),
                 ],
                 'is_active' => 'boolean',
             ],

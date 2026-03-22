@@ -1,5 +1,5 @@
 <div class="min-h-screen">
-    <div class="max-w-[1600px] mx-auto p-4 lg:p-6">
+    <div class="max-w-[1600px] mx-auto">
 
         @if(!$student)
             @include('livewire.students.documents.partials.status.no-profile')
@@ -11,10 +11,10 @@
             @include('livewire.students.documents.partials.status.rejected')
 
         @else
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="grid grid-cols-1 xl:grid-cols-12">
 
                 {{-- Columna principal --}}
-                <div class="lg:col-span-8 space-y-1">
+                <div class="xl:col-span-9 space-y-1">
                     @include('livewire.students.documents.partials.header')
 
                     <div x-data="{
@@ -23,8 +23,7 @@
                         }"
                         class="rounded-xl p-6">
                         <div class="space-y-4">
-                            @include('livewire.students.documents.partials.admin-documents')
-                            @include('livewire.students.documents.partials.document-cards')
+                            @include('livewire.students.documents.partials.document-cards-unified')
                         </div>
                     </div>
                 </div>

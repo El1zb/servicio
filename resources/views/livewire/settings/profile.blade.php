@@ -5,8 +5,8 @@
         <div class="space-y-6">
 
             {{-- Header --}}
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6" 
-                 style="background-color: var(--index-card-bg);">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6"
+                 style="background-color: var(--color-card-bg);">
                 <div>
                     <x-auth-header
                         title="Perfil"
@@ -17,31 +17,31 @@
             </div>
 
             {{-- Formulario Perfil --}}
-            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--index-card-bg);">
+            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--color-card-bg);">
                 <form wire:submit.prevent="updateProfileInformation" class="space-y-6 w-full">
 
                     {{-- Nombre --}}
-                    <flux:input 
-                        wire:model="name" 
-                        :label="__('Nombre')" 
-                        type="text" 
-                        required 
-                        autofocus 
+                    <flux:input
+                        wire:model="name"
+                        :label="__('Nombre')"
+                        type="text"
+                        required
+                        autofocus
                         autocomplete="name"
                         class="w-full"
-                        style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);"
                     />
 
                     {{-- Correo --}}
                     <div>
-                        <flux:input 
-                            wire:model="email" 
-                            :label="__('Correo electrónico')" 
-                            type="email" 
-                            required 
+                        <flux:input
+                            wire:model="email"
+                            :label="__('Correo electrónico')"
+                            type="email"
+                            required
                             autocomplete="email"
                             class="w-full"
-                            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+                            style="background-color: var(--color-icon-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);"
                         />
 
                         @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -49,8 +49,8 @@
                                 <flux:text class="mt-4">
                                     {{ __('Tu dirección de correo electrónico no está verificada.') }}
 
-                                    <flux:link 
-                                        class="text-sm cursor-pointer" 
+                                    <flux:link
+                                        class="text-sm cursor-pointer"
                                         wire:click.prevent="resendVerificationNotification"
                                     >
                                         {{ __('Haz clic aquí para reenviar el correo de verificación.') }}
@@ -73,9 +73,9 @@
                             wire:loading.attr="disabled"
                             class="group relative inline-flex items-center justify-center px-4 py-2
                             rounded-[var(--radius-md)]
-                            bg-[var(--index-btn-primary-bg)]! text-[var(--index-btn-primary-text)]!
-                            shadow-lg shadow-[var(--index-btn-primary-shadow)]
-                            hover:bg-[var(--index-btn-primary-hover)]! hover:shadow-xl hover:-translate-y-0.5
+                            bg-[var(--color-primary)]! text-[var(--color-bg)]!
+                            shadow-lg shadow-[var(--color-border-hover)]
+                            hover:bg-[var(--color-primary-2)]! hover:shadow-xl hover:-translate-y-0.5
                             transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed gap-2">
                             {{ __('Guardar') }}
                         </flux:button>

@@ -4,12 +4,12 @@
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <!-- Gradiente superior derecho -->
         <div class="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl"
-            style="background: radial-gradient(circle, var(--index-icon-bg) 0%, transparent 70%)">
+            style="background: radial-gradient(circle, var(--color-icon-bg) 0%, transparent 70%)">
         </div>
 
         <!-- Gradiente inferior izquierdo -->
         <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl"
-            style="background: radial-gradient(circle, var(--index-icon-bg) 0%, transparent 70%)">
+            style="background: radial-gradient(circle, var(--color-icon-bg) 0%, transparent 70%)">
         </div>
     </div>
 
@@ -17,12 +17,12 @@
     <x-auth-header
         :title="__('Restablecer contraseña')"
         :description="__('Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta')"
-        class="text-center text-[var(--index-text-primary)]"
+        class="text-center text-[var(--color-primary-2)]"
     />
 
     <!-- Estado de la sesión -->
     <x-auth-session-status
-        class="text-center font-medium text-[var(--index-status-approved-text)]"
+        class="text-center font-medium text-[var(--color-primary)]"
         :status="session('status')"
     />
 
@@ -37,7 +37,7 @@
             required
             autocomplete="email"
             readonly
-            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+            style="background-color: var(--color-card-bg); color: var(--color-primary-2); border: 1px solid var(--color-border);"
         />
 
         <!-- Nueva contraseña -->
@@ -49,7 +49,7 @@
             autocomplete="new-password"
             placeholder="Nueva contraseña"
             viewable
-            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+            style="background-color: var(--color-card-bg); color: var(--color-primary-2); border: 1px solid var(--color-border);"
         />
 
         <!-- Confirmar contraseña -->
@@ -61,7 +61,7 @@
             autocomplete="new-password"
             placeholder="Confirmar contraseña"
             viewable
-            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
+            style="background-color: var(--color-card-bg); color: var(--color-primary-2); border: 1px solid var(--color-border);"
         />
 
         <!-- Botón restablecer -->
@@ -73,10 +73,10 @@
                 class="group relative w-full h-12
                     max-w-[280px] mx-auto
                     rounded-[var(--radius-md)]
-                    bg-[var(--index-btn-primary-bg)] text-[var(--index-btn-primary-text)]
+                    bg-[var(--color-primary)]! text-[var(--color-bg)]!
                     font-semibold text-base
-                    shadow-lg shadow-[var(--index-btn-primary-shadow)]
-                    hover:bg-[var(--index-btn-primary-hover)]
+                    shadow-lg shadow-[var(--color-border-hover)]
+                    hover:bg-[var(--color-primary-2)]!
                     hover:shadow-xl hover:-translate-y-0.5
                     transition-all duration-300
                     disabled:opacity-60 disabled:cursor-not-allowed">

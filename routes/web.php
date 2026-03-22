@@ -27,7 +27,10 @@ use App\Livewire\Students\Documents\Index as StudentDocumentsIndex;
 //Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('dashboard');
+        if (auth()->user()->hasRole('admin')) {
+            return redirect()->route('dashboard');
+        }
+        return redirect()->route('students.profile');
     }
     return redirect()->route('login');
 })->name('home');

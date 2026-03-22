@@ -60,7 +60,7 @@ trait ManagesPeriods
             [
                 'name' => [
                     'required', 'string', 'max:255',
-                    Rule::unique('periods', 'name')->ignore($this->periodId),
+                    Rule::unique('periods', 'name')->ignore($this->periodId)->whereNull('deleted_at'),
                 ],
                 'start_date'        => 'required|date',
                 'end_date'          => 'required|date|after_or_equal:start_date',

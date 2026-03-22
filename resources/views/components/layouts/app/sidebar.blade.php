@@ -11,7 +11,7 @@
 
 <div class="mobile-overlay" id="mobileOverlay"></div>
 
-<aside class="sidebar-container" style="background: var(--color-bg);" id="sidebar">
+<aside class="sidebar-container" style="background: var(--sidebar-color-bg);" id="sidebar">
 
     <button class="sidebar-toggle-btn" onclick="toggleSidebarCollapse()">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">

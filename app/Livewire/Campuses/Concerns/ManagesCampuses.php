@@ -48,7 +48,7 @@ trait ManagesCampuses
             [
                 'name' => [
                     'required', 'string', 'min:3',
-                    Rule::unique('campuses', 'name')->ignore($this->campusId),
+                    Rule::unique('campuses', 'name')->ignore($this->campusId)->whereNull('deleted_at'),
                 ],
             ],
             [

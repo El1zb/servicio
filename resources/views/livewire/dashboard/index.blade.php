@@ -4,7 +4,7 @@
 
     @include('livewire.dashboard.index.partials.stats')
 
-    <div class="rounded-xl p-5 shadow-lg" style="background-color: var(--index-bg);">
+    <div class="rounded-xl p-5 shadow-lg" style="background-color: var(--color-card-bg);">
 
         @include('livewire.dashboard.index.partials.filters')
 

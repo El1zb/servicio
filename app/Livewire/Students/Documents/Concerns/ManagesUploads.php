@@ -97,8 +97,10 @@ trait ManagesUploads
             'status'            => 'en_revision',
         ]);
 
+        unset($this->fileUpload[$docId]); // igual que saveUpload
+
         $this->loadCalendarEvents();
         $this->dispatch('calendar-updated', calendarEvents: $this->calendarEvents);
-        $this->dispatch('notify', type: 'success', message: "Entrega de '{$document->name}' cancelada correctamente.");
+        $this->dispatch('notify', type: 'success', message: "Entrega de '{$document->name}' cancelada correctamente."); // 👈 $document->name, no $file->name
     }
 }

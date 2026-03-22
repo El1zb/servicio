@@ -23,8 +23,8 @@ $classes = Flux::classes()
         'bare' => '',
     })
     ->add(match ($variant) {
-        default => 'bg-[var(--modal-bg)] border border-transparent',
-        'flyout' => 'bg-[var(--modal-bg)] border-transparent',
+        default => 'bg-[var(--color-card-bg)] border border-transparent',
+        'flyout' => 'bg-[var(--color-card-bg)] border-transparent',
         'bare' => 'bg-transparent',
     });
 

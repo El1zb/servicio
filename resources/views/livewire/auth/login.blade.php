@@ -4,31 +4,31 @@
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <!-- Gradiente superior derecho -->
         <div class="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl"
-            style="background: radial-gradient(circle, var(--index-icon-bg) 0%, transparent 70%)">
+            style="background: radial-gradient(circle, var(--color-icon-bg) 0%, transparent 70%)">
         </div>
 
         <!-- Gradiente inferior izquierdo -->
         <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl"
-            style="background: radial-gradient(circle, var(--index-icon-bg) 0%, transparent 70%)">
+            style="background: radial-gradient(circle, var(--color-icon-bg) 0%, transparent 70%)">
         </div>
     </div>
 
     <!-- Header -->
-    <x-auth-header 
-        :title="__('Bienvenido')" 
-        :description="__('Ingresa tus credenciales para continuar')" 
-        class="text-center text-[var(--index-text-primary)]"
+    <x-auth-header
+        :title="__('Bienvenido')"
+        :description="__('Ingresa tus credenciales para continuar')"
+        class="text-center text-[var(--color-primary-2)]"
     />
 
     <!-- Estado de la sesión -->
-    <x-auth-session-status 
-        class="text-center font-medium text-[var(--index-status-approved-text)]" 
-        :status="session('status')" 
+    <x-auth-session-status
+        class="text-center font-medium text-[var(--color-primary)]"
+        :status="session('status')"
     />
 
     <!-- Formulario -->
     <form method="POST" wire:submit="login" class="flex flex-col gap-6">
-        
+
         <!-- Correo Electrónico -->
         <flux:input
             wire:model="email"
@@ -38,8 +38,7 @@
             autofocus
             autocomplete="email"
             placeholder="correo@ejemplo.com"
-            style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
-                   
+            style="background-color: var(--color-card-bg); color: var(--color-primary-2); border: 1px solid var(--color-border);"
         />
 
         <!-- Contraseña -->
@@ -52,14 +51,13 @@
                 autocomplete="current-password"
                 :placeholder="__('Contraseña')"
                 viewable
-                style="background-color: var(--index-card-bg); color: var(--index-text-primary); border: 1px solid var(--index-border);"
-                   
+                style="background-color: var(--color-card-bg); color: var(--color-primary-2); border: 1px solid var(--color-border);"
             />
 
             @if (Route::has('password.request'))
-                <flux:link 
-                    class="absolute end-0 top-0 text-sm hover:underline text-[var(--index-accent)]" 
-                    :href="route('password.request')" 
+                <flux:link
+                    class="absolute end-0 top-0 text-sm hover:underline text-[var(--color-primary)]"
+                    :href="route('password.request')"
                     wire:navigate
                 >
                     {{ __('¿Olvidaste tu contraseña?') }}
@@ -68,10 +66,10 @@
         </div>
 
         <!-- Recuérdame -->
-        <flux:checkbox 
-            wire:model="remember" 
-            :label="__('Recuérdame')" 
-            class="text-[var(--index-text-secondary)] transition-colors duration-200"
+        <flux:checkbox
+            wire:model="remember"
+            :label="__('Recuérdame')"
+            class="text-[var(--color-secondary)] transition-colors duration-200"
         />
 
         <!-- Botón de login -->
@@ -83,10 +81,10 @@
                 class="group relative w-full h-12
                     max-w-[280px] mx-auto
                     rounded-[var(--radius-md)]
-                    bg-[var(--index-btn-primary-bg)] text-[var(--index-btn-primary-text)]
+                    bg-[var(--color-primary)]! text-[var(--color-bg)]!
                     font-semibold text-base
-                    shadow-lg shadow-[var(--index-btn-primary-shadow)]
-                    hover:bg-[var(--index-btn-primary-hover)]
+                    shadow-lg shadow-[var(--color-border-hover)]
+                    hover:bg-[var(--color-primary-2)]!
                     hover:shadow-xl hover:-translate-y-0.5
                     transition-all duration-300
                     disabled:opacity-60 disabled:cursor-not-allowed">
@@ -111,12 +109,12 @@
 
     <!-- Registro -->
     @if (Route::has('register'))
-        <div class="text-center text-sm text-[var(--index-text-secondary)] transition-colors duration-200">
+        <div class="text-center text-sm text-[var(--color-secondary)] transition-colors duration-200">
             <span>{{ __('¿No tienes una cuenta?') }}</span>
-            <flux:link 
-                :href="route('register')" 
-                wire:navigate 
-                class="hover:underline transition-colors duration-200 text-[var(--index-accent)]"
+            <flux:link
+                :href="route('register')"
+                wire:navigate
+                class="hover:underline transition-colors duration-200 text-[var(--color-primary)]"
             >
                 {{ __('Regístrate') }}
             </flux:link>

@@ -48,7 +48,7 @@ trait ManagesCareers
             [
                 'name' => [
                     'required', 'string', 'min:3',
-                    Rule::unique('careers', 'name')->ignore($this->careerId),
+                    Rule::unique('careers', 'name')->ignore($this->careerId)->whereNull('deleted_at'),
                 ],
             ],
             [

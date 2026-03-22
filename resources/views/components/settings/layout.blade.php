@@ -4,31 +4,22 @@
             <flux:navlist.item
                 :href="route('settings.profile')"
                 wire:navigate
-                class="
-                    text-[var(--index-text-primary)]
-                    hover:text-[var(--period-detail-btn-text-g)]
-                    hover:bg-[var(--period-detail-btn-bg-g)]!
-                "
+                style="color: var(--color-primary-2);"
+                class="hover:text-[var(--color-primary)] hover:bg-[var(--color-icon-bg)]!"
             >
                 {{ __('Perfil') }}
             </flux:navlist.item>
 
             <flux:navlist.item :href="route('settings.password')" wire:navigate
-                class="
-                    text-[var(--index-text-primary)]
-                    hover:text-[var(--period-detail-btn-text-g)]
-                    hover:bg-[var(--period-detail-btn-bg-g)]!
-                "
+                style="color: var(--color-primary-2);"
+                class="hover:text-[var(--color-primary)] hover:bg-[var(--color-icon-bg)]!"
             >
                 {{ __('Contraseña') }}
             </flux:navlist.item>
 
             <flux:navlist.item :href="route('settings.appearance')" wire:navigate
-                class="
-                    text-[var(--index-text-primary)]
-                    hover:text-[var(--period-detail-btn-text-g)]
-                    hover:bg-[var(--period-detail-btn-bg-g)]!
-                "
+                style="color: var(--color-primary-2);"
+                class="hover:text-[var(--color-primary)] hover:bg-[var(--color-icon-bg)]!"
             >
                 {{ __('Apariencia') }}
             </flux:navlist.item>
@@ -37,11 +28,8 @@
                 <flux:navlist.item
                     :href="route('admin.create-admin')"
                     wire:navigate
-                    class="
-                        text-[var(--index-text-primary)]
-                        hover:text-[var(--period-detail-btn-text-g)]
-                        hover:bg-[var(--period-detail-btn-bg-g)]!
-                    "
+                    style="color: var(--color-primary-2);"
+                    class="hover:text-[var(--color-primary)] hover:bg-[var(--color-icon-bg)]!"
                 >
                     {{ __('Administradores') }}
                 </flux:navlist.item>
