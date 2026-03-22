@@ -8,9 +8,6 @@
             <div class="relative hidden h-full flex-col p-10 lg:flex" style="background-color: var(--color-primary-2); color: var(--color-bg);">
                 <div class="absolute inset-0" style="background-color: var(--color-primary-2);"></div>
                 <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium" wire:navigate style="color: var(--color-bg);">
-                    <span class="flex h-10 w-10 items-center justify-center rounded-md">
-                        <x-app-logo-icon class="me-2 h-7 fill-current" style="color: var(--color-bg);" />
-                    </span>
                     {{ config('app.name', 'Laravel') }}
                 </a>
 
@@ -28,9 +25,6 @@
             <div class="w-full lg:p-8" style="background-color: var(--color-bg);">
                 <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
                     <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden" wire:navigate>
-                        <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                            <x-app-logo-icon class="size-9 fill-current" style="color: var(--color-primary-2);" />
-                        </span>
 
                         <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
                     </a>

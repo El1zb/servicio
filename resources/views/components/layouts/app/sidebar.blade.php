@@ -1,7 +1,20 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <script>
+        (function() {
+            const appearance = localStorage.getItem('flux.appearance') || 'system';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (appearance === 'dark' || (appearance === 'system' && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+
     @include('partials.head')
+
     <script>
         if (localStorage.getItem('sidebarCollapsed') === 'true')
             document.documentElement.classList.add('sidebar-collapsed');
@@ -11,7 +24,8 @@
 
 <div class="mobile-overlay" id="mobileOverlay"></div>
 
-<aside class="sidebar-container" style="background: var(--sidebar-color-bg);" id="sidebar">
+@persist('sidebar')
+<aside class="sidebar-container bg-[var(--sidebar-color-bg)]" id="sidebar">
 
     <button class="sidebar-toggle-btn" onclick="toggleSidebarCollapse()">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,7 +40,7 @@
                 <span class="logo-initials-main">SS</span>
                 <span class="logo-initials-sub">ITSCO</span>
             </div>
-            <div class="logo-text-block" style="flex:1;">
+            <div class="logo-text-block">
                 <span class="logo-app-name">Servicio Social</span>
                 <span class="logo-app-sub">ITSCO</span>
             </div>
@@ -130,7 +144,9 @@
 
     </div>
 </aside>
+@endpersist
 
+@persist('mobile-header')
 <header class="mobile-header">
     <button class="mobile-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,12 +180,33 @@
         </flux:dropdown>
     </div>
 </header>
+@endpersist
 
 <main class="main-content">
     {{ $slot }}
 </main>
 
 <script>
+    // ← INTERCEPTOR: evita que Livewire borre la clase dark
+     if (!window._themeInterceptorInstalled) {
+        window._themeInterceptorInstalled = true;
+        var _originalClassName = Object.getOwnPropertyDescriptor(Element.prototype, 'className');
+        Object.defineProperty(document.documentElement, 'className', {
+            set(value) {
+                var appearance = localStorage.getItem('flux.appearance') || 'system';
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var isDark = appearance === 'dark' || (appearance === 'system' && prefersDark);
+                if (isDark && !value.includes('dark')) {
+                    value = value + ' dark';
+                }
+                _originalClassName.set.call(this, value.trim());
+            },
+            get() {
+                return _originalClassName.get.call(this);
+            }
+        });
+    }
+
     var userDropdownOpen = false;
     var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 
@@ -212,6 +249,17 @@
 
     document.addEventListener('livewire:navigating', function() {
         document.body.classList.add('livewire-navigating');
+
+        // ← AGREGA ESTO:
+        const appearance = localStorage.getItem('flux.appearance') || 'system';
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (appearance === 'dark' || (appearance === 'system' && prefersDark)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        // ← HASTA AQUÍ
+
         if (localStorage.getItem('sidebarCollapsed') === 'true')
             document.documentElement.classList.add('sidebar-collapsed');
         if (userDropdownOpen) {
@@ -222,6 +270,16 @@
     });
 
     document.addEventListener('livewire:navigated', function() {
+        // ← AGREGA ESTO:
+        const appearance = localStorage.getItem('flux.appearance') || 'system';
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (appearance === 'dark' || (appearance === 'system' && prefersDark)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        // ← HASTA AQUÍ
+
         const saved = localStorage.getItem('sidebarCollapsed') === 'true';
         const sidebar = document.getElementById('sidebar');
         sidebar?.classList.toggle('collapsed', saved);
