@@ -1,0 +1,83 @@
+services:
+  - type: web
+    name: servicio-social
+    env: php
+    buildCommand: composer install --no-dev && php artisan migrate --force && php artisan db:seed --force
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_NAME
+        value: Laravel
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:6DdvRBwyYP8I05XoGcgiOixbIre7JQsY0KYXUsHcIjw=
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://servicio-social.onrender.com
+      - key: APP_LOCALE
+        value: es
+      - key: APP_FALLBACK_LOCALE
+        value: es
+      - key: APP_FAKER_LOCALE
+        value: es_MX
+      - key: APP_MAINTENANCE_DRIVER
+        value: file
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_STACK
+        value: single
+      - key: LOG_LEVEL
+        value: debug
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: servicio-social-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: servicio-social-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: servicio-social-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: servicio-social-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: servicio-social-db
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: SESSION_ENCRYPT
+        value: false
+      - key: SESSION_PATH
+        value: /
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: BROADCAST_CONNECTION
+        value: log
+      - key: MAIL_MAILER
+        value: log
+      - key: MAIL_FROM_ADDRESS
+        value: hello@example.com
+      - key: MAIL_FROM_NAME
+        value: Laravel
+
+databases:
+  - name: servicio-social-db
+    databaseName: servicio
+    user: servicio_user
+    plan: free
