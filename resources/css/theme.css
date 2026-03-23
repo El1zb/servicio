@@ -1,127 +1,110 @@
 /* =====================================================
-   theme.css
-   DESIGN SYSTEM – ITSCO
-   Instituto Tecnológico Superior de Cosamaloapan
-   ===================================================== */
-
-/* =====================================================
-   MODO CLARO (DEFAULT)
+   MODO OSCURO (DEFAULT cuando .dark está presente)
    ===================================================== */
 :root {
-
-   /* ===========================
-      TOAST notifications
-      =========================== */
-   --toast-notification-bg:             #FFFFFF;
-   --toast-notification-success:        #059669;
-   --toast-notification-error:          #DC2626;
-   --toast-notification-info:           #2563EB;
-   --toast-notification-warning:        #D97706;
-   --toast-notification-text-primary:   #0A1628;
-   --toast-notification-text-secondary: #64748B;
-
-   /* Fondos */
-   --color-bg:    #F5F6FA;
-   --color-hover: #ECEEF5;
-
-   /* Tarjetas */
-   --color-card-bg:       #FDFEFF;
-   --color-card-bg-hover: #F5F6FA;
-   --color-card-hover:    #F5F6FA;
-
-   /* Bordes */
-   --color-border:       #E0E3EE;
-   --color-border-hover: #D2D6E8;
-
-   /* Textos */
-   --color-primary:   #213561;
-   --color-primary-2: #0A1628;
-   --color-secondary: #475569;
-   --color-text:      #475569;
-
-   /* Iconos */
-   --color-icon:        #475569;
-   --color-icon-hover:  #0A1628;
-   --color-icon-bg:     #F5F6FA;
-   --color-icon-bg-hover: #ECEEF5;
-   --color-bg-icon:     rgba(33, 53, 97, 0.1);
-
-   /* Navegación */
-   --color-nav:          #475569;
-   --color-nav-activate: #0A1628;
-   --color-indicator:    #D2D6E8;
-
-   /* Font */
-   --font-weight-medium: 500;
-
-   /* Sidebar */
-   --sidebar-color-bg:           #213561;
-   --sidebar-color-hover:        #1a2c52;
-   --sidebar-color-border:       #162449;
-   --sidebar-color-primary:      #FFFFFF;
-   --sidebar-color-secondary:    #a8b8d8;
-   --sidebar-color-nav:          #a8b8d8;
-   --sidebar-color-nav-activate: #FFFFFF;
-   --sidebar-color-bg-icon:      #162449;
+    color-scheme: light dark;
 }
 
-/* =====================================================
-   MODO OSCURO
-   ===================================================== */
+/* Claro */
+:root:not(.dark) {
+    --toast-notification-bg:             #FFFFFF;
+    --toast-notification-success:        #059669;
+    --toast-notification-error:          #DC2626;
+    --toast-notification-info:           #2563EB;
+    --toast-notification-warning:        #D97706;
+    --toast-notification-text-primary:   #0A1628;
+    --toast-notification-text-secondary: #64748B;
+
+    --color-bg:    #F5F6FA;
+    --color-hover: #ECEEF5;
+
+    --color-card-bg:       #FDFEFF;
+    --color-card-bg-hover: #F5F6FA;
+    --color-card-hover:    #F5F6FA;
+
+    --color-border:       #E0E3EE;
+    --color-border-hover: #D2D6E8;
+
+    --color-primary:   #213561;
+    --color-primary-2: #0A1628;
+    --color-secondary: #475569;
+    --color-text:      #475569;
+
+    --color-icon:          #475569;
+    --color-icon-hover:    #0A1628;
+    --color-icon-bg:       #F5F6FA;
+    --color-icon-bg-hover: #ECEEF5;
+    --color-bg-icon:       rgba(33, 53, 97, 0.1);
+
+    --color-nav:          #475569;
+    --color-nav-activate: #0A1628;
+    --color-indicator:    #D2D6E8;
+
+    --font-weight-medium: 500;
+
+    --sidebar-color-bg:           #213561;
+    --sidebar-color-hover:        #1a2c52;
+    --sidebar-color-border:       #162449;
+    --sidebar-color-primary:      #FFFFFF;
+    --sidebar-color-secondary:    #a8b8d8;
+    --sidebar-color-nav:          #a8b8d8;
+    --sidebar-color-nav-activate: #FFFFFF;
+    --sidebar-color-bg-icon:      #162449;
+}
+
+/* Oscuro */
 :root.dark {
+    --toast-notification-bg:             #161f2d;
+    --toast-notification-success:        #1f8f5f;
+    --toast-notification-error:          #9e1f1f;
+    --toast-notification-info:           #2f6fed;
+    --toast-notification-warning:        #b8871a;
+    --toast-notification-text-primary:   #e6edf3;
+    --toast-notification-text-secondary: #a5afbd;
 
-      /* ===========================
-         TOAST notifications
-         =========================== */
-      --toast-notification-bg:             #161f2d;
-      --toast-notification-success:        #1f8f5f;
-      --toast-notification-error:          #9e1f1f;
-      --toast-notification-info:           #2f6fed;
-      --toast-notification-warning:        #b8871a;
-      --toast-notification-text-primary:   #e6edf3;
-      --toast-notification-text-secondary: #a5afbd;
+    --color-bg:    #07080A;
+    --color-hover: #0C0D0F;
 
-      /* Fondos */
-      --color-bg:    #07080A;
-      --color-hover: #0C0D0F;
+    --color-card-bg:       #0C0D0F;
+    --color-card-bg-hover: #18191B;
+    --color-card-hover:    #121417;
 
-      /* Tarjetas */
-      --color-card-bg:       #0C0D0F;
-      --color-card-bg-hover: #18191B;
-      --color-card-hover:    #121417;
+    --color-border:       #060606;
+    --color-border-hover: #191b1e;
 
-      /* Bordes */
-      --color-border:       #060606;
-      --color-border-hover: #191b1e;
+    --color-primary:   #FAFDF8;
+    --color-primary-2: #dadada;
+    --color-secondary: #696868;
+    --color-text:      #A5ABA7;
 
-      /* Textos */
-      --color-primary:   #FAFDF8;
-      --color-primary-2: #dadada;
-      --color-secondary: #696868;
-      --color-text:      #A5ABA7;
+    --color-icon:          #767779;
+    --color-icon-hover:    #bebebe;
+    --color-icon-bg:       #18191B;
+    --color-icon-bg-hover: #202224;
+    --color-bg-icon:       #1F2022;
 
-      /* Iconos */
-      --color-icon:          #767779;
-      --color-icon-hover:    #bebebe;
-      --color-icon-bg:       #18191B;
-      --color-icon-bg-hover: #202224;
-      --color-bg-icon:       #1F2022;
+    --color-nav:          #595B55;
+    --color-nav-activate: #E5E8EA;
+    --color-indicator:    #3f3f3f;
 
-      /* Navegación */
-      --color-nav:          #595B55;
-      --color-nav-activate: #E5E8EA;
-      --color-indicator:    #3f3f3f;
+    --font-weight-medium: 500;
 
-      /* Font */
-      --font-weight-medium: 500;
+    --sidebar-color-bg:           #07080A;
+    --sidebar-color-hover:        #0C0D0F;
+    --sidebar-color-border:       #060606;
+    --sidebar-color-primary:      #FAFDF8;
+    --sidebar-color-secondary:    #696868;
+    --sidebar-color-nav:          #595B55;
+    --sidebar-color-nav-activate: #E5E8EA;
+    --sidebar-color-bg-icon:      #1F2022;
+}
 
-      /* Sidebar */
-      --sidebar-color-bg:           #07080A;
-      --sidebar-color-hover:        #0C0D0F;
-      --sidebar-color-border:       #060606;
-      --sidebar-color-primary:      #FAFDF8;
-      --sidebar-color-secondary:    #696868;
-      --sidebar-color-nav:          #595B55;
-      --sidebar-color-nav-activate: #E5E8EA;
-      --sidebar-color-bg-icon:      #1F2022;
-   }
+/* Oculta contenido durante navegación SPA para eliminar el flash */
+body.livewire-navigating .sidebar-container,
+body.livewire-navigating .main-content {
+    visibility: hidden !important;
+}
+
+/* Evita que el navegador interpole colores nativos */
+html.dark { color-scheme: dark; }
+html:not(.dark) { color-scheme: light; }

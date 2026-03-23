@@ -1,7 +1,7 @@
 {{-- Grid de Campus --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 p-4">
     @foreach($campuses as $campus)
-        <div class="flex flex-col h-full rounded-2xl overflow-hidden transition-all duration-200
+        <div class="flex flex-col h-full rounded-2xl overflow-hidden transition-all duration-200 
                     border border-[var(--color-border-hover)]
                     hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)] hover:border-[var(--color-indicator)]">
 

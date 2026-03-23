@@ -1,15 +1,30 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@php
+    $appearance = request()->cookie('appearance', 'system');
+    $htmlClass = $appearance === 'dark' ? 'dark' : '';
+@endphp
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $htmlClass }}">
 <head>
+    <!-- PRIMER tag, antes de cualquier CSS -->
     <script>
         (function() {
-            const appearance = localStorage.getItem('flux.appearance') || 'system';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (appearance === 'dark' || (appearance === 'system' && prefersDark)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+            var a = localStorage.getItem('flux.appearance') || 'system';
+            var dark = a === 'dark' || (a === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
+            document.documentElement.classList.toggle('dark', dark);
+            document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+
+            // Intercepta replaceHtmlAttributes de Livewire antes de que borre 'dark'
+            var _setAttribute = Element.prototype.setAttribute;
+            Element.prototype.setAttribute = function(name, value) {
+                if (this === document.documentElement && name === 'class') {
+                    var a = localStorage.getItem('flux.appearance') || 'system';
+                    var dark = a === 'dark' || (a === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
+                    if (dark && !value.includes('dark')) {
+                        value = (value + ' dark').trim();
+                    }
+                }
+                _setAttribute.call(this, name, value);
+            };
         })();
     </script>
 
@@ -24,7 +39,6 @@
 
 <div class="mobile-overlay" id="mobileOverlay"></div>
 
-@persist('sidebar')
 <aside class="sidebar-container bg-[var(--sidebar-color-bg)]" id="sidebar">
 
     <button class="sidebar-toggle-btn" onclick="toggleSidebarCollapse()">
@@ -144,9 +158,7 @@
 
     </div>
 </aside>
-@endpersist
 
-@persist('mobile-header')
 <header class="mobile-header">
     <button class="mobile-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -180,31 +192,26 @@
         </flux:dropdown>
     </div>
 </header>
-@endpersist
 
 <main class="main-content">
     {{ $slot }}
 </main>
 
-<script>
-    // ← INTERCEPTOR: evita que Livewire borre la clase dark
-     if (!window._themeInterceptorInstalled) {
-        window._themeInterceptorInstalled = true;
-        var _originalClassName = Object.getOwnPropertyDescriptor(Element.prototype, 'className');
-        Object.defineProperty(document.documentElement, 'className', {
-            set(value) {
-                var appearance = localStorage.getItem('flux.appearance') || 'system';
-                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                var isDark = appearance === 'dark' || (appearance === 'system' && prefersDark);
-                if (isDark && !value.includes('dark')) {
-                    value = value + ' dark';
-                }
-                _originalClassName.set.call(this, value.trim());
-            },
-            get() {
-                return _originalClassName.get.call(this);
-            }
-        });
+<script data-navigate-once>
+    // Sincroniza localStorage → cookie para que el servidor sepa el tema
+    var _appearance = localStorage.getItem('flux.appearance') || 'system';
+    document.cookie = 'appearance=' + _appearance + ';path=/;max-age=31536000;SameSite=Lax';
+
+    // Cuando Flux cambie la apariencia, actualiza la cookie también
+    document.addEventListener('flux-appearance-changed', function(e) {
+        document.cookie = 'appearance=' + e.detail + ';path=/;max-age=31536000;SameSite=Lax';
+    });
+
+    function applyTheme() {
+        var a = localStorage.getItem('flux.appearance') || 'system';
+        var dark = a === 'dark' || (a === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
     }
 
     var userDropdownOpen = false;
@@ -248,17 +255,13 @@
     bindOverlay();
 
     document.addEventListener('livewire:navigating', function() {
+        console.log('[navigating] dark:', document.documentElement.classList.contains('dark'));
+        console.log('[navigating] visibility sidebar:', getComputedStyle(document.getElementById('sidebar')).visibility);
+        console.log('[navigating] classList:', document.documentElement.className);
+
         document.body.classList.add('livewire-navigating');
 
-        // ← AGREGA ESTO:
-        const appearance = localStorage.getItem('flux.appearance') || 'system';
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (appearance === 'dark' || (appearance === 'system' && prefersDark)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-        // ← HASTA AQUÍ
+        applyTheme();
 
         if (localStorage.getItem('sidebarCollapsed') === 'true')
             document.documentElement.classList.add('sidebar-collapsed');
@@ -270,15 +273,10 @@
     });
 
     document.addEventListener('livewire:navigated', function() {
-        // ← AGREGA ESTO:
-        const appearance = localStorage.getItem('flux.appearance') || 'system';
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (appearance === 'dark' || (appearance === 'system' && prefersDark)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-        // ← HASTA AQUÍ
+        console.log('[navigated] dark:', document.documentElement.classList.contains('dark'));
+        console.log('[navigated] classList:', document.documentElement.className);
+
+        applyTheme()        
 
         const saved = localStorage.getItem('sidebarCollapsed') === 'true';
         const sidebar = document.getElementById('sidebar');
@@ -295,6 +293,18 @@
         }
         bindOverlay();
         setTimeout(() => document.body.classList.remove('livewire-navigating'), 50);
+    });
+
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            console.log('[MutationObserver] classList cambió a:', document.documentElement.className);
+            console.trace(); // muestra el stack trace para saber QUIÉN lo cambió
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class']
     });
 </script>
 

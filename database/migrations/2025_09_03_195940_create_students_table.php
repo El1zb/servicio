@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('campus_id')->constrained('campuses')->onDelete('cascade');
             $table->foreignId('period_id')->constrained('periods')->onDelete('cascade'); // <-- agregado
-            $table->enum('system', ['Escolarizado', 'Sabatino']);
+            //$table->enum('system', ['Escolarizado', 'Sabatino']);
+            $table->string('system');
             $table->foreignId('career_id')->constrained('careers')->onDelete('cascade');
             $table->string('curp');
             $table->string('rfc')->nullable();
@@ -29,7 +30,8 @@ return new class extends Migration
             $table->string('phone');
             $table->decimal('reticular_progress', 5, 2)->default(0); 
             $table->foreignId('semester_id')->nullable()->constrained('semesters')->onDelete('set null');
-            $table->enum('status', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
+            //$table->enum('status', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
+            $table->string('status')->default('pendiente');
             $table->text('rejection_reason')->nullable(); // <-- motivo de rechazo
             $table->timestamps();
         });

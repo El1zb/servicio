@@ -1,6 +1,5 @@
 {{-- Header --}}
-<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6"
-     style="background-color: var(--color-card-bg);">
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6 bg-[var(--color-card-bg)]">
     <div>
         <x-auth-header
             title="Campus"
