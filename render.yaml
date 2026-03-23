@@ -34,25 +34,15 @@ services:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        fromDatabase:
-          name: servicio-social-db
-          property: host
+        value: db.aftejfsurgmvvsklkftr.supabase.co
       - key: DB_PORT
-        fromDatabase:
-          name: servicio-social-db
-          property: port
+        value: 5432
       - key: DB_DATABASE
-        fromDatabase:
-          name: servicio-social-db
-          property: database
+        value: postgres
       - key: DB_USERNAME
-        fromDatabase:
-          name: servicio-social-db
-          property: user
+        value: postgres
       - key: DB_PASSWORD
-        fromDatabase:
-          name: servicio-social-db
-          property: password
+        value: cemalu082316
       - key: SESSION_DRIVER
         value: database
       - key: SESSION_LIFETIME
@@ -75,9 +65,3 @@ services:
         value: hello@example.com
       - key: MAIL_FROM_NAME
         value: Laravel
-
-databases:
-  - name: servicio-social-db
-    databaseName: servicio
-    user: servicio_user
-    plan: free
