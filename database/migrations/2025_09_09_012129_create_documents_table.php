@@ -29,8 +29,8 @@ return new class extends Migration
             $table->date('custom_limit_date')->nullable();
 
             // Estado del documento
-            //$table->enum('status', ['en_revision', 'revisado', 'rechazado'])->default('en_revision');
-            $table->string('status')->default('en_revision');
+            $table->enum('status', ['en_revision', 'revisado', 'rechazado'])->default('en_revision');
+            //$table->string('status')->default('en_revision');
             $table->boolean('is_active')->default(true); // nuevo: para manejar documentos activos/inactivos
             $table->text('comments')->nullable();
 

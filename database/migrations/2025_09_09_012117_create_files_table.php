@@ -26,8 +26,8 @@
                 $table->string('example_name_file')->nullable();
                 $table->integer('max_size')->default(10240);
 
-                //$table->enum('upload_mode', ['user_only', 'admin_only', 'bidirectional'])->default('bidirectional');
-                $table->string('upload_mode')->default('bidirectional');
+                $table->enum('upload_mode', ['user_only', 'admin_only', 'bidirectional'])->default('bidirectional');
+                //$table->string('upload_mode')->default('bidirectional');
                 $table->boolean('is_individual')->default(false);
 
                 $table->timestamps();
