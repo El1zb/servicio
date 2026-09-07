@@ -7,12 +7,56 @@ use Illuminate\Support\Facades\Storage;
 
 trait ManagesUploads
 {
-    public array $fileUpload = [];
+    public array $fileUpload        = [];
+    public ?int  $uploadDocId       = null;
+    public bool  $isUploadModalOpen = false;
 
-    public function updatedFileUpload($file, $docId): void
+    public ?int  $cancelDocId       = null;
+    public bool  $isCancelModalOpen = false;
+
+    // ─── Modal de subida ─────────────────────────────────────────────────────────
+    // isUploadModalOpen (booleano) es lo que controla la visibilidad del
+    // modal (wire:model), separado de uploadDocId (qué documento). Igual que
+    // isDocumentModalOpen/documentId en el admin: si el modal se ligara
+    // directo a un id mutable, el ciclo de subida temporal de Livewire podía
+    // cerrarlo solo a mitad de la subida.
+
+    public function openUploadModal(int $docId): void
     {
-        if ($docId) $this->saveUpload($docId);
+        $document = Document::find($docId);
+
+        if (! $document || ! $this->canUploadFile($document)) return;
+
+        unset($this->fileUpload[$docId]);
+        $this->resetValidation();
+        $this->uploadDocId       = $docId;
+        $this->isUploadModalOpen = true;
     }
+
+    public function closeUploadModal(): void
+    {
+        if ($this->uploadDocId !== null) {
+            unset($this->fileUpload[$this->uploadDocId]);
+        }
+        $this->uploadDocId       = null;
+        $this->isUploadModalOpen = false;
+    }
+
+    public function removeSelectedUpload(): void
+    {
+        if ($this->uploadDocId !== null) {
+            unset($this->fileUpload[$this->uploadDocId]);
+        }
+    }
+
+    public function confirmUpload(): void
+    {
+        if ($this->uploadDocId === null) return;
+
+        $this->saveUpload($this->uploadDocId);
+    }
+
+    // ─── Guardar / cancelar entrega ─────────────────────────────────────────────
 
     public function saveUpload(int $docId): void
     {
@@ -49,8 +93,8 @@ trait ManagesUploads
             }
         }
 
-        if ($document->student_file_path && Storage::disk('public')->exists($document->student_file_path)) {
-            Storage::disk('public')->delete($document->student_file_path);
+        if ($document->student_file_path && Storage::disk('local')->exists($document->student_file_path)) {
+            Storage::disk('local')->delete($document->student_file_path);
         }
 
         $periodName     = $this->student->period->name ?? 'Periodo';
@@ -58,7 +102,7 @@ trait ManagesUploads
         $extension      = $uploadedFile->getClientOriginalExtension();
         $storedFileName = "{$file->name}_{$this->student->control_number}_{$periodName}_{$timestamp}.{$extension}";
 
-        $path = $uploadedFile->storeAs('student_uploads', $storedFileName, 'public');
+        $path = $uploadedFile->storeAs('student_uploads', $storedFileName, 'local');
 
         $document->update([
             'student_file_path' => $path,
@@ -70,10 +114,41 @@ trait ManagesUploads
         ]);
 
         unset($this->fileUpload[$docId]);
+        $this->uploadDocId       = null;
+        $this->isUploadModalOpen = false;
 
-        $this->loadCalendarEvents();
-        $this->dispatch('calendar-updated', calendarEvents: $this->calendarEvents);
         $this->dispatch('notify', type: 'success', message: "Archivo '{$file->name}' subido correctamente.");
+    }
+
+    // ─── Cancelar entrega (modal de confirmación, mismo diseño que "Eliminar
+    // cuenta" en configuración) ──────────────────────────────────────────────
+    // isCancelModalOpen separado de cancelDocId por el mismo motivo que
+    // isUploadModalOpen/uploadDocId arriba.
+
+    public function openCancelModal(int $docId): void
+    {
+        $document = Document::find($docId);
+
+        if (! $document || ! $this->canUploadFile($document) || $document->status !== 'rechazado') return;
+
+        $this->cancelDocId       = $docId;
+        $this->isCancelModalOpen = true;
+    }
+
+    public function closeCancelModal(): void
+    {
+        $this->cancelDocId       = null;
+        $this->isCancelModalOpen = false;
+    }
+
+    public function confirmCancelUpload(): void
+    {
+        if ($this->cancelDocId === null) return;
+
+        $this->cancelUpload($this->cancelDocId);
+
+        $this->cancelDocId       = null;
+        $this->isCancelModalOpen = false;
     }
 
     public function cancelUpload(int $docId): void
@@ -84,10 +159,12 @@ trait ManagesUploads
 
         if (! $this->canUploadFile($document)) return;
 
-        if ($document->status === 'revisado') return;
+        // Solo se puede cancelar una entrega rechazada — aprobada o en
+        // revisión no se tocan (ver mismo criterio en submission-documents.blade.php).
+        if ($document->status !== 'rechazado') return;
 
-        if ($document->student_file_path && Storage::disk('public')->exists($document->student_file_path)) {
-            Storage::disk('public')->delete($document->student_file_path);
+        if ($document->student_file_path && Storage::disk('local')->exists($document->student_file_path)) {
+            Storage::disk('local')->delete($document->student_file_path);
         }
 
         $document->update([
@@ -97,10 +174,8 @@ trait ManagesUploads
             'status'            => 'en_revision',
         ]);
 
-        unset($this->fileUpload[$docId]); // igual que saveUpload
+        unset($this->fileUpload[$docId]);
 
-        $this->loadCalendarEvents();
-        $this->dispatch('calendar-updated', calendarEvents: $this->calendarEvents);
-        $this->dispatch('notify', type: 'success', message: "Entrega de '{$document->name}' cancelada correctamente."); // 👈 $document->name, no $file->name
+        $this->dispatch('notify', type: 'success', message: "Entrega de '{$document->name}' cancelada correctamente.");
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Livewire\Dashboard\Index\Concerns;
 
 use App\Models\Period;
-use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -15,30 +14,53 @@ trait ManagesStats
     public string $statusFilter = 'all';
     public string $sortBy       = 'recent';
 
-    // ─── Query principal de periodos ─────────────────────────────────────────────
+    // ─── Setters de filtros (botones del dropdown custom del header) ───────────────
 
-    protected function getPeriodsQuery(): LengthAwarePaginator
+    public function setStatusFilter(string $value): void
     {
-        $query = Period::with(['semesters', 'students'])
-            ->withCount([
-                'students',
-                'files',
-                'students as approved_students_count' => fn ($q) => $q->where('status', 'aprobado'),
-                'students as pending_students_count'  => fn ($q) => $q->where('status', 'pendiente'),
-                'students as rejected_students_count' => fn ($q) => $q->where('status', 'rechazado'),
-            ]);
+        $this->statusFilter = $value;
+        $this->resetPage();
+    }
 
-        // Búsqueda por nombre
+    public function setSortBy(string $value): void
+    {
+        $this->sortBy = $value;
+        $this->resetPage();
+    }
+
+    // ─── Query base filtrada (búsqueda + estado) ─────────────────────────────────
+    // Compartida por el listado y las estadísticas, para que las tarjetas de
+    // arriba siempre reflejen el mismo subconjunto de periodos que se ve abajo.
+
+    protected function filteredPeriodsBaseQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = Period::query();
+
         if ($this->search) {
             $query->where('name', 'like', '%' . $this->search . '%');
         }
 
-        // Filtro por estado
         match ($this->statusFilter) {
             'active'   => $query->where('is_active', true),
             'inactive' => $query->where('is_active', false),
             default    => null,
         };
+
+        return $query;
+    }
+
+    // ─── Query principal de periodos ─────────────────────────────────────────────
+
+    protected function getPeriodsQuery(): LengthAwarePaginator
+    {
+        $query = $this->filteredPeriodsBaseQuery()
+            ->with(['semesters', 'students'])
+            ->withCount([
+                'students',
+                'files',
+                'students as pending_students_count' => fn ($q) => $q->where('status', 'pendiente'),
+                'documents as pending_review_documents_count' => fn ($q) => $q->where('documents.status', 'en_revision'),
+            ]);
 
         // Ordenamiento
         match ($this->sortBy) {
@@ -51,9 +73,6 @@ trait ManagesStats
 
         // Decorar cada periodo con propiedades calculadas
         $periods->getCollection()->transform(function (Period $period) {
-            $total = $period->students_count ?: 1;
-
-            $period->approvalRate   = round(($period->approved_students_count / $total) * 100);
             $period->startFormatted = Carbon::parse($period->start_date)->format('d/m/Y');
             $period->endFormatted   = Carbon::parse($period->end_date)->format('d/m/Y');
             $period->hasStudents    = $period->students_count > 0;
@@ -62,17 +81,5 @@ trait ManagesStats
         });
 
         return $periods;
-    }
-
-    // ─── Estadísticas globales ───────────────────────────────────────────────────
-
-    protected function getStats(): array
-    {
-        return [
-            'total_periods'    => Period::count(),
-            'active_periods'   => Period::where('is_active', true)->count(),
-            'total_students'   => Student::count(),
-            'pending_approvals' => Student::where('status', 'pendiente')->count(),
-        ];
     }
 }

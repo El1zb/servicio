@@ -11,10 +11,17 @@ class Career extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'is_active'];
+
+    protected $casts = ['is_active' => 'boolean'];
 
     public function students()
     {
         return $this->hasMany(Student::class);
+    }
+
+    public function campuses()
+    {
+        return $this->belongsToMany(Campus::class, 'campus_career');
     }
 }

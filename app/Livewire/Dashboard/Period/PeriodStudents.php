@@ -8,6 +8,7 @@ use App\Livewire\Dashboard\Period\Concerns\ManagesStudents;
 use App\Models\Period;
 use App\Models\Campus;
 use App\Models\Career;
+use App\Models\Semester;
 
 class PeriodStudents extends Component
 {
@@ -43,16 +44,28 @@ class PeriodStudents extends Component
 
     public function goBack()
     {
-        return redirect()->route('dashboard');
+        return redirect()->route('periods');
     }
 
     public function render()
     {
         return view('livewire.dashboard.period.partials.students-tab', [
-            'students'  => $this->getStudentsPaginated(),
-            'campuses'  => Campus::all(),
-            'careers'   => Career::all(),
-            'semesters' => $this->period->semesters,
+            'period'          => $this->period,
+            'students'        => $this->getStudentsPaginated(),
+            'campuses'        => Campus::all(),
+            // Listas completas: para el formulario de edición (se puede
+            // asignar cualquier carrera/semestre del sistema).
+            'careers'         => Career::all(),
+            'semesters'       => Semester::all(),
+            // Filtro de carrera: acotado a lo que de verdad tienen los
+            // estudiantes de este periodo.
+            'filterCareers'   => $this->getFilterCareers(),
+            // Filtro de semestre: los semestres configurados para el
+            // periodo (no los de los estudiantes; el periodo define cuáles
+            // aplican, aunque algún estudiante tenga uno fuera de esa
+            // configuración).
+            'filterSemesters' => $this->period->semesters,
+            'pendingCount'    => $this->pendingCount(),
         ])->layout('components.layouts.period-detail');
     }
 }

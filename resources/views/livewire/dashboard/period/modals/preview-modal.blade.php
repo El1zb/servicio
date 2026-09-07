@@ -3,14 +3,25 @@
     <flux:modal
         wire:model="previewPath"
         :dismissible="false"
+        :closable="false"
         class="w-[95vw] sm:w-[85vw] md:w-[75vw] lg:w-[860px] xl:w-[960px] max-w-[95vw]">
 
         <div class="flex flex-col" style="height: 75vh; max-height: 85vh;">
-            @php $ext = strtolower(pathinfo($previewPath, PATHINFO_EXTENSION)); @endphp
+            @php
+                $ext = strtolower(pathinfo($previewPath, PATHINFO_EXTENSION));
+                // El .docx se sirve convertido a PDF (LibreOffice, ver
+                // DocxToPdfConverter) para poder visualizarlo aquí igual que
+                // un PDF real, sin perder la extensión original mostrada arriba.
+                $previewIsViewable = in_array($ext, ['pdf', 'docx']);
+                $previewSrc        = route('files.show', array_filter([
+                    'path' => $previewPath,
+                    'as'   => $ext === 'docx' ? 'pdf' : null,
+                ]));
+            @endphp
 
             {{-- ── Header ── --}}
             <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0"
-                style="border-bottom: 1px solid var(--color-border-hover); background-color: var(--color-card-bg);">
+                style="border-bottom: 1px solid var(--color-border-hover); background-color: var(--color-modal-bg);">
 
                 <div class="flex items-center gap-3 min-w-0">
                     {{-- Icono tipo ── --}}
@@ -42,14 +53,14 @@
 
             {{-- ── Contenido ── --}}
             <div class="flex-1 overflow-hidden"
-                style="background-color: var(--color-card-bg);">
+                style="background-color: var(--color-modal-bg);">
 
-                @if($ext === 'pdf')
+                @if($previewIsViewable)
                     <iframe
-                        src="{{ asset($previewPath) }}"
+                        src="{{ $previewSrc }}"
                         class="w-full h-full"
                         style="background-color: var(--color-icon-bg);"
-                        title="Vista previa PDF">
+                        title="Vista previa">
                     </iframe>
 
                 @else
@@ -76,14 +87,9 @@
                                 </p>
                             </div>
 
-                            <a href="{{ asset($previewPath) }}" download="{{ $previewName }}"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                                style="background-color: var(--color-primary); color: var(--color-card-bg);"
-                                onmouseover="this.style.backgroundColor='var(--color-primary-2)'"
-                                onmouseout="this.style.backgroundColor='var(--color-primary)'">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            <a href="{{ route('files.show', ['path' => $previewPath]) }}" download="{{ $previewName }}" class="btn-primary">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                 </svg>
                                 Descargar archivo
                             </a>
@@ -92,30 +98,24 @@
                 @endif
             </div>
 
-            {{-- ── Footer (solo PDF) ── --}}
-            @if($ext === 'pdf')
-                <div class="flex items-center gap-3 px-4 sm:px-6 py-3 flex-shrink-0"
-                    style="border-top: 1px solid var(--color-border-hover); background-color: var(--color-card-bg);">
+            {{-- ── Footer ── --}}
+            <div class="flex items-center justify-end gap-2 px-4 sm:px-6 py-3 flex-shrink-0"
+                style="border-top: 1px solid var(--color-border-hover); background-color: var(--color-modal-bg);">
 
-                    <p class="text-xs flex-1 hidden sm:block" style="color: var(--color-secondary);">
-                        Usa los controles del visor para navegar
-                    </p>
+                <button type="button" wire:click="closePreview"
+                        class="px-4 py-2 rounded-full text-sm transition-colors duration-150 text-[var(--color-secondary)] hover:text-[var(--color-primary-2)] hover:bg-[var(--sidebar-color-hover)]">
+                    Cerrar
+                </button>
 
-                    <div class="flex items-center gap-2 ml-auto">
-                        <a href="{{ asset($previewPath) }}" download="{{ $previewName }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                            style="background-color: var(--color-primary); color: var(--color-card-bg);"
-                            onmouseover="this.style.backgroundColor='var(--color-primary-2)'"
-                            onmouseout="this.style.backgroundColor='var(--color-primary)'">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                            Descargar
-                        </a>
-                    </div>
-                </div>
-            @endif
+                @if($previewIsViewable)
+                    <a href="{{ route('files.show', ['path' => $previewPath]) }}" download="{{ $previewName }}" class="btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Descargar
+                    </a>
+                @endif
+            </div>
 
         </div>
     </flux:modal>

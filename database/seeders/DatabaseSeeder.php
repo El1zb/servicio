@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
             CampusSeeder::class,
             CareerSeeder::class,
             SemesterSeeder::class,
+            PeriodSeeder::class,
+            StudentSeeder::class,
+            FileSeeder::class,
         ]);
     }
 }

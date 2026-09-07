@@ -1,306 +1,174 @@
-{{-- REVISIÓN DE DOCUMENTOS --}}
-<div class="backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
-     style="background-color: var(--color-card-bg);">
+{{-- Buscador: en desktop vive en el topbar, en mobile se queda acá. --}}
+@push('topbar-search')
+    <div class="topbar-search-input-wrap">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+        </svg>
+        <input type="text" placeholder="Buscar por nombre o número de control..." value="{{ $searchRevision }}" oninput="topbarSearchInput(this.value, 'searchRevision')" class="topbar-search-input"/>
+    </div>
+@endpush
 
-    {{-- Header --}}
-    <div class="p-4 sm:p-6" style="border-bottom: 1px solid var(--color-border-hover);">
-        <h2 class="text-xl sm:text-2xl font-bold mb-2" style="color: var(--color-primary-2);">
-            Revisión de Documentos
-        </h2>
-        <p style="color: var(--color-secondary);">
-            Revisa los documentos entregados por los estudiantes
-        </p>
+{{-- Botón principal: negro sólido, igual que "Nuevo X". --}}
+@push('topbar-actions')
+    <button type="button" wire:loading.attr="disabled" wire:target="exportExcel"
+            onclick="topbarAction('exportExcel')"
+            class="header-filter-select disabled:opacity-40 disabled:cursor-not-allowed">
+        <span wire:loading.remove wire:target="exportExcel">Exportar a Excel</span>
+        <span wire:loading wire:target="exportExcel">Exportando...</span>
+    </button>
 
-        <div class="mt-4 flex flex-col gap-3">
+    <button type="button" onclick="topbarAction('reviewAllPending')"
+            @disabled($pendingDocsCount === 0)
+            class="btn-primary disabled:opacity-40 disabled:cursor-not-allowed">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+        Revisar pendientes
+    </button>
+@endpush
 
-            {{-- Fila 1: Búsqueda + Exportar --}}
-            <div class="flex gap-3 items-center">
-                <div class="flex-1 min-w-0">
-                    <div class="relative w-full">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                style="color: var(--color-secondary);">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </div>
-                        <input
-                            type="text"
-                            wire:model.live.debounce.300ms="searchRevision"
-                            placeholder="Buscar por nombre o número de control..."
-                            class="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm transition-all focus:ring-2 focus:outline-none"
-                            style="background-color: var(--color-icon-bg);
-                                   color: var(--color-primary-2);
-                                   border: 1px solid var(--color-border-hover);"
-                        >
-                    </div>
-                </div>
+<div class="space-y-6">
 
-                {{-- Exportar Excel --}}
-                <div class="relative group/excel shrink-0">
-                    <button
-                        wire:click="exportExcel"
-                        wire:loading.attr="disabled"
-                        class="px-4 sm:px-5 py-2.5 font-semibold rounded-lg disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap transition-all duration-200 hover:-translate-y-0.5"
-                        style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                        onmouseover="this.style.backgroundColor='var(--color-hover)'"
-                        onmouseout="this.style.backgroundColor='var(--color-icon-bg)'"
-                    >
-                        <span wire:loading.remove wire:target="exportExcel" class="flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </span>
-                        <span wire:loading wire:target="exportExcel" class="flex items-center gap-2">
-                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </span>
+    {{-- Respaldo mobile: buscador y botón principal. --}}
+    <div class="lg:hidden flex flex-col gap-3">
+        <div class="relative w-full">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-secondary);">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+                </svg>
+            </div>
+            <input type="text" wire:model.live.debounce.400ms="searchRevision"
+                   placeholder="Buscar por nombre o número de control..."
+                   class="app-input w-full" style="padding-left: 40px;">
+        </div>
+
+        <button type="button" wire:click="reviewAllPending" @disabled($pendingDocsCount === 0)
+                class="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+            Revisar pendientes
+        </button>
+    </div>
+
+    {{-- Filtros: carrera, estatus y exportar --}}
+    <div class="flex flex-wrap items-center gap-3">
+        <div class="header-filter-dropdown" wire:ignore
+             x-data="{ open: false, value: '{{ $careerFilter }}', label: '{{ $careerFilter ? ($filterCareers->firstWhere('id', $careerFilter)->name ?? 'Todas las carreras') : 'Todas las carreras' }}' }"
+             @click.outside="open = false">
+            <button type="button" class="header-filter-select" @click="open = !open">
+                <span x-text="label"></span>
+                <svg class="header-filter-select-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div class="header-filter-dropdown-panel" x-show="open" x-cloak x-transition style="max-height: 280px; overflow-y: auto;">
+                <button type="button" class="header-filter-dropdown-option" :class="{ 'is-selected': value === '' }"
+                        @click="value = ''; label = 'Todas las carreras'; open = false; $wire.set('careerFilter', null)">
+                    Todas las carreras
+                </button>
+                @foreach($filterCareers as $career)
+                    <button type="button" class="header-filter-dropdown-option" :class="{ 'is-selected': value === '{{ $career->id }}' }"
+                            @click="value = '{{ $career->id }}'; label = '{{ $career->name }}'; open = false; $wire.set('careerFilter', {{ $career->id }})">
+                        {{ $career->name }}
                     </button>
-                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium rounded-lg opacity-0 group-hover/excel:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50"
-                        style="background-color: var(--color-card-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);">
-                        Exportar Excel
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
-                            style="border-top-color: var(--color-card-bg);"></div>
-                    </div>
-                </div>
+                @endforeach
             </div>
+        </div>
 
-            {{-- Fila 2: Filtros --}}
-            <div class="flex flex-col sm:flex-row gap-3">
-                <flux:select wire:model.live="careerFilter"
-                    class="w-full sm:flex-1 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
-                    style="background-color: var(--color-icon-bg);
-                           color: var(--color-primary-2);
-                           border: 1px solid var(--color-border-hover);">
-                    <option value="">Todas las carreras</option>
-                    @foreach($careers as $career)
-                        <option value="{{ $career->id }}">{{ $career->name }}</option>
-                    @endforeach
-                </flux:select>
+        <div class="header-filter-dropdown" wire:ignore
+             x-data="{ open: false, value: '{{ $statusFilter }}', label: {{ json_encode(['' => 'Todos los estatus', 'pending' => 'Pendiente', 'approved' => 'Aprobados', 'rejected' => 'Rechazados', 'missing_individual' => 'Falta individual'][$statusFilter ?? '']) }} }"
+             @click.outside="open = false">
+            <button type="button" class="header-filter-select" @click="open = !open">
+                <span x-text="label"></span>
+                <svg class="header-filter-select-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
 
-                <flux:select wire:model.live="statusFilter"
-                    class="w-full sm:w-48 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
-                    style="background-color: var(--color-icon-bg);
-                           color: var(--color-primary-2);
-                           border: 1px solid var(--color-border-hover);">
-                    <option value="">Todos</option>
-                    <option value="pending">Pendientes</option>
-                    <option value="approved">Aprobados</option>
-                    <option value="rejected">Rechazados</option>
-                </flux:select>
+            <div class="header-filter-dropdown-panel" x-show="open" x-cloak x-transition>
+                @foreach(['' => 'Todos los estatus', 'pending' => 'Pendiente', 'approved' => 'Aprobados', 'rejected' => 'Rechazados', 'missing_individual' => 'Falta individual'] as $value => $label)
+                    <button type="button" class="header-filter-dropdown-option" :class="{ 'is-selected': value === '{{ $value }}' }"
+                            @click="value = '{{ $value }}'; label = '{{ $label }}'; open = false; $wire.set('statusFilter', '{{ $value }}')">
+                        {{ $label }}
+                    </button>
+                @endforeach
             </div>
-
         </div>
     </div>
 
-    {{-- Tabla: sm en adelante --}}
-    <div class="hidden sm:block overflow-x-auto">
-        <table class="w-full">
-            <thead style="background-color: var(--color-icon-bg);">
-                <tr>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase w-12"
-                        style="color: var(--color-secondary);"></th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase"
-                        style="color: var(--color-secondary);">Estudiante</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase"
-                        style="color: var(--color-secondary);">Carrera</th>
-                    <th class="px-6 py-4 text-center text-xs font-semibold uppercase"
-                        style="color: var(--color-secondary);">Aprobados</th>
-                    <th class="px-6 py-4 text-center text-xs font-semibold uppercase"
-                        style="color: var(--color-secondary);">Pendientes</th>
-                    <th class="px-6 py-4 text-center text-xs font-semibold uppercase"
-                        style="color: var(--color-secondary);">Rechazados</th>
-                    <th class="px-6 py-4 text-center text-xs font-semibold uppercase"
-                        style="color: var(--color-secondary);">Seguimiento</th>
-                </tr>
-            </thead>
-
-            <tbody style="border-top: 1px solid var(--color-border-hover);">
-                @forelse($studentsRevision as $student)
-                    <tr
-                        class="transition cursor-pointer"
-                        wire:click="toggleStudentExpand({{ $student->id }})"
-                        onmouseover="this.style.backgroundColor='var(--color-hover)'"
-                        onmouseout="this.style.backgroundColor='transparent'"
-                        style="border-bottom: 1px solid var(--color-border-hover);">
-
-                        <td class="px-6 py-4">
-                            <div class="p-1.5 rounded-lg transition"
-                                 style="background-color: var(--color-icon-bg);">
-                                <svg class="w-5 h-5 transition-transform {{ $expandedStudent === $student->id ? 'rotate-90' : '' }}"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-secondary);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                        </td>
-
-                        <td class="px-6 py-4">
-                            <p class="font-medium" style="color: var(--color-primary-2);">
-                                {{ $student->name }} {{ $student->last_name_paterno }} {{ $student->last_name_materno }}
+    {{-- Grid de estudiantes --}}
+    @if($studentsRevision->count())
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            @foreach($studentsRevision as $student)
+                <div class="period-card group" wire:click="viewStudentDocuments({{ $student->id }})" style="cursor: pointer;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="stat-card-label truncate">
+                                {{ $student->name }} {{ $student->last_name_paterno }}
                             </p>
-                            <p class="text-xs" style="color: var(--color-secondary);">{{ $student->control_number }}</p>
-                            <p class="text-xs" style="color: var(--color-secondary);">{{ $student->personal_email }}</p>
-                        </td>
+                            <p class="text-xs truncate mt-0.5" style="color: var(--color-secondary);">
+                                {{ $student->career->name ?? '—' }} · {{ $student->control_number }}
+                            </p>
+                        </div>
 
-                        <td class="px-6 py-4">
-                            <span class="text-sm" style="color: var(--color-primary-2);">
-                                {{ Str::limit($student->career->name ?? 'N/A', 30) }}
-                            </span>
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold"
-                                style="background-color: rgba(16, 185, 129, 0.2); color: rgb(52, 211, 153);">
-                                {{ $student->approved_count ?? 0 }}
-                            </span>
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold"
-                                style="background-color: rgba(232, 210, 50, 0.2); color: rgb(250, 204, 21);">
-                                {{ $student->pending_count ?? 0 }}
-                            </span>
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold"
-                                style="background-color: rgba(239, 68, 68, 0.2); color: rgb(248, 113, 113);">
-                                {{ $student->rejected_count ?? 0 }}
-                            </span>
-                        </td>
-
-                        <td class="px-6 py-4">
-                            <div class="flex items-center justify-center gap-2" onclick="event.stopPropagation()">
-                                <div class="relative group/pdf-seguimiento">
-                                    <button
-                                        wire:click="exportStudentPDF({{ $student->id }})"
-                                        class="w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer text-xs hover:-translate-y-0.5"
-                                        style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                                        onmouseover="this.style.backgroundColor='var(--color-hover)'"
-                                        onmouseout="this.style.backgroundColor='var(--color-icon-bg)'"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                        </svg>
-                                    </button>
-                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium rounded-lg opacity-0 group-hover/pdf-seguimiento:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50"
-                                        style="background-color: var(--color-icon-bg); color: var(--color-secondary); border: 1px solid var(--color-border-hover);">
-                                        Descargar
-                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
-                                            style="border-top-color: var(--color-icon-bg);"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    @if($expandedStudent === $student->id)
-                        <tr style="background-color: var(--color-icon-bg);">
-                            <td colspan="7" class="p-0">
-                                @include('livewire.dashboard.period.partials.documents-grid', ['student' => $student])
-                            </td>
-                        </tr>
-                    @endif
-
-                @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-16 text-center">
-                            <div class="flex flex-col items-center">
-                                <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-secondary); opacity: 0.4;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                                </svg>
-                                <p class="font-semibold mb-1" style="color: var(--color-secondary);">No se encontraron estudiantes</p>
-                                <p class="text-sm" style="color: var(--color-secondary); opacity: 0.7;">Intenta con otros filtros de búsqueda</p>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    {{-- Cards: móvil --}}
-    <div class="sm:hidden divide-y" style="border-color: var(--color-border-hover);">
-        @forelse($studentsRevision as $student)
-            <div class="p-4">
-                <div class="flex items-start justify-between gap-3 cursor-pointer"
-                     wire:click="toggleStudentExpand({{ $student->id }})">
-                    <div class="min-w-0">
-                        <p class="font-medium text-sm truncate" style="color: var(--color-primary-2);">
-                            {{ $student->name }} {{ $student->last_name_paterno }} {{ $student->last_name_materno }}
-                        </p>
-                        <p class="text-xs mt-0.5" style="color: var(--color-secondary);">{{ $student->control_number }}</p>
-                        <p class="text-xs" style="color: var(--color-secondary);">{{ $student->career->name ?? 'N/A' }}</p>
-                    </div>
-                    <div class="p-1.5 rounded-lg shrink-0" style="background-color: var(--color-icon-bg);">
-                        <svg class="w-5 h-5 transition-transform {{ $expandedStudent === $student->id ? 'rotate-90' : '' }}"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            style="color: var(--color-secondary);">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="mt-3 flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold"
-                        style="background-color: rgba(16, 185, 129, 0.2); color: rgb(52, 211, 153);">
-                        {{ $student->approved_count ?? 0 }}
-                    </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold"
-                        style="background-color: rgba(232, 210, 50, 0.2); color: rgb(250, 204, 21);">
-                        {{ $student->pending_count ?? 0 }}
-                    </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold"
-                        style="background-color: rgba(239, 68, 68, 0.2); color: rgb(248, 113, 113);">
-                        {{ $student->rejected_count ?? 0 }}
-                    </span>
-                    <div class="ml-auto" onclick="event.stopPropagation()">
-                        <button
-                            wire:click="exportStudentPDF({{ $student->id }})"
-                            class="w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 hover:-translate-y-0.5"
-                            style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                            onmouseover="this.style.backgroundColor='var(--color-hover)'"
-                            onmouseout="this.style.backgroundColor='var(--color-icon-bg)'"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        <button wire:click.stop="exportStudentPDF({{ $student->id }})"
+                                title="Descargar seguimiento"
+                                class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
+                                       text-[var(--color-icon)] bg-transparent cursor-pointer
+                                       opacity-0 group-hover:opacity-100
+                                       transition-all duration-150
+                                       hover:text-[var(--color-icon-hover)] hover:bg-[var(--sidebar-color-hover)]">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 7L12 14M12 14L15 11M12 14L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 17H12H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
                         </button>
                     </div>
-                </div>
 
-                @if($expandedStudent === $student->id)
-                    <div class="-mx-4 mt-3">
-                        @include('livewire.dashboard.period.partials.documents-grid', ['student' => $student])
+                    <div class="flex items-center gap-5">
+                        <div class="flex flex-col gap-0.5">
+                            <span class="flex items-center gap-1.5">
+                                <span class="period-card-stat-value">{{ $student->pending_count ?? 0 }}</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="flex-shrink-0">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V10C2 6.22876 2 4.34315 3.17157 3.17157C4.34315 2 6.23869 2 10.0298 2C10.6358 2 11.1214 2 11.53 2.01666C11.5166 2.09659 11.5095 2.17813 11.5092 2.26057L11.5 5.09497C11.4999 6.19207 11.4998 7.16164 11.6049 7.94316C11.7188 8.79028 11.9803 9.63726 12.6716 10.3285C13.3628 11.0198 14.2098 11.2813 15.0569 11.3952C15.8385 11.5003 16.808 11.5002 17.9051 11.5001L18 11.5001H21.9574C22 12.0344 22 12.6901 22 13.5629V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22Z" fill="var(--color-icon)"/>
+                                    <path d="M19.3517 7.61665L15.3929 4.05375C14.2651 3.03868 13.7012 2.53114 13.0092 2.26562L13 5.00011C13 7.35713 13 8.53564 13.7322 9.26787C14.4645 10.0001 15.643 10.0001 18 10.0001H21.5801C21.2175 9.29588 20.5684 8.71164 19.3517 7.61665Z" fill="var(--color-icon)"/>
+                                </svg>
+                            </span>
+                            <span class="period-card-stat-label">Pendientes</span>
+                        </div>
+
+                        @if(($student->individual_total ?? 0) > 0)
+                            <div class="flex flex-col gap-0.5">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="period-card-stat-value">{{ $student->individual_missing ?? 0 }}</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="flex-shrink-0">
+                                        <path d="M19.3517 7.61665L15.3929 4.05375C14.2651 3.03868 13.7012 2.53114 13.0092 2.26562L13 5.00011C13 7.35713 13 8.53564 13.7322 9.26787C14.4645 10.0001 15.643 10.0001 18 10.0001H21.5801C21.2175 9.29588 20.5684 8.71164 19.3517 7.61665Z" fill="var(--color-icon)"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 22H14C17.7712 22 19.6569 22 20.8284 20.8284C22 19.6569 22 17.7712 22 14V13.5629C22 12.6901 22 12.0344 21.9574 11.5001H18L17.9051 11.5001C16.808 11.5002 15.8385 11.5003 15.0569 11.3952C14.2098 11.2813 13.3628 11.0198 12.6716 10.3285C11.9803 9.63726 11.7188 8.79028 11.6049 7.94316C11.4998 7.16164 11.4999 6.19207 11.5 5.09497L11.5092 2.26057C11.5095 2.17813 11.5166 2.09659 11.53 2.01666C11.1214 2 10.6358 2 10.0298 2C6.23869 2 4.34315 2 3.17157 3.17157C2 4.34315 2 6.22876 2 10V14C2 17.7712 2 19.6569 3.17157 20.8284C4.34315 22 6.22876 22 10 22ZM9.01296 12.9528C8.72446 12.6824 8.27554 12.6824 7.98704 12.9528L5.98704 14.8278C5.68486 15.1111 5.66955 15.5858 5.95285 15.888C6.23614 16.1901 6.71077 16.2055 7.01296 15.9222L7.75 15.2312L7.75 18.5C7.75 18.9142 8.08579 19.25 8.5 19.25C8.91421 19.25 9.25 18.9142 9.25 18.5L9.25 15.2312L9.98704 15.9222C10.2892 16.2055 10.7639 16.1901 11.0472 15.888C11.3305 15.5858 11.3151 15.1111 11.013 14.8278L9.01296 12.9528Z" fill="var(--color-icon)"/>
+                                    </svg>
+                                </span>
+                                <span class="period-card-stat-label">Individual{{ $student->individual_missing > 1 ? 'es' : '' }}</span>
+                            </div>
+                        @endif
                     </div>
-                @endif
-            </div>
-        @empty
-            <div class="px-6 py-16 text-center">
-                <div class="flex flex-col items-center">
-                    <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        style="color: var(--color-secondary); opacity: 0.4;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                    </svg>
-                    <p class="font-semibold mb-1" style="color: var(--color-secondary);">No se encontraron estudiantes</p>
-                    <p class="text-sm" style="color: var(--color-secondary); opacity: 0.7;">Intenta con otros filtros de búsqueda</p>
                 </div>
-            </div>
-        @endforelse
-    </div>
+            @endforeach
+        </div>
 
-    @if($studentsRevision->hasPages())
-        <div class="p-4" style="border-top: 1px solid var(--color-border-hover);">
+        <div>
             {{ $studentsRevision->links() }}
+        </div>
+    @else
+        <div class="text-center py-20">
+            <svg class="w-14 h-14 mx-auto mb-4" style="color: var(--color-secondary);" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="text-lg font-bold mb-2" style="color: var(--color-primary-2);">
+                No se encontraron estudiantes
+            </h3>
+            <p class="mb-6 max-w-sm mx-auto text-sm" style="color: var(--color-secondary);">
+                Ajusta el buscador o los filtros para ver otros resultados.
+            </p>
         </div>
     @endif
 

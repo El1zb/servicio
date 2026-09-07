@@ -1,81 +1,70 @@
-<section class="mt-10 space-y-6">
-    {{-- Header --}}
-    <div class="rounded-xl p-6 shadow-sm" style="background-color: var(--color-card-bg);">
-        <x-auth-header
-            title="{{ __('Eliminar cuenta') }}"
-            description="{{ __('Elimina tu cuenta y todos los recursos asociados') }}"
-            :center="false"
-        />
-    </div>
-
+<div>
     {{-- Botón Eliminar cuenta --}}
     <flux:modal.trigger name="confirm-user-deletion">
-       <flux:button
+        <button
             x-data=""
             x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
             type="button"
-            class="px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-            style="background-color: rgba(239, 68, 68, 0.9); color: white; border: 1px solid rgba(239, 68, 68, 0.9);"
-            onmouseover="this.style.opacity='0.85'"
-            onmouseout="this.style.opacity='1'"
+            class="btn-danger"
         >
             {{ __('Eliminar cuenta') }}
-        </flux:button>
+        </button>
     </flux:modal.trigger>
 
-    {{-- Modal Confirmación --}}
+    {{-- =================== MODAL ELIMINAR CUENTA =================== --}}
     <flux:modal
         name="confirm-user-deletion"
         :show="$errors->isNotEmpty()"
+        :dismissible="false"
+        :closable="false"
         focusable
-        class="max-w-lg"
+        class="w-[95vw] sm:w-[90vw] md:w-[460px] max-w-[95vw]"
+        style="border-color: var(--color-border);"
     >
-        <form method="POST" wire:submit="deleteUser" class="space-y-6 rounded-xl p-6 shadow-lg"
-              style="background-color: var(--color-card-bg);">
+        <form method="POST" wire:submit="deleteUser" class="flex flex-col" style="max-height: 90vh;">
 
-            {{-- Header Modal --}}
-            <div class="space-y-2">
-                <flux:heading size="lg">
-                    {{ __('¿Estás seguro de que deseas eliminar tu cuenta?') }}
-                </flux:heading>
-                <flux:subheading>
-                    {{ __('Una vez que tu cuenta sea eliminada, todos sus recursos y datos se eliminarán de forma permanente. Por favor, ingresa tu contraseña para confirmar que deseas eliminar tu cuenta de manera definitiva.') }}
-                </flux:subheading>
+            {{-- ── Header ── --}}
+            <div class="px-6 py-5 flex-shrink-0" style="border-bottom: 1px solid var(--color-border);">
+                <h2 class="text-lg font-semibold leading-tight" style="color: var(--color-primary-2);">
+                    {{ __('¿Eliminar tu cuenta?') }}
+                </h2>
+                <p class="text-sm mt-0.5" style="color: var(--color-secondary);">
+                    {{ __('Todos tus recursos y datos se eliminarán de forma permanente. Ingresa tu contraseña para confirmar.') }}
+                </p>
             </div>
 
-            {{-- Input Contraseña --}}
-            <flux:input
-                wire:model="password"
-                :label="__('Contraseña')"
-                type="password"
-                class="w-full"
-                style="background-color: var(--color-icon-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);"
-            />
-
-            {{-- Footer Modal --}}
-            <div class="flex justify-end gap-2 rtl:gap-2 mt-4">
-                <flux:modal.close>
-                    <flux:button
-                        type="button"
-                        class="w-full sm:w-auto px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:-translate-y-0.5"
-                        style="color: var(--color-secondary); background-color: transparent; border: 1px solid transparent;"
-                        onmouseover="this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'"
-                        onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent'"
+            {{-- ── Body ── --}}
+            <div class="flex-1 overflow-y-auto px-6 py-5" style="background-color: var(--color-modal-bg);">
+                <div class="app-field">
+                    <label for="delete-password" class="app-field-label">{{ __('Contraseña') }}</label>
+                    <input
+                        wire:model="password"
+                        id="delete-password"
+                        type="password"
+                        autocomplete="current-password"
+                        class="app-input w-full"
                     >
+                    @error('password')
+                        <p class="app-field-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            {{-- ── Footer ── --}}
+            <div class="flex items-center justify-end gap-2 px-6 py-4 flex-shrink-0"
+                style="border-top: 1px solid var(--color-border);">
+
+                <flux:modal.close>
+                    <button type="button"
+                            class="px-4 py-2 rounded-full text-sm transition-colors duration-150 text-[var(--color-secondary)] hover:text-[var(--color-primary-2)] hover:bg-[var(--sidebar-color-hover)]">
                         {{ __('Cancelar') }}
-                    </flux:button>
+                    </button>
                 </flux:modal.close>
 
-                <flux:button
-                    type="submit"
-                    class="w-full sm:w-auto px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2"
-                    style="background-color: rgba(239, 68, 68, 0.9); color: white; border: 1px solid rgba(239, 68, 68, 0.9);"
-                    onmouseover="this.style.opacity='0.85'"
-                    onmouseout="this.style.opacity='1'"
-                >
+                <button type="submit" class="btn-danger">
                     {{ __('Eliminar cuenta') }}
-                </flux:button>
+                </button>
             </div>
         </form>
     </flux:modal>
-</section>
+</div>

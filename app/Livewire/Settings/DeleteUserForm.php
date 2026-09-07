@@ -17,6 +17,9 @@ class DeleteUserForm extends Component
     {
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
+        ], [
+            'password.required'        => 'La contraseña es obligatoria.',
+            'password.current_password' => 'La contraseña ingresada es incorrecta.',
         ]);
 
         tap(Auth::user(), $logout(...))->delete();

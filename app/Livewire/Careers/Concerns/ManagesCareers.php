@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Careers\Concerns;
 
+use App\Models\Campus;
 use App\Models\Career;
 use Illuminate\Validation\Rule;
 
@@ -10,11 +11,16 @@ trait ManagesCareers
     // ─── Propiedades ────────────────────────────────────────────────────────────
 
     public string $search           = '';
+    public string $statusFilter     = 'all';
     public ?int   $careerId         = null;
     public string $name             = '';
+    public bool   $allCampuses      = true;
+    public array  $selectedCampusIds = [];
+    public bool   $is_active        = true;
     public bool   $isOpen           = false;
     public bool   $isDeleteModalOpen = false;
     public ?int   $careerToDelete   = null;
+    public int    $formInstance     = 0;
 
     // ─── Watcher de paginación ───────────────────────────────────────────────────
 
@@ -23,11 +29,25 @@ trait ManagesCareers
         $this->resetPage();
     }
 
+    public function setStatusFilter(string $value): void
+    {
+        $this->statusFilter = $value;
+        $this->resetPage();
+    }
+
+    // ─── Limpiar errores por campo ───────────────────────────────────────────────
+
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
+    }
+
     // ─── Abrir modal creación ────────────────────────────────────────────────────
 
     public function create(): void
     {
         $this->resetCareerInput();
+        $this->formInstance++;
         $this->isOpen = true;
     }
 
@@ -35,8 +55,16 @@ trait ManagesCareers
 
     public function edit(Career $career): void
     {
-        $this->careerId = $career->id;
-        $this->name     = $career->name;
+        $this->careerId   = $career->id;
+        $this->name       = $career->name;
+        $this->is_active  = (bool) $career->is_active;
+
+        $linkedCampusIds        = $career->campuses()->pluck('campuses.id')->toArray();
+        $this->allCampuses      = count($linkedCampusIds) === Campus::count();
+        $this->selectedCampusIds = $this->allCampuses ? [] : $linkedCampusIds;
+
+        $this->resetValidation();
+        $this->formInstance++;
         $this->isOpen   = true;
     }
 
@@ -58,10 +86,12 @@ trait ManagesCareers
             ]
         );
 
-        Career::updateOrCreate(
+        $career = Career::updateOrCreate(
             ['id' => $this->careerId],
-            ['name' => $this->name]
+            ['name' => $this->name, 'is_active' => $this->is_active]
         );
+
+        $career->campuses()->sync($this->allCampuses ? Campus::pluck('id') : $this->selectedCampusIds);
 
         $type   = $this->careerId ? 'info' : 'success';
         $action = $this->careerId ? 'actualizada' : 'creada';
@@ -75,6 +105,7 @@ trait ManagesCareers
 
     public function confirmDelete(int $id): void
     {
+        $this->isOpen            = false;
         $this->careerToDelete    = $id;
         $this->isDeleteModalOpen = true;
     }
@@ -85,9 +116,15 @@ trait ManagesCareers
     {
         if (! $this->careerToDelete) return;
 
-        $career = Career::find($this->careerToDelete);
+        $career = Career::withCount('students')->find($this->careerToDelete);
 
         if (! $career) return;
+
+        if ($career->students_count > 0) {
+            $this->dispatch('notify', type: 'warning', message: 'No puedes eliminar una carrera con estudiantes registrados. Desactívala en su lugar.');
+            $this->isDeleteModalOpen = false;
+            return;
+        }
 
         $career->delete();
 
@@ -109,8 +146,11 @@ trait ManagesCareers
 
     private function resetCareerInput(): void
     {
-        $this->careerId = null;
-        $this->name     = '';
+        $this->careerId          = null;
+        $this->name              = '';
+        $this->allCampuses       = true;
+        $this->selectedCampusIds = [];
+        $this->is_active         = true;
         $this->resetValidation();
     }
 }

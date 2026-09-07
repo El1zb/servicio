@@ -20,6 +20,7 @@ trait ManagesPeriods
     public $is_active        = false;
 
     public $periodToDelete   = null;
+    public int $formInstance = 0;
 
     // ─── Watchers de paginación ──────────────────────────────────────────────────
 
@@ -27,13 +28,19 @@ trait ManagesPeriods
     public function updatingStatusFilter(): void  { $this->resetPage(); }
     public function updatingSortBy(): void        { $this->resetPage(); }
 
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
+    }
+
     // ─── Abrir modal creación ────────────────────────────────────────────────────
 
     public function createPeriod(): void
     {
         $this->resetPeriodFields(false);
-        $this->is_active = true;
-        $this->isOpen    = true;
+        $this->is_active   = true;
+        $this->formInstance++;
+        $this->isOpen = true;
     }
 
     // ─── Abrir modal edición ─────────────────────────────────────────────────────
@@ -44,12 +51,22 @@ trait ManagesPeriods
 
         $this->periodId         = $period->id;
         $this->name             = $period->name;
-        $this->start_date       = $period->start_date;
-        $this->end_date         = $period->end_date;
+        $this->start_date       = $period->start_date ? \Carbon\Carbon::parse($period->start_date)->format('Y-m-d') : '';
+        $this->end_date         = $period->end_date ? \Carbon\Carbon::parse($period->end_date)->format('Y-m-d') : '';
         $this->selectedSemesters = $period->semesters->pluck('id')->toArray();
         $this->is_active        = (bool) $period->is_active;
 
+        $this->resetValidation();
+        $this->formInstance++;
         $this->isOpen = true;
+    }
+
+    public function toggleSemester(int $id): void
+    {
+        $this->selectedSemesters = collect($this->selectedSemesters ?? [])
+            ->contains($id)
+                ? collect($this->selectedSemesters)->reject(fn ($s) => $s == $id)->values()->all()
+                : [...($this->selectedSemesters ?? []), $id];
     }
 
     // ─── Guardar / actualizar ────────────────────────────────────────────────────
@@ -115,7 +132,8 @@ trait ManagesPeriods
 
     public function confirmDelete(int $id): void
     {
-        $this->periodToDelete   = $id;
+        $this->isOpen            = false;
+        $this->periodToDelete    = $id;
         $this->isDeleteModalOpen = true;
     }
 
@@ -125,7 +143,7 @@ trait ManagesPeriods
     {
         if (! $this->periodToDelete) return;
 
-        $period = Period::with(['students.documents', 'files'])->find($this->periodToDelete);
+        $period = Period::find($this->periodToDelete);
 
         if (! $period) return;
 
@@ -136,27 +154,12 @@ trait ManagesPeriods
             return;
         }
 
-        // Eliminar archivos físicos de documentos de estudiantes
-        foreach ($period->students as $student) {
-            foreach ($student->documents as $doc) {
-                if ($doc->student_file_path && \Storage::disk('public')->exists($doc->student_file_path)) {
-                    \Storage::disk('public')->delete($doc->student_file_path);
-                }
-            }
-        }
-
-        // Eliminar archivos físicos base del periodo
-        foreach ($period->files as $file) {
-            foreach (['file_path', 'example_path'] as $field) {
-                if ($file->$field && \Storage::disk('public')->exists($file->$field)) {
-                    \Storage::disk('public')->delete($file->$field);
-                }
-            }
-        }
-
+        // Solo baja lógica: los estudiantes, documentos y archivos físicos se
+        // conservan intactos en la papelera (Configuración > Papelera) hasta
+        // que se restaure o se elimine permanentemente (o pasen 30 días).
         $period->delete();
 
-        $this->dispatch('notify', type: 'error', message: 'Periodo eliminado exitosamente');
+        $this->dispatch('notify', type: 'error', message: 'Periodo movido a la papelera');
 
         $this->periodToDelete    = null;
         $this->isDeleteModalOpen = false;

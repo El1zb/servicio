@@ -1,106 +1,66 @@
-{{-- Quick Stats Bar --}}
-<div class="w-full mb-6">
-    <div class="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+{{-- Estadísticas del periodo: mismo patrón que las de Inicio, pero
+     enfocadas en lo que de verdad importa revisar aquí (no cifras
+     genéricas repetidas). --}}
+@php
+    $totalStudents    = $period->students()->count();
+    $pendingStudents  = $period->students()->where('status', 'pendiente')->count();
+    $approvedStudents = $period->students()->where('status', 'aprobado')->count();
 
-        {{-- Total Estudiantes --}}
-        <div class="h-full rounded-xl p-5 shadow-lg" style="background-color: var(--color-card-bg);">
-            <div class="flex items-center justify-between h-full">
-                <div>
-                    <p class="text-sm mb-1" style="color: var(--color-secondary);">Total Estudiantes</p>
-                    <p class="text-3xl font-bold" style="color: var(--color-primary-2);">
-                        {{ $period->students->count() }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                     style="background-color: var(--color-icon-bg);">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         style="color: var(--color-secondary);">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
+    $pendingDocuments = \App\Models\Document::whereHas('file', fn ($q) => $q->where('period_id', $period->id))
+        ->whereNotNull('student_file_path')
+        ->where(fn ($q) => $q->where('status', 'en_revision')->orWhereNull('status'))
+        ->count();
+
+    $statCards = [
+        [
+            'label'       => 'Pendientes de aceptar',
+            'value'       => $pendingStudents,
+            'description' => $totalStudents > 0
+                ? round($pendingStudents / $totalStudents * 100) . '% del total'
+                : 'Aún no hay estudiantes',
+            'dark'        => true,
+            'icon'        => '<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        ],
+        [
+            'label'       => 'Documentos por revisar',
+            'value'       => $pendingDocuments,
+            'description' => 'entregados por estudiantes',
+            'dark'        => false,
+            'icon'        => '<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        ],
+        [
+            'label'       => 'Aprobados',
+            'value'       => $approvedStudents,
+            'description' => 'listos para el periodo',
+            'dark'        => false,
+            'icon'        => '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        ],
+        [
+            'label'       => 'Total Estudiantes',
+            'value'       => $totalStudents,
+            'description' => 'registrados en el periodo',
+            'dark'        => false,
+            'icon'        => '<path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        ],
+    ];
+@endphp
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    @foreach($statCards as $card)
+        <div class="stat-card {{ $card['dark'] ? 'stat-card-dark' : '' }}">
+            <div class="stat-card-top">
+                <p class="stat-card-label">{{ $card['label'] }}</p>
+                <div class="stat-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">{!! $card['icon'] !!}</svg>
                 </div>
             </div>
-        </div>
 
-        {{-- Aprobados --}}
-        <div class="h-full rounded-xl p-5 shadow-lg" style="background-color: var(--color-card-bg);">
-            <div class="flex items-center justify-between h-full">
-                <div>
-                    <p class="text-sm mb-1" style="color: var(--color-secondary);">Aprobados</p>
-                    <p class="text-3xl font-bold" style="color: var(--color-primary-2);">
-                        {{ $period->students->where('status','aprobado')->count() }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                     style="background-color: rgba(16, 185, 129, 0.2);">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         style="color: rgb(52, 211, 153);">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
+            <p class="stat-card-value">{{ $card['value'] }}</p>
 
-        {{-- Pendientes --}}
-        <div class="h-full rounded-xl p-5 shadow-lg" style="background-color: var(--color-card-bg);">
-            <div class="flex items-center justify-between h-full">
-                <div>
-                    <p class="text-sm mb-1" style="color: var(--color-secondary);">Pendientes</p>
-                    <p class="text-3xl font-bold" style="color: var(--color-primary-2);">
-                        {{ $period->students->where('status','pendiente')->count() }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style="background-color: rgba(232, 210, 50, 0.2);">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        style="color: rgb(250, 204, 21);">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-            </div>
+            <p class="stat-card-description">
+                <span class="stat-card-dot"></span>
+                {{ $card['description'] }}
+            </p>
         </div>
-
-        {{-- Rechazados --}}
-        <div class="h-full rounded-xl p-5 shadow-lg" style="background-color: var(--color-card-bg);">
-            <div class="flex items-center justify-between h-full">
-                <div>
-                    <p class="text-sm mb-1" style="color: var(--color-secondary);">Rechazados</p>
-                    <p class="text-3xl font-bold" style="color: var(--color-primary-2);">
-                        {{ $period->students->where('status','rechazado')->count() }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                     style="background-color: rgba(239, 68, 68, 0.2);">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         style="color: rgb(248, 113, 113);">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        {{-- Documentos Base --}}
-        <div class="h-full rounded-xl p-5 shadow-lg" style="background-color: var(--color-card-bg);">
-            <div class="flex items-center justify-between h-full">
-                <div>
-                    <p class="text-sm mb-1" style="color: var(--color-secondary);">Documentos Base</p>
-                    <p class="text-3xl font-bold" style="color: var(--color-primary-2);">
-                        {{ $period->files->count() }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                     style="background-color: rgba(59, 130, 246, 0.2);">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         style="color: rgb(96, 165, 250);">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-    </div>
+    @endforeach
 </div>

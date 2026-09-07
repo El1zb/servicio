@@ -25,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'created_by',
     ];
 
     /**
@@ -62,6 +63,19 @@ class User extends Authenticatable
             ->implode('');
     }
 
+    /**
+     * Primeros dos nombres/apellidos del usuario, para mostrar en la UI sin
+     * ocupar todo el nombre completo (ej. "Marian Elizabeth" en vez de
+     * "Marian Elizabeth Cardenas Andrade").
+     */
+    public function shortName(): string
+    {
+        return Str::of($this->name)
+            ->explode(' ')
+            ->take(2)
+            ->implode(' ');
+    }
+
 
 
 
@@ -72,6 +86,14 @@ public function student()
 {
     return $this->hasOne(\App\Models\Student::class, 'user_id');
 }
+
+    /**
+     * Admin que creó esta cuenta (solo para trazabilidad, sin uso en UI).
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }
 
 

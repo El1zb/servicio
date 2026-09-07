@@ -1,25 +1,20 @@
-{{-- Perfil rechazado --}}
 <div class="flex items-center justify-center min-h-[80vh] px-4">
-    <div class="max-w-md w-full">
-        <div class="bg-[var(--color-card-bg)] rounded-2xl p-8 text-center">
-            <div class="relative w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6
-                        before:content-[''] before:absolute before:inset-0 before:rounded-full
-                        before:bg-red-500/10 before:animate-ping before:opacity-20">
-                <i class="fas fa-times-circle text-4xl text-red-400 relative z-10"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-[var(--color-primary-2)] mb-3">Perfil rechazado</h2>
-            <p class="text-[var(--color-secondary)] mb-6 leading-relaxed max-w-sm mx-auto">
-                Por favor, actualiza la información necesaria y vuelve a enviarlo para su revisión.
-            </p>
-            <a href="{{ route('students.profile') }}"
-               class="group inline-flex items-center justify-center px-4 py-2 rounded-lg gap-2
-                      bg-[var(--color-icon-bg)] text-[var(--color-primary-2)]
-                      border border-[var(--color-border-hover)]
-                      hover:bg-[var(--color-icon-bg-hover)] hover:text-[var(--color-icon-hover)] hover:-translate-y-0.5
-                      transition-all duration-300">
-                <span>Corregir perfil</span>
-                <i class="fas fa-edit text-sm"></i>
-            </a>
-        </div>
+    <div class="max-w-sm w-full text-center">
+
+        <svg width="56" height="56" viewBox="0 0 200 200" class="mx-auto mb-6" style="color: var(--color-primary-2);">
+            <path fill="currentColor" d="M100,15a85,85,0,1,0,85,85A84.93,84.93,0,0,0,100,15Zm0,150a65,65,0,1,1,65-65A64.87,64.87,0,0,1,100,165Zm30-72.5H70a10,10,0,0,0,0,20h60a10,10,0,0,0,0-20Z"/>
+        </svg>
+
+        <h2 class="text-2xl font-bold mb-3" style="color: var(--color-primary-2);">Perfil rechazado</h2>
+        <p class="text-sm leading-relaxed mb-8" style="color: var(--color-secondary);">
+            Por favor, actualiza la información necesaria y vuelve a enviarlo para su revisión.
+            @if($student?->rejection_reason)
+                <span style="color: #DC2626;"><strong>Motivo:</strong> {{ $student->rejection_reason }}</span>
+            @endif
+        </p>
+
+        <button type="button" wire:click="openProfileModal" class="btn-primary">
+            Corregir perfil
+        </button>
     </div>
 </div>

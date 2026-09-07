@@ -1,58 +1,44 @@
-{{-- Grid de Campus --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 p-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
     @foreach($campuses as $campus)
-        <div class="flex flex-col h-full rounded-2xl overflow-hidden transition-all duration-200 
-                    border border-[var(--color-border-hover)]
-                    hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)] hover:border-[var(--color-indicator)]">
+        <div class="period-card group">
+            <div class="stat-card-top">
+                <div class="min-w-0 flex-1 flex flex-col gap-2">
+                    <p class="stat-card-label">{{ $campus->name }}</p>
+                    <span class="period-card-status {{ $campus->is_active ? 'is-active' : '' }}" style="align-self:flex-start;">
+                        <span class="period-card-status-dot"></span>
+                        {{ $campus->is_active ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </div>
 
-            {{-- Cuerpo --}}
-            <div class="flex-1 flex flex-col gap-3 p-4">
-                <div>
-                    <p class="text-[9px] font-semibold tracking-widest uppercase text-[var(--color-secondary)] mb-1">
-                        Campus
-                    </p>
-                    <h3 class="text-sm font-medium text-[var(--color-primary-2)] leading-snug">
-                        {{ $campus->name }}
-                    </h3>
+                <div class="stat-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 21h18M5 21V7a2 2 0 012-2h10a2 2 0 012 2v14M9 9h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
             </div>
 
-            {{-- Footer --}}
-            <div class="flex items-center justify-end gap-1 px-2.5 py-2 border-t border-[var(--color-border-hover)] flex-shrink-0">
+            <div class="period-card-footer">
+                <p class="stat-card-description" style="margin:0;">
+                    <span class="stat-card-dot"></span>
+                    {{ $campus->careers_count }} {{ $campus->careers_count === 1 ? 'carrera relacionada' : 'carreras relacionadas' }}
+                </p>
 
-                {{-- Editar --}}
                 <button wire:click="edit({{ $campus->id }})"
-                        class="w-7 h-7 flex items-center justify-center rounded-md border border-transparent
+                        class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
                                text-[var(--color-icon)] bg-transparent cursor-pointer
+                               opacity-0 group-hover:opacity-100
                                transition-all duration-150
-                               hover:text-[var(--color-icon-hover)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-icon-bg-hover)]">
-                    <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                               hover:text-[var(--color-icon-hover)] hover:bg-[var(--sidebar-color-hover)]">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M20.1497 7.93997L8.27971 19.81C7.21971 20.88 4.04971 21.3699 3.27971 20.6599C2.50971 19.9499 3.06969 16.78 4.12969 15.71L15.9997 3.84C16.5478 3.31801 17.2783 3.03097 18.0351 3.04019C18.7919 3.04942 19.5151 3.35418 20.0503 3.88938C20.5855 4.42457 20.8903 5.14781 20.8995 5.90463C20.9088 6.66146 20.6217 7.39189 20.0997 7.93997H20.1497Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 21H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-
-                {{-- Separador --}}
-                <span class="w-px h-3.5 bg-[var(--color-border-hover)] mx-0.5 flex-shrink-0"></span>
-
-                {{-- Eliminar --}}
-                <button wire:click="confirmDelete({{ $campus->id }})"
-                        class="w-7 h-7 flex items-center justify-center rounded-md border border-transparent
-                               text-[var(--color-icon)] bg-transparent cursor-pointer
-                               transition-all duration-150
-                               hover:text-red-400 hover:border-red-400/30 hover:bg-red-500/10">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                </button>
-
             </div>
         </div>
     @endforeach
 </div>
 
-{{-- Paginación --}}
-<div class="mt-6 px-4">
+<div class="mt-6">
     {{ $campuses->links() }}
 </div>

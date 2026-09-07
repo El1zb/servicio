@@ -3,25 +3,57 @@
 namespace App\Livewire\Dashboard\Period\Concerns;
 
 use App\Models\Student;
+use Illuminate\Support\Arr;
 
 trait ManagesStudents
 {
     // ========================= Propiedades =========================
 
     public string $search               = '';
+    public ?string $statusFilterStudents = null;
+    public ?int $careerFilterStudents    = null;
+    public ?int $semesterFilterStudents  = null;
+
     public ?object $selectedStudent     = null;
     public bool $showModal              = false;
     public bool $editMode               = false;
     public array $studentData           = [];
 
+    public bool $isRejecting            = false;
     public string $rejectionReason      = '';
-    public bool $showRejectModal        = false;
+    public bool $enteredEditFromCard    = false;
+    public int  $editFormInstance       = 0;
 
-    public ?string $statusFilterStudents = null;
+    // Navegación entre pendientes (visor rápido)
+    public bool $isReviewingQueue       = false;
+    public $nextPendingStudent          = null;
+    public $previousPendingStudent      = null;
+    public int $pendingQueuePosition    = 0;
+    public int $pendingQueueTotal       = 0;
 
-    // ========================= Watcher =========================
+    // ========================= Watchers =========================
+
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
+    }
 
     public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStatusFilterStudents(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingCareerFilterStudents(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSemesterFilterStudents(): void
     {
         $this->resetPage();
     }
@@ -29,7 +61,8 @@ trait ManagesStudents
     // ========================= Query =========================
 
     /**
-     * Devuelve el paginador de estudiantes usado en render().
+     * Devuelve el paginador de estudiantes usado en render() (visor con
+     * filtros, para buscar cualquier estudiante sin importar su estatus).
      */
     public function getStudentsPaginated()
     {
@@ -43,21 +76,85 @@ trait ManagesStudents
                     default    => null,
                 };
             })
-            ->where(function ($q) {
-                $q->where('name', 'like', "%{$this->search}%")
-                    ->orWhere('last_name_paterno', 'like', "%{$this->search}%")
-                    ->orWhere('last_name_materno', 'like', "%{$this->search}%")
-                    ->orWhere('control_number', 'like', "%{$this->search}%");
+            ->when($this->careerFilterStudents, fn ($q) => $q->where('career_id', $this->careerFilterStudents))
+            ->when($this->semesterFilterStudents, fn ($q) => $q->where('semester_id', $this->semesterFilterStudents))
+            ->when($this->search, function ($q) {
+                $q->where(function ($query) {
+                    $query->where('name', 'like', "%{$this->search}%")
+                        ->orWhere('last_name_paterno', 'like', "%{$this->search}%")
+                        ->orWhere('last_name_materno', 'like', "%{$this->search}%")
+                        ->orWhere('control_number', 'like', "%{$this->search}%");
+                });
             })
             ->orderBy('name')
-            ->paginate(10);
+            ->paginate(12);
 
         $students->getCollection()->transform(fn ($s) => $this->decorateStudentStatus($s));
 
         return $students;
     }
 
-    // ========================= Modales =========================
+    /**
+     * Estudiantes pendientes, respetando los filtros de carrera/semestre
+     * activos (el buscador y el filtro de estatus no aplican aquí: la cola
+     * de revisión rápida es siempre "todos los pendientes que apliquen").
+     */
+    private function getPendingQueueQuery()
+    {
+        return Student::where('period_id', $this->periodId)
+            ->where('status', 'pendiente')
+            ->when($this->careerFilterStudents, fn ($q) => $q->where('career_id', $this->careerFilterStudents))
+            ->when($this->semesterFilterStudents, fn ($q) => $q->where('semester_id', $this->semesterFilterStudents))
+            ->orderBy('name');
+    }
+
+    public function pendingCount(): int
+    {
+        return $this->getPendingQueueQuery()->count();
+    }
+
+    /**
+     * Carreras que de verdad tienen estudiantes en este periodo (no todas
+     * las carreras del sistema, que sería una lista enorme e irrelevante).
+     */
+    public function getFilterCareers()
+    {
+        return \App\Models\Career::whereIn(
+            'id',
+            Student::where('period_id', $this->periodId)->distinct()->pluck('career_id')
+        )->orderBy('name')->get();
+    }
+
+    // ========================= Visor rápido =========================
+
+    /**
+     * Abre el visor en el primer estudiante pendiente (respetando filtros
+     * de carrera/semestre activos). Punto de entrada del botón
+     * "Revisar pendientes".
+     */
+    public function reviewPending(): void
+    {
+        $first = $this->getPendingQueueQuery()->first();
+
+        if (! $first) {
+            $this->dispatch('notify', type: 'info', message: 'No hay estudiantes pendientes por revisar.');
+            return;
+        }
+
+        $this->isReviewingQueue = true;
+        $this->viewDetails($first->id);
+    }
+
+    /**
+     * Punto de entrada al abrir una card individual (no la cola de
+     * "Revisar pendientes"): aprobar/rechazar aquí solo cierra la card,
+     * no salta automáticamente a otro pendiente.
+     */
+    public function openStudentCard(int $studentId): void
+    {
+        $this->isReviewingQueue = false;
+        $this->viewDetails($studentId);
+    }
 
     public function viewDetails(int $studentId): void
     {
@@ -65,28 +162,87 @@ trait ManagesStudents
             ->where('period_id', $this->periodId)
             ->findOrFail($studentId);
 
-        $this->editMode  = false;
-        $this->showModal = true;
+        $this->editMode     = false;
+        $this->isRejecting  = false;
+        $this->rejectionReason = '';
+        $this->showModal    = true;
+
+        $this->findNavigationStudents();
     }
 
     public function closeModal(): void
     {
-        $this->reset(['showModal', 'editMode', 'selectedStudent', 'studentData']);
+        $this->reset([
+            'showModal', 'editMode', 'selectedStudent', 'studentData',
+            'isRejecting', 'rejectionReason', 'enteredEditFromCard', 'isReviewingQueue',
+            'nextPendingStudent', 'previousPendingStudent',
+            'pendingQueuePosition', 'pendingQueueTotal',
+        ]);
+    }
+
+    public function navigateToNextPending(): bool
+    {
+        if ($this->nextPendingStudent) {
+            $this->viewDetails($this->nextPendingStudent->id);
+            return true;
+        }
+        return false;
+    }
+
+    public function navigateToPreviousPending(): bool
+    {
+        if ($this->previousPendingStudent) {
+            $this->viewDetails($this->previousPendingStudent->id);
+            return true;
+        }
+        return false;
+    }
+
+    private function findNavigationStudents(): void
+    {
+        $this->nextPendingStudent     = null;
+        $this->previousPendingStudent = null;
+        $this->pendingQueuePosition   = 0;
+        $this->pendingQueueTotal      = 0;
+
+        if (! $this->isReviewingQueue || ! $this->selectedStudent || $this->selectedStudent->status !== 'pendiente') {
+            return;
+        }
+
+        $pending      = $this->getPendingQueueQuery()->get()->values();
+        $currentIndex = $pending->search(fn ($s) => $s->id === $this->selectedStudent->id);
+
+        if ($currentIndex === false) {
+            return;
+        }
+
+        $this->nextPendingStudent     = $pending[$currentIndex + 1] ?? null;
+        $this->previousPendingStudent = $pending[$currentIndex - 1] ?? null;
+        $this->pendingQueuePosition   = $currentIndex + 1;
+        $this->pendingQueueTotal      = $pending->count();
     }
 
     // ========================= Edición =========================
 
     public function editStudent(int $studentId): void
     {
+        $this->enteredEditFromCard = ! $this->showModal;
+
         $student               = Student::where('period_id', $this->periodId)->findOrFail($studentId);
         $this->selectedStudent = $student;
         $this->studentData     = $student->toArray();
         $this->editMode        = true;
+        $this->editFormInstance++;
         $this->showModal       = true;
     }
 
     public function cancelEdit(): void
     {
+        if ($this->enteredEditFromCard) {
+            $this->closeModal();
+            return;
+        }
+
         $this->editMode    = false;
         $this->studentData = $this->selectedStudent->toArray();
     }
@@ -100,10 +256,16 @@ trait ManagesStudents
             $this->studentUpdateMessages()
         );
 
-        $this->selectedStudent->update($this->studentData);
+        $allowedFields = array_map(
+            fn ($key) => str_replace('studentData.', '', $key),
+            array_keys($this->studentUpdateRules())
+        );
+
+        $this->selectedStudent->update(Arr::only($this->studentData, $allowedFields));
 
         $this->dispatch('notify', type: 'info', message: 'Información actualizada correctamente');
-        $this->closeModal();
+        $this->editMode = false;
+        $this->viewDetails($this->selectedStudent->id);
     }
 
     // ========================= Aprobar / Rechazar =========================
@@ -112,19 +274,29 @@ trait ManagesStudents
     {
         $student = Student::where('period_id', $this->periodId)->find($studentId);
 
-        if ($student) {
-            $student->update(['status' => 'aprobado']);
-            $this->dispatch('notify', type: 'success', message: 'Perfil aprobado correctamente');
+        if (! $student) {
+            $this->closeModal();
+            return;
         }
 
-        $this->closeModal();
+        $student->update(['status' => 'aprobado']);
+        $this->dispatch('notify', type: 'success', message: 'Perfil aprobado correctamente');
+
+        if (! $this->isReviewingQueue || ! $this->navigateToNextPending()) {
+            $this->closeModal();
+        }
     }
 
-    public function reject(int $studentId): void
+    public function startReject(): void
     {
-        $this->selectedStudent = Student::where('period_id', $this->periodId)->findOrFail($studentId);
-        $this->rejectionReason = $this->selectedStudent->rejection_reason ?? '';
-        $this->showRejectModal = true;
+        $this->isRejecting     = true;
+        $this->rejectionReason = '';
+    }
+
+    public function cancelReject(): void
+    {
+        $this->isRejecting     = false;
+        $this->rejectionReason = '';
     }
 
     public function confirmReject(): void
@@ -132,12 +304,14 @@ trait ManagesStudents
         $this->validate(
             ['rejectionReason' => 'required|min:3'],
             [
-                'rejectionReason.required' => 'Debes agregar un motivo para rechazar el documento.',
+                'rejectionReason.required' => 'Debes agregar un motivo para rechazar al estudiante.',
                 'rejectionReason.min'      => 'El motivo debe tener al menos 3 caracteres.',
             ]
         );
 
         if (! $this->selectedStudent) return;
+
+        $studentId = $this->selectedStudent->id;
 
         $this->selectedStudent->update([
             'status'           => 'rechazado',
@@ -145,29 +319,29 @@ trait ManagesStudents
         ]);
 
         $this->dispatch('notify', type: 'error', message: 'Perfil rechazado correctamente');
-        $this->reset(['showRejectModal', 'selectedStudent', 'rejectionReason']);
+
+        $this->isRejecting     = false;
+        $this->rejectionReason = '';
+
+        if (! $this->isReviewingQueue || ! $this->navigateToNextPending()) {
+            $this->closeModal();
+        }
     }
 
     // ========================= Helpers =========================
 
     private function decorateStudentStatus(object $student): object
     {
-        match ($student->status) {
-            'aprobado' => (
-                $student->status_label = 'Aprobado'
-            ) && (
-                $student->status_style = 'background-color: var(--status-icon-bg-approved); color: var(--status-icon-color-approved); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
-            ),
-            'rechazado' => (
-                $student->status_label = 'Rechazado'
-            ) && (
-                $student->status_style = 'background-color: var(--status-icon-bg-rejected); color: var(--status-icon-color-rejected); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
-            ),
-            default => (
-                $student->status_label = 'Pendiente'
-            ) && (
-                $student->status_style = 'background-color: var(--status-icon-bg-pending); color: var(--status-icon-color-pending); padding: 0.25rem 0.5rem; border-radius: 0.5rem; font-weight: 500;'
-            ),
+        $student->status_label = match ($student->status) {
+            'aprobado'  => 'Aprobado',
+            'rechazado' => 'Rechazado',
+            default     => 'Pendiente',
+        };
+
+        $student->status_badge_class = match ($student->status) {
+            'aprobado'  => 'status-badge--approved',
+            'rechazado' => 'status-badge--rejected',
+            default     => 'status-badge--pending',
         };
 
         return $student;

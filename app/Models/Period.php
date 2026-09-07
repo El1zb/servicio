@@ -36,4 +36,10 @@ class Period extends Model
     {
         return $this->hasMany(File::class);
     }
+
+    // 📤 Documentos subidos por los estudiantes del periodo
+    public function documents()
+    {
+        return $this->hasManyThrough(Document::class, Student::class);
+    }
 }

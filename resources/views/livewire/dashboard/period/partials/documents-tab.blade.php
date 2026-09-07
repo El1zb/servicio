@@ -1,607 +1,148 @@
-{{-- DOCUMENTOS BASE --}}
-<div class="space-y-4 sm:space-y-6">
+{{-- Buscador: en desktop vive en el topbar, en mobile se queda acá. --}}
+@push('topbar-search')
+    <div class="topbar-search-input-wrap">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+        </svg>
+        <input type="text" placeholder="Buscar documento..." value="{{ $searchDocuments }}" oninput="topbarSearchInput(this.value, 'searchDocuments')" class="topbar-search-input"/>
+    </div>
+@endpush
 
-    {{-- ================== CREAR / EDITAR DOCUMENTO ================== --}}
-    <div class="backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl overflow-hidden"
-         style="background-color: var(--color-card-bg);">
+{{-- Botón principal: mismo diseño que "Nuevo X" en el resto de la app. --}}
+@push('topbar-actions')
+    <button type="button" onclick="topbarAction('openCreateDocumentModal')" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Nuevo Documento
+    </button>
+@endpush
 
-        {{-- Header del formulario --}}
-        <div class="p-4 sm:p-6"
-            style="background-color: var(--color-icon-bg);
-                   border-bottom: 1px solid var(--color-border-hover);">
-            <div class="flex items-center gap-3">
-                <div class="flex-1 min-w-0">
-                    <h2 class="text-base sm:text-xl font-bold truncate" style="color: var(--color-primary-2);">
-                        {{ $editingDocumentId ? 'Editar Documento Base' : 'Crear Nuevo Documento Base' }}
-                    </h2>
-                    <p class="text-xs sm:text-sm mt-0.5 truncate" style="color: var(--color-secondary);">
-                        {{ $editingDocumentId ? 'Actualiza la información del documento' : 'Se le asignará este documento a los estudiantes' }}
-                    </p>
-                </div>
+<div class="space-y-6">
+
+    {{-- Respaldo mobile: buscador y botón principal. --}}
+    <div class="lg:hidden flex flex-col gap-3">
+        <div class="relative w-full">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-secondary);">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+                </svg>
             </div>
+            <input type="text" wire:model.live.debounce.400ms="searchDocuments"
+                   placeholder="Buscar documento..."
+                   class="app-input w-full" style="padding-left: 40px;">
         </div>
 
-        {{-- Formulario --}}
-        <div class="p-4 sm:p-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-
-                {{-- Nombre del Documento --}}
-                <flux:field class="lg:col-span-2">
-                    <flux:label class="flex items-center">
-                        <svg class="w-4 h-4 inline-block mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            style="color: var(--color-primary);">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                        </svg>
-                        <span>Nombre del Documento</span>
-                        <span class="ml-1" style="color: rgb(248,113,113);">*</span>
-                    </flux:label>
-                    <flux:input wire:model.defer="documentName" type="text"
-                        placeholder="Ej: Anexo 10. Plan de Trabajo"
-                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2);"
-                        class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all"/>
-                    <flux:error name="documentName" />
-                </flux:field>
-
-                {{-- Modo de Carga --}}
-                <div class="lg:col-span-2">
-                    <label class="block text-sm font-semibold mb-3 flex items-center gap-2"
-                        style="color: var(--color-primary-2);">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            style="color: var(--color-primary);">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                        </svg>
-                        Modo de Carga
-                        <span class="ml-1" style="color: rgb(248,113,113);">*</span>
-                    </label>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        @foreach([
-                            'bidirectional' => ['label' => 'Bidireccional', 'desc' => 'Admin y estudiantes pueden subir archivos', 'icon' => 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4'],
-                            'user_only'     => ['label' => 'Solo Estudiantes', 'desc' => 'Solo estudiantes pueden subir archivos', 'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
-                            'admin_only'    => ['label' => 'Solo Admin', 'desc' => 'Solo administradores pueden subir archivos', 'icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'],
-                        ] as $modeValue => $modeData)
-                            <label class="relative cursor-pointer group">
-                                <input type="radio"
-                                    wire:model.live="documentUploadMode"
-                                    value="{{ $modeValue }}"
-                                    class="peer sr-only">
-                                <div class="p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all flex h-full peer-checked:border-2"
-                                    style="background-color: var(--color-icon-bg); border-color: var(--color-border-hover);"
-                                    onmouseover="if(!this.previousElementSibling.checked) this.style.borderColor='var(--color-primary)'"
-                                    onmouseout="if(!this.previousElementSibling.checked) this.style.borderColor='var(--color-border-hover)'">
-                                    <div class="flex items-center sm:items-stretch gap-3 w-full">
-                                        <div class="upload-mode-icon w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                                            style="background-color: var(--color-card-bg);">
-                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                style="color: var(--color-secondary);">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $modeData['icon'] }}"/>
-                                            </svg>
-                                        </div>
-                                        <div class="flex-1 flex flex-col justify-between min-w-0">
-                                            <div>
-                                                <h4 class="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1 leading-tight" style="color: var(--color-primary-2);">
-                                                    {{ $modeData['label'] }}
-                                                </h4>
-                                                <p class="text-xs leading-tight" style="color: var(--color-secondary);">
-                                                    {{ $modeData['desc'] }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
-                    <flux:error name="documentUploadMode" />
-                </div>
-
-                <style>
-                    input[type="radio"]:checked + div {
-                        border-color: var(--color-primary) !important;
-                        background-color: var(--color-icon-bg);
-                    }
-                    input[type="radio"]:checked + div .upload-mode-icon {
-                        background-color: var(--color-primary) !important;
-                    }
-                    input[type="radio"]:checked + div .upload-mode-icon svg {
-                        color: var(--color-bg) !important;
-                    }
-                </style>
-
-                {{-- Fecha Límite y Tamaño (solo si no es admin_only) --}}
-                @if($documentUploadMode !== 'admin_only')
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:col-span-2">
-                        <flux:field>
-                            <flux:label class="flex items-center">
-                                <svg class="w-4 h-4 inline-block mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-primary);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <span>Fecha Límite</span>
-                                <span class="ml-1" style="color: rgb(248,113,113);">*</span>
-                            </flux:label>
-                            <flux:input wire:model.defer="documentDeadline" type="date"
-                                min="{{ $period->start_date }}" max="{{ $period->end_date }}"
-                                style="background-color: var(--color-icon-bg); color: var(--color-primary-2);"
-                                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all"/>
-                            <flux:error name="documentDeadline" />
-                        </flux:field>
-
-                        <flux:field>
-                            <flux:label class="flex items-center">
-                                <svg class="w-4 h-4 inline-block mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-primary);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
-                                </svg>
-                                <span>Tamaño Máximo (KB)</span>
-                                <span class="ml-1" style="color: rgb(248,113,113);">*</span>
-                            </flux:label>
-                            <flux:input wire:model.defer="maxSize" type="number" placeholder="10240"
-                                min="1" max="20480"
-                                style="background-color: var(--color-icon-bg); color: var(--color-primary-2);"
-                                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all"/>
-                            <flux:error name="maxSize" />
-                        </flux:field>
-                    </div>
-                @endif
-
-                {{-- Checkbox Individual (solo si admin_only) --}}
-                @if($documentUploadMode === 'admin_only')
-                    <div class="lg:col-span-2">
-                        <div class="p-4 sm:p-5 rounded-lg sm:rounded-xl border-2 transition-all cursor-pointer"
-                            style="background-color: var(--color-icon-bg); border-color: {{ $isIndividual ? 'var(--color-primary)' : 'var(--color-border-hover)' }};"
-                            wire:click="$toggle('isIndividual')"
-                            onmouseover="this.style.borderColor='var(--color-primary)'"
-                            onmouseout="this.style.borderColor='{{ $isIndividual ? 'var(--color-primary)' : 'var(--color-border-hover)' }}'">
-                            <div class="flex items-start gap-3 sm:gap-4">
-                                <div class="flex-shrink-0 pt-0.5">
-                                    <input type="checkbox" wire:model.live="isIndividual" id="isIndividual" class="sr-only">
-                                    <label for="isIndividual"
-                                        class="w-5 h-5 sm:w-6 sm:h-6 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all"
-                                        style="{{ $isIndividual
-                                            ? 'background-color: var(--color-primary); border-color: var(--color-primary);'
-                                            : 'background-color: var(--color-card-bg); border-color: var(--color-border-hover);' }}">
-                                        @if($isIndividual)
-                                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                style="color: var(--color-bg);">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                            </svg>
-                                        @endif
-                                    </label>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2 mb-1 sm:mb-2">
-                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--color-primary);">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                        </svg>
-                                        <h4 class="text-sm sm:text-base font-medium" style="color: var(--color-primary-2);">Documento Individual</h4>
-                                    </div>
-                                    <p class="text-xs sm:text-sm leading-relaxed" style="color: var(--color-secondary);">
-                                        El administrador podrá subir un archivo específico diferente para cada alumno.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Archivos (Word y PDF) --}}
-                @if(!$documentUploadMode || $documentUploadMode !== 'user_only')
-                    @if(!($documentUploadMode === 'admin_only' && $isIndividual))
-
-                        {{-- Archivo Word --}}
-                        <flux:field class="lg:col-span-2">
-                            <flux:label class="flex items-center">
-                                <svg class="w-4 h-4 inline-block mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-primary);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <span>Archivo del Documento (Word)</span>
-                            </flux:label>
-
-                            <input type="file" wire:model="documentFile" accept=".doc,.docx" class="hidden" id="documentFile">
-                            <label for="documentFile"
-                                class="group flex items-center justify-center w-full px-4 sm:px-6 py-6 sm:py-8 border-2 border-dashed rounded-lg sm:rounded-xl cursor-pointer transition-all"
-                                style="background-color: var(--color-icon-bg); border-color: var(--color-border-hover); color: var(--color-primary-2);"
-                                onmouseover="this.style.borderColor='var(--color-primary)';"
-                                onmouseout="this.style.borderColor='var(--color-border-hover)';">
-                                <div class="text-center">
-                                    <svg class="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <p class="text-xs sm:text-sm font-medium transition-colors" style="color: var(--color-secondary);">
-                                        Haz clic para seleccionar
-                                    </p>
-                                </div>
-                            </label>
-
-                            @if($documentFile)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3"
-                                    style="background-color: var(--color-icon-bg); border: 1px solid var(--color-border-hover);">
-                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <span class="text-xs sm:text-sm flex-1 truncate" style="color: var(--color-secondary);">{{ $documentFile->getClientOriginalName() }}</span>
-                                    <button wire:click="$set('documentFile', null)" type="button"
-                                        class="flex-shrink-0"
-                                        style="color: var(--color-secondary);">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            @elseif($editingDocumentId && $period->files->find($editingDocumentId)?->name_file && !$removeDocumentFile)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3"
-                                    style="background-color: var(--color-icon-bg); border: 1px solid var(--color-border-hover);">
-                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                    <span class="text-xs sm:text-sm flex-1 truncate" style="color: var(--color-secondary);">
-                                        Archivo actual: {{ $period->files->find($editingDocumentId)->name_file }}
-                                    </span>
-                                    <button wire:click="removeExistingDocumentFile" type="button"
-                                        class="flex-shrink-0"
-                                        style="color: var(--color-secondary);">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            @elseif($editingDocumentId && $removeDocumentFile)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3"
-                                    style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
-                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: rgb(239, 68, 68);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                    </svg>
-                                    <span class="text-xs sm:text-sm flex-1" style="color: rgb(239, 68, 68);">El archivo será eliminado al guardar</span>
-                                    <button wire:click="cancelRemoveDocumentFile" type="button"
-                                        class="px-2 sm:px-3 py-1 text-xs rounded-lg flex-shrink-0"
-                                        style="color: var(--color-primary-2);">Cancelar</button>
-                                </div>
-                            @endif
-                            <flux:error name="documentFile" />
-                        </flux:field>
-
-                        {{-- Archivo PDF de ejemplo --}}
-                        <div class="lg:col-span-2">
-                            <label class="block text-sm font-semibold mb-3 flex items-center gap-2"
-                                style="color: var(--color-primary-2);">
-                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-primary);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                </svg>
-                                Ejemplo (PDF)
-                                <span class="text-xs font-normal hidden sm:inline" style="color: var(--color-secondary);">
-                                    — Archivo de referencia para estudiantes
-                                </span>
-                            </label>
-
-                            <input type="file" wire:model="documentExample" accept=".pdf" class="hidden" id="documentExample">
-                            <label for="documentExample"
-                                class="group flex items-center justify-center w-full px-4 sm:px-6 py-5 sm:py-6 border-2 border-dashed rounded-lg sm:rounded-xl cursor-pointer transition-all"
-                                style="background-color: var(--color-icon-bg); border-color: var(--color-border-hover);"
-                                onmouseover="this.style.borderColor='var(--color-primary)';"
-                                onmouseout="this.style.borderColor='var(--color-border-hover)';">
-                                <div class="text-center">
-                                    <svg class="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                    </svg>
-                                    <p class="text-xs sm:text-sm font-medium" style="color: var(--color-secondary);">Subir ejemplo</p>
-                                </div>
-                            </label>
-
-                            @if($documentExample)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3"
-                                    style="background-color: var(--color-icon-bg); border: 1px solid var(--color-border-hover);">
-                                    <span class="text-xs sm:text-sm flex-1 truncate" style="color: var(--color-secondary);">{{ $documentExample->getClientOriginalName() }}</span>
-                                    <button wire:click="$set('documentExample', null)" type="button"
-                                        class="flex-shrink-0"
-                                        style="color: var(--color-secondary);">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            @elseif($editingDocumentId && $period->files->find($editingDocumentId)?->example_name_file && !$removeExampleFile)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3"
-                                    style="background-color: var(--color-icon-bg); border: 1px solid var(--color-border-hover);">
-                                    <span class="text-xs sm:text-sm flex-1 truncate" style="color: var(--color-secondary);">
-                                        Archivo actual: {{ $period->files->find($editingDocumentId)->example_name_file }}
-                                    </span>
-                                    <button wire:click="removeExistingExampleFile" type="button"
-                                        class="flex-shrink-0"
-                                        style="color: var(--color-secondary);">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            @elseif($editingDocumentId && $removeExampleFile)
-                                <div class="mt-3 p-3 rounded-lg flex items-center gap-3"
-                                    style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
-                                    <span class="text-xs sm:text-sm flex-1" style="color: rgb(239, 68, 68);">El archivo de ejemplo será eliminado al guardar</span>
-                                    <button wire:click="cancelRemoveExampleFile" type="button"
-                                        class="px-2 sm:px-3 py-1 text-xs rounded-lg flex-shrink-0"
-                                        style="color: var(--color-primary-2);">Cancelar</button>
-                                </div>
-                            @endif
-                        </div>
-
-                    @endif
-                @endif
-
-                {{-- Firman --}}
-                <flux:field class="lg:col-span-2">
-                    <flux:label class="flex items-center">
-                        <svg class="w-4 h-4 inline-block mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            style="color: var(--color-primary);">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        <span>Firman</span>
-                    </flux:label>
-                    <flux:textarea wire:model.defer="documentFirman" rows="3"
-                        placeholder="Escribe aquí..."
-                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2);"
-                        class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all resize-none"/>
-                    <flux:error name="documentFirman" />
-                </flux:field>
-
-                {{-- Observaciones --}}
-                <flux:field class="lg:col-span-2">
-                    <flux:label class="flex items-center">
-                        <svg class="w-4 h-4 inline-block mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            style="color: var(--color-primary);">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span>Observaciones</span>
-                    </flux:label>
-                    <flux:textarea wire:model.defer="documentObservations" rows="4"
-                        placeholder="Escribe aquí..."
-                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2);"
-                        class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all resize-none"/>
-                    <flux:error name="documentObservations" />
-                </flux:field>
-
-            </div>
-
-            {{-- Botones de acción --}}
-            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6"
-                style="border-top: 1px solid var(--color-border-hover);">
-                @if($editingDocumentId)
-                    <button wire:click="cancelEditDocument"
-                        class="w-full sm:w-auto px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:-translate-y-0.5 text-center"
-                        style="color: var(--color-secondary); background-color: transparent;"
-                        onmouseover="this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'"
-                        onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent'">
-                        Cancelar
-                    </button>
-                @endif
-
-                <button wire:click="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}"
-                    wire:loading.attr="disabled"
-                    class="w-full sm:w-auto px-4 py-2 text-sm font-semibold rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    style="background-color: var(--color-primary); color: var(--color-bg);"
-                    onmouseover="this.style.backgroundColor='var(--color-primary-2)'"
-                    onmouseout="this.style.backgroundColor='var(--color-primary)'">
-                    <span wire:loading.remove wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}">
-                        {{ $editingDocumentId ? 'Guardar' : 'Crear Documento' }}
-                    </span>
-                    <span wire:loading wire:target="{{ $editingDocumentId ? 'saveDocument' : 'createDocument' }}" class="flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Procesando...
-                    </span>
-                </button>
-            </div>
-        </div>
+        <button type="button" wire:click="openCreateDocumentModal" class="btn-primary w-full">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Nuevo Documento
+        </button>
     </div>
 
-    {{-- ================== LISTA DE DOCUMENTOS ================== --}}
-    @if(!$editingDocumentId)
-        <div class="backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl overflow-hidden"
-             style="background-color: var(--color-card-bg);">
-
-            {{-- Header lista --}}
-            <div class="p-4 sm:p-6"
-                style="background-color: var(--color-icon-bg);
-                       border-bottom: 1px solid var(--color-border-hover);">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                        <h2 class="text-base sm:text-xl font-bold flex items-center gap-2" style="color: var(--color-primary-2);">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                style="color: var(--color-primary);">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    {{-- Grid de documentos --}}
+    @if($paginatedFiles->count())
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            @foreach($paginatedFiles as $file)
+                <div class="period-card group">
+                    <div class="stat-card-top">
+                        <div class="min-w-0 flex-1">
+                            <p class="stat-card-label truncate">{{ $file->name }}</p>
+                            <p class="text-xs truncate mt-0.5" style="color: var(--color-secondary);">
+                                Creado el {{ $file->created_at->format('d/m/Y') }}
+                            </p>
+                        </div>
+                        <div class="stat-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            Documentos Base Creados
-                        </h2>
-                        <p class="text-xs sm:text-sm mt-0.5" style="color: var(--color-secondary);">
-                            {{ $period->files->count() }} {{ $period->files->count() === 1 ? 'documento disponible' : 'documentos disponibles' }}
-                        </p>
+                        </div>
                     </div>
 
-                    {{-- Buscador --}}
-                    <div class="w-full sm:max-w-xs sm:ml-auto">
-                        <div class="relative w-full">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    style="color: var(--color-secondary);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                            </div>
-                            <input type="text"
-                                wire:model.live.debounce.300ms="searchDocuments"
-                                placeholder="Buscar documento..."
-                                class="w-full pl-9 pr-4 py-2 rounded-lg text-sm transition-all focus:ring-2 focus:outline-none"
-                                style="background-color: var(--color-card-bg);
-                                       color: var(--color-primary-2);
-                                       border: 1px solid var(--color-border-hover);">
-                        </div>
+                    <p class="stat-card-description" style="margin:0;">
+                        <span class="stat-card-dot"></span>
+                        @if($file->limit_date)
+                            Límite: {{ \Carbon\Carbon::parse($file->limit_date)->format('d/m/Y') }}
+                        @else
+                            Solo administrador
+                        @endif
+                    </p>
+
+                    <div class="flex items-center justify-end gap-1">
+                        @if($file->file_path)
+                            <button wire:click="previewFile('{{ $file->file_path }}','{{ $file->name_file }}')"
+                                    title="Ver Word"
+                                    class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
+                                           bg-transparent cursor-pointer
+                                           opacity-0 group-hover:opacity-100
+                                           transition-all duration-150
+                                           hover:bg-[var(--sidebar-color-hover)]">
+                                <svg width="14" height="14" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="docTabWordGrad{{ $file->id }}" x1="4.494" y1="-1712.086" x2="13.832" y2="-1695.914" gradientTransform="translate(0 1720)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2368c4"/><stop offset="0.5" stop-color="#1a5dbe"/><stop offset="1" stop-color="#1146ac"/></linearGradient></defs><path d="M28.806,3H9.705A1.192,1.192,0,0,0,8.512,4.191h0V9.5l11.069,3.25L30,9.5V4.191A1.192,1.192,0,0,0,28.806,3Z" style="fill:#41a5ee"/><path d="M30,9.5H8.512V16l11.069,1.95L30,16Z" style="fill:#2b7cd3"/><path d="M8.512,16v6.5L18.93,23.8,30,22.5V16Z" style="fill:#185abd"/><path d="M9.705,29h19.1A1.192,1.192,0,0,0,30,27.809h0V22.5H8.512v5.309A1.192,1.192,0,0,0,9.705,29Z" style="fill:#103f91"/><path d="M16.434,8.2H8.512V24.45h7.922a1.2,1.2,0,0,0,1.194-1.191V9.391A1.2,1.2,0,0,0,16.434,8.2Z" style="opacity:0.1;isolation:isolate"/><path d="M15.783,8.85H8.512V25.1h7.271a1.2,1.2,0,0,0,1.194-1.191V10.041A1.2,1.2,0,0,0,15.783,8.85Z" style="opacity:0.2;isolation:isolate"/><path d="M15.783,8.85H8.512V23.8h7.271a1.2,1.2,0,0,0,1.194-1.191V10.041A1.2,1.2,0,0,0,15.783,8.85Z" style="opacity:0.2;isolation:isolate"/><path d="M15.132,8.85H8.512V23.8h6.62a1.2,1.2,0,0,0,1.194-1.191V10.041A1.2,1.2,0,0,0,15.132,8.85Z" style="opacity:0.2;isolation:isolate"/><path d="M3.194,8.85H15.132a1.193,1.193,0,0,1,1.194,1.191V21.959a1.193,1.193,0,0,1-1.194,1.191H3.194A1.192,1.192,0,0,1,2,21.959V10.041A1.192,1.192,0,0,1,3.194,8.85Z" style="fill:url(#docTabWordGrad{{ $file->id }})"/><path d="M6.9,17.988c.023.184.039.344.046.481h.028c.01-.13.032-.287.065-.47s.062-.338.089-.465l1.255-5.407h1.624l1.3,5.326a7.761,7.761,0,0,1,.162,1h.022a7.6,7.6,0,0,1,.135-.975l1.039-5.358h1.477l-1.824,7.748H10.591L9.354,14.742q-.054-.222-.122-.578t-.084-.52H9.127q-.021.189-.084.561c-.042.249-.075.432-.1.552L7.78,19.871H6.024L4.19,12.127h1.5l1.131,5.418A4.469,4.469,0,0,1,6.9,17.988Z" style="fill:#fff"/></svg>
+                            </button>
+                        @endif
+
+                        @if($file->example_path)
+                            <button wire:click="previewFile('{{ $file->example_path }}','{{ $file->example_name_file }}')"
+                                    title="Ver PDF"
+                                    class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
+                                           bg-transparent cursor-pointer
+                                           opacity-0 group-hover:opacity-100
+                                           transition-all duration-150
+                                           hover:bg-[var(--sidebar-color-hover)]">
+                                <svg width="14" height="14" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><polygon style="fill:#B12A27;" points="475.435,117.825 475.435,512 47.791,512 47.791,0.002 357.613,0.002 412.491,54.881 "/><rect x="36.565" y="34.295" style="fill:#F2F2F2;" width="205.097" height="91.768"/><path style="fill:#B12A27;" d="M110.132,64.379c-0.905-2.186-2.111-4.146-3.769-5.804c-1.658-1.658-3.694-3.015-6.031-3.92 c-2.412-0.98-5.126-1.432-8.141-1.432H69.651v58.195h11.383V89.481h11.157c3.015,0,5.729-0.452,8.141-1.432 c2.337-0.905,4.372-2.261,6.031-3.92c1.659-1.658,2.865-3.543,3.769-5.804c0.829-2.186,1.282-4.523,1.282-6.935 C111.413,68.902,110.961,66.565,110.132,64.379z M97.844,77.118c-1.508,1.432-3.618,2.186-6.181,2.186H81.034V63.323h10.629 c2.563,0,4.674,0.754,6.181,2.261c1.432,1.432,2.186,3.392,2.186,5.804C100.031,73.726,99.277,75.686,97.844,77.118z"/><path style="fill:#B12A27;" d="M164.558,75.761c-0.075-2.035-0.151-3.844-0.377-5.503c-0.226-1.659-0.603-3.166-1.131-4.598 c-0.528-1.357-1.206-2.714-2.111-3.92c-2.035-2.94-4.523-5.126-7.312-6.483c-2.865-1.357-6.257-2.035-10.252-2.035h-20.956 v58.195h20.956c3.995,0,7.387-0.678,10.252-2.035c2.789-1.357,5.277-3.543,7.312-6.483c0.905-1.206,1.583-2.563,2.111-3.92 c0.528-1.432,0.905-2.94,1.131-4.598c0.226-1.658,0.301-3.468,0.377-5.503c0.075-1.96,0.075-4.146,0.075-6.558 C164.633,79.908,164.633,77.721,164.558,75.761z M153.175,88.2c0,1.734-0.151,3.091-0.302,4.297 c-0.151,1.131-0.377,2.186-0.678,2.94c-0.301,0.829-0.754,1.583-1.281,2.261c-1.885,2.412-4.749,3.543-8.518,3.543h-8.669V63.323 h8.669c3.769,0,6.634,1.206,8.518,3.618c0.528,0.678,0.98,1.357,1.281,2.186s0.528,1.809,0.678,3.015 c0.151,1.131,0.302,2.563,0.302,4.221c0.075,1.659,0.075,3.694,0.075,5.955C153.251,84.581,153.251,86.541,153.175,88.2z"/><path style="fill:#B12A27;" d="M213.18,63.323V53.222h-38.37v58.195h11.383V87.823h22.992V77.646h-22.992V63.323H213.18z"/><polygon style="opacity:0.08;fill:#040000;" points="475.435,117.825 475.435,512 47.791,512 47.791,419.581 247.705,219.667 259.54,207.832 266.098,201.273 277.029,190.343 289.995,177.377 412.491,54.881 "/><polygon style="fill:#771B1B;" points="475.435,117.836 357.599,117.836 357.599,0 "/><path style="fill:#F2F2F2;" d="M414.376,370.658c-2.488-4.372-5.88-8.518-10.101-12.287c-3.467-3.166-7.538-6.106-12.137-8.82 c-18.544-10.93-45.003-16.207-80.961-16.207h-3.618c-1.96-1.809-3.995-3.618-6.106-5.503 c-13.644-12.287-24.499-25.63-32.942-40.48c16.584-36.561,24.499-69.126,23.519-96.867c-0.151-4.674-0.829-9.046-2.035-13.117 c-1.809-6.558-4.824-12.363-9.046-17.112c-0.075-0.075-0.075-0.075-0.151-0.151c-6.709-7.538-16.056-11.835-25.555-11.835 c-9.574,0-18.393,4.146-24.801,11.76c-6.332,7.538-9.724,17.866-9.875,30.002c-0.226,18.544,1.281,36.108,4.448,52.315 c0.301,1.282,0.528,2.563,0.829,3.844c3.166,14.7,7.84,28.645,13.87,41.611c-7.086,14.398-14.247,26.836-19.223,35.279 c-3.769,6.408-7.915,13.117-12.212,19.826c-19.373,3.468-35.807,7.689-50.129,12.966c-19.373,7.011-34.902,16.056-46.059,26.836 c-7.237,6.935-12.137,14.323-14.549,22.012c-2.563,7.915-2.412,15.83,0.452,22.916c2.638,6.558,7.387,12.061,13.72,15.83 c1.508,0.905,3.091,1.658,4.749,2.337c4.825,1.96,10.101,3.015,15.604,3.015c12.74,0,25.856-5.503,36.937-15.378 c20.655-18.469,41.988-48.169,54.577-66.94c10.327-1.583,21.559-2.94,34.224-4.297c14.926-1.508,28.118-2.412,40.104-2.865 c3.694,3.317,7.237,6.483,10.629,9.498c18.846,16.81,33.168,28.947,46.134,37.465c0,0.075,0.075,0.075,0.151,0.075 c5.126,3.392,10.026,6.181,14.926,8.443c5.503,2.563,11.081,3.92,16.81,3.92c7.237,0,14.021-2.186,19.675-6.181 c5.729-4.146,9.875-10.101,11.76-16.81C420.18,387.694,418.899,378.724,414.376,370.658z M247.705,219.667 c-1.055-9.348-1.508-19.072-1.357-29.324c0.151-9.724,3.694-16.283,8.895-16.283c3.92,0,8.066,3.543,9.95,10.327 c0.528,2.035,0.905,4.372,0.98,7.01c0.151,3.166,0.075,6.483-0.075,9.875c-0.452,9.574-2.111,19.75-4.975,30.681 c-1.734,7.011-3.995,14.323-6.784,21.936C251.173,243.186,248.911,231.803,247.705,219.667z M121.967,418.073 c-1.282-3.166,0.151-9.272,7.991-16.81c11.986-11.458,30.756-20.504,56.914-27.364c-4.975,6.784-9.875,12.966-14.624,18.619 c-7.237,8.744-14.172,16.132-20.429,21.71c-5.352,4.824-11.232,7.84-16.81,8.594c-0.98,0.151-1.96,0.226-2.94,0.226 C127.168,423.049,123.173,421.089,121.967,418.073z M242.428,337.942l0.528-0.829l-0.829,0.151 c0.151-0.377,0.377-0.754,0.603-1.055c3.166-5.352,7.161-12.212,11.458-20.127l0.377,0.829l0.98-2.035 c3.166,4.523,6.634,8.971,10.252,13.267c1.734,2.035,3.543,3.995,5.352,5.955l-1.206,0.075l1.055,0.98 c-3.091,0.226-6.332,0.528-9.574,0.829c-2.035,0.226-4.146,0.377-6.257,0.603C250.796,337.037,246.499,337.49,242.428,337.942z M369.297,384.98c-8.971-5.729-18.996-13.795-31.359-24.575c17.564,1.809,31.359,5.654,41.159,11.383 c4.297,2.488,7.538,5.051,9.724,7.538c3.618,3.844,4.9,7.312,4.221,9.649c-0.603,2.337-3.241,3.92-6.483,3.92 c-1.885,0-3.844-0.452-5.88-1.432c-3.468-1.658-7.086-3.694-10.93-6.181C369.598,385.282,369.448,385.131,369.297,384.98z"/></svg>
+                            </button>
+                        @endif
+
+                        <button wire:click="editDocument({{ $file->id }})"
+                                title="Editar"
+                                class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
+                                       text-[var(--color-icon)] bg-transparent cursor-pointer
+                                       opacity-0 group-hover:opacity-100
+                                       transition-all duration-150
+                                       hover:text-[var(--color-icon-hover)] hover:bg-[var(--sidebar-color-hover)]">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M20.1497 7.93997L8.27971 19.81C7.21971 20.88 4.04971 21.3699 3.27971 20.6599C2.50971 19.9499 3.06969 16.78 4.12969 15.71L15.9997 3.84C16.5478 3.31801 17.2783 3.03097 18.0351 3.04019C18.7919 3.04942 19.5151 3.35418 20.0503 3.88938C20.5855 4.42457 20.8903 5.14781 20.8995 5.90463C20.9088 6.66146 20.6217 7.39189 20.0997 7.93997H20.1497Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M21 21H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-            </div>
+            @endforeach
+        </div>
 
-            {{-- Items --}}
-            <div>
-                @forelse($paginatedFiles as $file)
-                    <div class="p-4 sm:p-6 transition-all"
-                         style="border-bottom: 1px solid var(--color-border-hover);"
-                         onmouseover="this.style.backgroundColor='transparent'"
-                         onmouseout="this.style.backgroundColor='transparent'">
-
-                        <div class="flex items-start justify-between gap-3">
-                            {{-- Info --}}
-                            <div class="flex items-start gap-3 flex-1 min-w-0">
-                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                                    style="background-color: var(--color-icon-bg);">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-sm sm:text-base font-semibold truncate" style="color: var(--color-primary-2);">
-                                        {{ $file->name }}
-                                    </h3>
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs sm:text-sm"
-                                         style="color: var(--color-secondary);">
-                                        <span class="flex items-center gap-1">
-                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                            {{ $file->created_at->format('d/m/Y') }}
-                                        </span>
-                                        @if($file->limit_date)
-                                            <span class="flex items-center gap-1">
-                                                <svg class="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                Límite: {{ \Carbon\Carbon::parse($file->limit_date)->format('d/m/Y') }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Acciones --}}
-                            <div class="flex gap-1 items-center flex-shrink-0">
-                                @if($file->file_path)
-                                    <div class="relative group/word">
-                                        <button wire:click="previewFile('{{ $file->file_path }}','{{ $file->name_file }}')"
-                                            class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer text-xs hover:-translate-y-0.5"
-                                            style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                                            onmouseover="this.style.backgroundColor='var(--color-border-hover)'"
-                                            onmouseout="this.style.backgroundColor='var(--color-icon-bg)'">
-                                            <i class="fas fa-file-word"></i>
-                                        </button>
-                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium rounded-lg opacity-0 group-hover/word:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50"
-                                            style="background-color: var(--color-icon-bg); color: var(--color-secondary); border: 1px solid var(--color-border-hover);">
-                                            Ver Word
-                                            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
-                                                style="border-top-color: var(--color-icon-bg);"></div>
-                                        </div>
-                                    </div>
-                                @endif
-
-                                @if($file->example_path)
-                                    <div class="relative group/pdf">
-                                        <button wire:click="previewFile('{{ $file->example_path }}','{{ $file->example_name_file }}')"
-                                            class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer text-xs hover:-translate-y-0.5"
-                                            style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                                            onmouseover="this.style.backgroundColor='var(--color-border-hover)'"
-                                            onmouseout="this.style.backgroundColor='var(--color-icon-bg)'">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium rounded-lg opacity-0 group-hover/pdf:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50"
-                                            style="background-color: var(--color-icon-bg); color: var(--color-secondary); border: 1px solid var(--color-border-hover);">
-                                            Ver PDF
-                                            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
-                                                style="border-top-color: var(--color-icon-bg);"></div>
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <div class="relative group/edit">
-                                    <button wire:click="editDocument({{ $file->id }})"
-                                        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer text-xs hover:-translate-y-0.5"
-                                        style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                                        onmouseover="this.style.backgroundColor='var(--color-border-hover)'"
-                                        onmouseout="this.style.backgroundColor='var(--color-icon-bg)'">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium rounded-lg opacity-0 group-hover/edit:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50"
-                                        style="background-color: var(--color-icon-bg); color: var(--color-secondary); border: 1px solid var(--color-border-hover);">
-                                        Editar
-                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
-                                            style="border-top-color: var(--color-icon-bg);"></div>
-                                    </div>
-                                </div>
-
-                                <div class="relative group/delete">
-                                    <button wire:click="deleteDocument({{ $file->id }})"
-                                        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer text-xs hover:-translate-y-0.5"
-                                        style="background-color: var(--color-icon-bg); color: var(--color-secondary);"
-                                        onmouseover="this.style.backgroundColor='var(--color-border-hover)'"
-                                        onmouseout="this.style.backgroundColor='var(--color-icon-bg)'">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium rounded-lg opacity-0 group-hover/delete:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50"
-                                        style="background-color: var(--color-icon-bg); color: var(--color-secondary); border: 1px solid var(--color-border-hover);">
-                                        Eliminar
-                                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
-                                            style="border-top-color: var(--color-icon-bg);"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="p-10 sm:p-16 text-center">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center"
-                             style="background-color: var(--color-icon-bg);">
-                            <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 style="color: var(--color-secondary);">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <p class="text-base sm:text-lg font-semibold mb-1 sm:mb-2" style="color: var(--color-secondary);">No hay documentos base</p>
-                        <p class="text-xs sm:text-sm" style="color: var(--color-secondary);">Crea documentos para que los estudiantes puedan subirlos</p>
-                    </div>
-                @endforelse
-            </div>
-
-            <div class="p-3 sm:p-4">
-                {{ $paginatedFiles->links() }}
-            </div>
+        <div>
+            {{ $paginatedFiles->links() }}
+        </div>
+    @elseif($searchDocuments !== '')
+        <div class="text-center py-20">
+            <svg class="w-14 h-14 mx-auto mb-4" style="color: var(--color-secondary);" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="text-lg font-bold mb-2" style="color: var(--color-primary-2);">
+                No se encontraron documentos
+            </h3>
+            <p class="mb-6 max-w-sm mx-auto text-sm" style="color: var(--color-secondary);">
+                Ajusta el buscador para ver otros resultados.
+            </p>
+        </div>
+    @else
+        <div class="text-center py-20">
+            <svg class="w-14 h-14 mx-auto mb-4" style="color: var(--color-secondary);" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="text-lg font-bold mb-2" style="color: var(--color-primary-2);">
+                No hay documentos base
+            </h3>
+            <p class="mb-6 max-w-sm mx-auto text-sm" style="color: var(--color-secondary);">
+                Crea documentos para que los estudiantes puedan subirlos.
+            </p>
+            <button type="button" wire:click="openCreateDocumentModal" class="btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                Nuevo Documento
+            </button>
         </div>
     @endif
 
+    @include('livewire.dashboard.period.modals.document-modal')
     @include('livewire.dashboard.period.modals.delete-document-modal')
     @include('livewire.dashboard.period.modals.upload-mode-modal')
     @include('livewire.dashboard.period.modals.preview-modal')

@@ -32,7 +32,7 @@ class PeriodDocuments extends Component
 
     public function goBack()
     {
-        return redirect()->route('dashboard');
+        return redirect()->route('periods');
     }
 
     public function render()

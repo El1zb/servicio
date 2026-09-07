@@ -7,7 +7,6 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Livewire\Dashboard\Period\Concerns\ManagesRevision;
 use App\Models\Period;
-use App\Models\Career;
 
 class PeriodRevision extends Component
 {
@@ -33,14 +32,16 @@ class PeriodRevision extends Component
 
     public function goBack()
     {
-        return redirect()->route('dashboard');
+        return redirect()->route('periods');
     }
 
     public function render()
     {
         return view('livewire.dashboard.period.partials.revision-tab', [
             'studentsRevision' => $this->getStudentsRevisionPaginated(),
-            'careers'          => Career::all(),
+            'filterCareers'    => $this->getFilterCareers(),
+            'pendingDocsCount' => $this->pendingDocsCount(),
+            'viewingStudent'   => $this->getViewingStudent(),
         ])->layout('components.layouts.period-detail');
     }
 }

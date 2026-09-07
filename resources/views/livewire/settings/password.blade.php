@@ -1,95 +1,80 @@
-<section class="w-full">
-    @include('partials.settings-heading')
-
-    <x-settings.layout>
-        <div class="space-y-6">
-
-            {{-- Header --}}
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 rounded-xl shadow-sm p-6"
-                 style="background-color: var(--color-card-bg);">
-                <div>
-                    <x-auth-header
-                        title="Actualizar contraseña"
-                        description="Asegúrate de que tu cuenta use una contraseña larga y aleatoria para mantenerse segura."
-                        :center="false"
-                    />
-                </div>
+<div>
+    {{-- Mensaje flash --}}
+    @if (session()->has('message'))
+        <div class="rounded-xl p-4 border flex items-center gap-3 mb-6"
+             style="background-color: var(--color-card-bg);
+                    border-color: var(--color-border-hover);">
+            <div class="flex-shrink-0">
+                <svg class="w-5 h-5" style="color: var(--color-primary-2);"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
             </div>
-
-            {{-- Mensaje flash --}}
-            @if (session()->has('message'))
-                <div class="rounded-xl p-4 shadow-lg border flex items-center gap-3"
-                     style="background-color: var(--color-card-bg);
-                            border-color: var(--color-border-hover);">
-                    <div class="flex-shrink-0">
-                        <svg class="w-5 h-5" style="color: var(--color-primary-2);"
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <p class="text-sm font-medium" style="color: var(--color-primary-2);">
-                        {{ session('message') }}
-                    </p>
-                </div>
-            @endif
-
-            {{-- Formulario de actualización de contraseña --}}
-            <div class="rounded-xl p-6 shadow-lg" style="background-color: var(--color-card-bg);">
-                <form method="POST" wire:submit.prevent="updatePassword" class="space-y-6">
-
-                    <flux:input
-                        wire:model="current_password"
-                        :label="__('Contraseña actual')"
-                        type="password"
-                        required
-                        autocomplete="current-password"
-                        class="w-full"
-                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);"
-                    />
-
-                    <flux:input
-                        wire:model="password"
-                        :label="__('Nueva contraseña')"
-                        type="password"
-                        required
-                        autocomplete="new-password"
-                        class="w-full"
-                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);"
-                    />
-
-                    <flux:input
-                        wire:model="password_confirmation"
-                        :label="__('Confirmar contraseña')"
-                        type="password"
-                        required
-                        autocomplete="new-password"
-                        class="w-full"
-                        style="background-color: var(--color-icon-bg); color: var(--color-primary-2); border: 1px solid var(--color-border-hover);"
-                    />
-
-                    {{-- Botón Guardar --}}
-                    <div class="flex justify-end">
-                        <flux:button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            class="group relative inline-flex items-center justify-center px-4 py-2
-                            rounded-[var(--radius-md)]
-                            bg-[var(--color-primary)]! text-[var(--color-bg)]!
-                            shadow-lg shadow-[var(--color-border-hover)]
-                            hover:bg-[var(--color-primary-2)]! hover:shadow-xl hover:-translate-y-0.5
-                            transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed gap-2">
-                            {{ __('Guardar') }}
-                        </flux:button>
-                    </div>
-
-                    {{-- Mensaje de acción --}}
-                    <x-action-message class="mt-3" on="password-updated">
-                        {{ __('Guardado.') }}
-                    </x-action-message>
-
-                </form>
-            </div>
-
+            <p class="text-sm font-medium" style="color: var(--color-primary-2);">
+                {{ session('message') }}
+            </p>
         </div>
-    </x-settings.layout>
-</section>
+    @endif
+
+    {{-- Formulario de actualización de contraseña --}}
+    <form method="POST" wire:submit.prevent="updatePassword" class="space-y-6">
+
+        <div class="app-field">
+            <label for="current_password" class="app-field-label">{{ __('Contraseña actual') }}</label>
+            <input
+                wire:model="current_password"
+                id="current_password"
+                type="password"
+                required
+                autocomplete="current-password"
+                class="app-input {{ $errors->has('current_password') ? 'has-error' : '' }}"
+            >
+            @error('current_password')
+                <p class="app-field-error">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="app-field">
+            <label for="password" class="app-field-label">{{ __('Nueva contraseña') }}</label>
+            <input
+                wire:model="password"
+                id="password"
+                type="password"
+                required
+                autocomplete="new-password"
+                class="app-input {{ $errors->has('password') ? 'has-error' : '' }}"
+            >
+            @error('password')
+                <p class="app-field-error">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="app-field">
+            <label for="password_confirmation" class="app-field-label">{{ __('Confirmar contraseña') }}</label>
+            <input
+                wire:model="password_confirmation"
+                id="password_confirmation"
+                type="password"
+                required
+                autocomplete="new-password"
+                class="app-input {{ $errors->has('password_confirmation') ? 'has-error' : '' }}"
+            >
+            @error('password_confirmation')
+                <p class="app-field-error">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Botón Guardar: solo aparece si hay cambios sin guardar --}}
+        <div class="flex justify-end">
+            <button
+                type="submit"
+                wire:loading.attr="disabled"
+                wire:dirty
+                wire:target="current_password,password,password_confirmation"
+                class="btn-primary">
+                {{ __('Guardar') }}
+            </button>
+        </div>
+
+    </form>
+</div>

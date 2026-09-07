@@ -1,147 +1,231 @@
-{{-- =================== MODAL REVISIÓN RÁPIDA =================== --}}
+{{-- =================== VISOR UNIFICADO DE REVISIÓN (ocupa toda la ventana del navegador,
+     pero sin pedir pantalla completa real — sin requestFullscreen()) =================== --}}
 <flux:modal
     wire:model="showQuickReviewModal"
     :dismissible="false"
-    class="w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[860px] xl:w-[960px] max-w-[95vw]">
+    :closable="false"
+    class="!p-0 !max-w-none !rounded-none !shadow-none w-screen h-screen !m-0 overflow-hidden !outline-none"
+    style="outline: none; max-width: 100vw; max-height: 100vh; margin: 0; inset: 0;">
 
-    @if($quickReviewDoc)
-    <div class="flex flex-col" style="height: 80vh; max-height: 88vh;">
+    <div class="flex flex-col"
+        style="height: 100vh;"
+        x-data
+        @keydown.window="
+            const el = document.activeElement;
+            const typing = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+            if ($wire.showQuickReviewModal && !typing) {
+                if ($event.key === 'ArrowLeft') {
+                    const btn = document.querySelector('button[title=\'Documento anterior\']');
+                    if (btn && !btn.disabled) btn.click();
+                } else if ($event.key === 'ArrowRight') {
+                    const btn = document.querySelector('button[title=\'Siguiente documento\']');
+                    if (btn && !btn.disabled) btn.click();
+                }
+            }
+        ">
 
-        {{-- ── Header ── --}}
-        <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0"
-            style="border-bottom: 1px solid var(--color-border-hover); background-color: var(--color-card-bg);">
+        {{-- ── Barra 1: estudiante ── --}}
+        <div class="flex items-center justify-between gap-4 px-4 sm:px-6 py-3 flex-shrink-0"
+            style="background-color: var(--sidebar-color-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; z-index: 2;">
 
             <div class="flex items-center gap-3 min-w-0 flex-1">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style="background-color: var(--color-icon-bg);">
-                    <svg class="w-4 h-4" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </div>
-                <div class="min-w-0 flex-1">
-                    <h3 class="text-sm font-semibold leading-tight truncate"
-                        style="color: var(--color-primary-2);">
-                        {{ $quickReviewDoc->file->name ?? $quickReviewDoc->name }}
-                    </h3>
-                    <p class="text-xs mt-0.5 truncate" style="color: var(--color-secondary);">
-                        {{ $quickReviewDoc->student->name }}
-                        {{ $quickReviewDoc->student->last_name_paterno }}
-                        {{ $quickReviewDoc->student->last_name_materno }}
-                        · {{ $quickReviewDoc->student->control_number }}
-                    </p>
-                </div>
-            </div>
+                <button type="button" wire:click="closeQuickReview"
+                    class="review-icon-btn"
+                    style="background-color: transparent; color: var(--color-icon);"
+                    onmouseover="this.style.backgroundColor='var(--sidebar-color-hover)'; this.style.color='var(--color-icon-hover)';"
+                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--color-icon)';">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
 
-            {{-- Badge de estado --}}
-            <div class="flex-shrink-0 ml-3">
-                @if($quickReviewDoc->file->upload_mode === 'admin_only')
-                    @if($quickReviewDoc->file->is_individual)
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border"
-                            style="{{ $currentIndividualUpload
-                                ? 'background-color: rgba(16,185,129,0.1); color: rgb(52,211,153); border-color: rgba(16,185,129,0.3);'
-                                : 'background-color: var(--color-icon-bg); color: var(--color-secondary); border-color: var(--color-border-hover);' }}">
-                            {{ $currentIndividualUpload ? 'Archivo Subido' : 'Sin Subir' }}
-                        </span>
-                    @else
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border"
-                            style="background-color: rgba(16,185,129,0.1); color: rgb(52,211,153); border-color: rgba(16,185,129,0.3);">
-                            Documento Base
-                        </span>
-                    @endif
-                @else
-                    @if($quickReviewDoc->student_file_path)
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border"
-                            style="
-                                @if($quickReviewDoc->status === 'revisado')
-                                    background-color: rgba(16,185,129,0.1); color: rgb(52,211,153); border-color: rgba(16,185,129,0.3);
-                                @elseif($quickReviewDoc->status === 'rechazado')
-                                    background-color: rgba(239,68,68,0.15); color: rgb(248,113,113); border-color: rgba(239,68,68,0.3);
-                                @else
-                                    background-color: rgba(232,210,50,0.15); color: rgb(250,204,21); border-color: rgba(232,210,50,0.3);
-                                @endif
-                            ">
-                            @if($quickReviewDoc->status === 'revisado') Aprobado
-                            @elseif($quickReviewDoc->status === 'rechazado') Rechazado
-                            @else En revisión
-                            @endif
-                        </span>
-                    @else
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border"
-                            style="background-color: var(--color-icon-bg); color: var(--color-secondary); border-color: var(--color-border-hover);">
-                            Pendiente
-                        </span>
-                    @endif
+                @if($viewingStudent)
+                    <div class="min-w-0">
+                        <h2 class="text-sm font-semibold leading-tight truncate" style="color: var(--color-primary-2);">
+                            {{ $viewingStudent->name }} {{ $viewingStudent->last_name_paterno }}
+                        </h2>
+                        <p class="text-xs mt-0.5 truncate" style="color: var(--color-secondary);">
+                            {{ $viewingStudent->career->name ?? '—' }} · {{ $viewingStudent->control_number }}
+                        </p>
+                    </div>
                 @endif
             </div>
+
+            @if($viewingStudent)
+                <button type="button" wire:click="exportStudentPDF({{ $viewingStudent->id }})"
+                    class="inline-flex items-center gap-2 px-4 h-9 rounded-full text-sm font-medium transition-colors flex-shrink-0"
+                    style="background-color: var(--color-bg); color: var(--color-primary-2); outline: none;"
+                    onmouseover="this.style.backgroundColor='#EDEDED'"
+                    onmouseout="this.style.backgroundColor='var(--color-bg)'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 7L12 14M12 14L15 11M12 14L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17H12H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span class="hidden lg:inline">Descargar seguimiento</span>
+                </button>
+            @endif
         </div>
 
-        {{-- ── Layout 2 columnas ── --}}
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-0 flex-1 overflow-hidden">
+        @if(!$viewingStudent)
+            <div class="flex-1 flex items-center justify-center">
+                <p class="text-sm" style="color: var(--color-secondary);">No se encontró información del estudiante.</p>
+            </div>
+        @else
+            @php
+                $viewingIndividualFile = $this->getViewingIndividualFile();
+            @endphp
 
-            {{-- ── Columna izquierda: Preview ── --}}
-            <div class="flex flex-col min-h-0 overflow-hidden"
-                style="border-right: 1px solid var(--color-border-hover);">
+            {{-- ── Barra 2: buscador + documento actual (ancho completo) ── --}}
+            <div class="flex items-center gap-3 px-4 sm:px-6 py-3 flex-shrink-0"
+                style="background-color: var(--sidebar-color-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; z-index: 1; min-height: 58px;">
 
-                <div class="flex-1 flex flex-col min-h-0 overflow-hidden"
-                    style="background-color: var(--color-card-bg);">
+                <div class="topbar-search-input-wrap" style="max-width: 220px; flex-shrink: 0;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+                    </svg>
+                    <input type="text" wire:model.live.debounce.300ms="reviewDocSearch"
+                        placeholder="Buscar documento..."
+                        class="topbar-search-input review-field">
+                </div>
 
-                    @if($quickReviewDoc->file->upload_mode === 'admin_only' && !$quickReviewDoc->file->is_individual)
+                @if($quickReviewDoc)
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button type="button" wire:click="navigateToPreviousDoc" @disabled(!$previousPendingDoc) class="review-icon-btn" title="Documento anterior"
+                            onmouseover="this.style.backgroundColor='#EDEDED'" onmouseout="this.style.backgroundColor=''">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                        </button>
+                        <button type="button" wire:click="navigateToNextDoc" @disabled(!$nextPendingDoc) class="review-icon-btn" title="Siguiente documento"
+                            onmouseover="this.style.backgroundColor='#EDEDED'" onmouseout="this.style.backgroundColor=''">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                    </div>
 
-                        @if($adminExamplePdf)
-                            <div class="flex-1 min-h-0">
-                                <iframe src="{{ $adminExamplePdf['url'] }}" class="w-full h-full" style="background-color: var(--color-icon-bg);"></iframe>
-                            </div>
+                    <h3 class="text-sm font-semibold truncate flex-1 min-w-0" style="color: var(--color-primary-2);">
+                        {{ $quickReviewDoc->file->name ?? $quickReviewDoc->name }}
+                    </h3>
+
+                    <span class="status-badge {{ $quickReviewDoc->status === 'revisado' ? 'status-badge--approved' : ($quickReviewDoc->status === 'rechazado' ? 'status-badge--rejected' : 'status-badge--pending') }} flex-shrink-0">
+                        <span class="status-badge-dot"></span>
+                        @if($quickReviewDoc->status === 'revisado') Aprobado
+                        @elseif($quickReviewDoc->status === 'rechazado') Rechazado
+                        @else En revisión
+                        @endif
+                    </span>
+                @elseif($viewingIndividualFile)
+                    <h3 class="text-sm font-semibold truncate flex-1 min-w-0" style="color: var(--color-primary-2);">
+                        {{ $viewingIndividualFile->name }}
+                    </h3>
+
+                    <span class="status-badge {{ $currentIndividualUpload ? 'status-badge--approved' : '' }} flex-shrink-0">
+                        <span class="status-badge-dot"></span>
+                        {{ $currentIndividualUpload ? 'Archivo subido' : 'Sin subir' }}
+                    </span>
+                @endif
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+
+                {{-- ── Columna izquierda: buscador (arriba, en barra 2) + documentos + estadísticas ── --}}
+                <div class="flex flex-col overflow-hidden flex-shrink-0"
+                    style="width: var(--sidebar-width); background-color: var(--sidebar-color-bg); box-shadow: 1px 0 3px rgba(0,0,0,0.04); position: relative; z-index: 1;">
+
+                    @php
+                        $studentDocs      = $this->getFilteredStudentDocuments($viewingStudent->id);
+                        $individualFiles  = $this->getFilteredIndividualFiles($viewingStudent->id);
+                    @endphp
+
+                    <div class="flex-1 overflow-y-auto px-3 pt-3 pb-2 space-y-1">
+                        @if($individualFiles->count())
+                            <p class="px-3 pb-1 pt-1 text-xs font-semibold uppercase tracking-wide" style="color: var(--color-secondary);">Individuales</p>
+                            @foreach($individualFiles as $file)
+                                <button type="button"
+                                    wire:click="viewIndividualFile({{ $file->id }})"
+                                    class="review-nav-item {{ $viewingIndividualFileId === $file->id ? 'is-active' : '' }}">
+                                    <span class="status-badge-dot flex-shrink-0" style="color: {{ $file->uploaded ? '#16A34A' : '#D1D5DB' }};"></span>
+                                    <span class="truncate flex-1">{{ $file->name }}</span>
+                                </button>
+                            @endforeach
+                            <div style="height: 8px;"></div>
                         @endif
 
-                        @if($adminBaseWord)
-                            <div class="flex items-center justify-between gap-4 px-4 py-3 flex-shrink-0"
-                                style="border-top: 1px solid var(--color-border-hover); background-color: var(--color-card-bg);">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        style="background-color: rgba(37,99,235,0.15);">
-                                        <i class="fas fa-file-word text-xs" style="color: rgb(96,165,250);"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-semibold truncate" style="color: var(--color-primary-2);">Documento base (Word)</p>
-                                        <p class="text-xs truncate" style="color: var(--color-secondary);">{{ $adminBaseWord['name'] }}</p>
-                                    </div>
+                        @forelse($studentDocs as $doc)
+                            @php
+                                $docColor = $doc->status === 'revisado' ? '#16A34A' : ($doc->status === 'rechazado' ? '#DC2626' : '#D97706');
+                            @endphp
+                            <button type="button"
+                                wire:click="reviewDocFromStudent({{ $viewingStudent->id }}, {{ $doc->id }})"
+                                class="review-nav-item {{ $quickReviewDoc && $quickReviewDoc->id === $doc->id ? 'is-active' : '' }}">
+                                <span class="status-badge-dot flex-shrink-0" style="color: {{ $docColor }};"></span>
+                                <span class="truncate flex-1">{{ $doc->file->name ?? $doc->name }}</span>
+                            </button>
+                        @empty
+                            @if(!$individualFiles->count())
+                                <div class="text-center px-3 py-10">
+                                    <p class="text-xs" style="color: var(--color-secondary);">
+                                        @if($reviewDocSearch !== '')
+                                            No se encontraron documentos con "{{ $reviewDocSearch }}".
+                                        @else
+                                            Este estudiante todavía no ha subido documentos.
+                                        @endif
+                                    </p>
                                 </div>
-                                <a href="{{ $adminBaseWord['url'] }}" download
-                                    class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 hover:-translate-y-0.5 flex-shrink-0"
-                                    style="background-color: var(--color-primary); color: var(--color-card-bg);"
-                                    onmouseover="this.style.backgroundColor='var(--color-primary-2)'"
-                                    onmouseout="this.style.backgroundColor='var(--color-primary)'">
-                                    Descargar
-                                </a>
-                            </div>
-                        @endif
+                            @endif
+                        @endforelse
+                    </div>
 
-                        @if(!$adminExamplePdf && !$adminBaseWord)
-                            <div class="flex flex-col items-center justify-center flex-1 text-center px-4 py-8">
-                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
-                                    style="background-color: var(--color-icon-bg);">
-                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
+                    <div class="pt-2 pb-3 flex-shrink-0" style="box-shadow: 0 -1px 3px rgba(0,0,0,0.04);">
+                        <div class="flex items-center gap-2.5 px-4 pt-2 py-1.5">
+                            <span class="status-badge-dot" style="color: #16A34A; width: 7px; height: 7px;"></span>
+                            <span class="text-sm font-semibold" style="color: var(--color-primary-2);">{{ $viewingStudent->approved_count ?? 0 }}</span>
+                            <span class="text-sm" style="color: var(--color-secondary);">Aprobados</span>
+                        </div>
+                        <div class="flex items-center gap-2.5 px-4 py-1.5">
+                            <span class="status-badge-dot" style="color: #D97706; width: 7px; height: 7px;"></span>
+                            <span class="text-sm font-semibold" style="color: var(--color-primary-2);">{{ $viewingStudent->pending_count ?? 0 }}</span>
+                            <span class="text-sm" style="color: var(--color-secondary);">Pendientes</span>
+                        </div>
+                        <div class="flex items-center gap-2.5 px-4 py-1.5">
+                            <span class="status-badge-dot" style="color: #DC2626; width: 7px; height: 7px;"></span>
+                            <span class="text-sm font-semibold" style="color: var(--color-primary-2);">{{ $viewingStudent->rejected_count ?? 0 }}</span>
+                            <span class="text-sm" style="color: var(--color-secondary);">Rechazados</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ── Columna central: documento ── --}}
+                <div class="flex-1 flex flex-col overflow-hidden min-w-0 relative">
+                    @if($quickReviewDoc || $viewingIndividualFile)
+                        <div class="flex-1 min-h-0" style="background-color: var(--color-contenedor-view);">
+                            @if($quickReviewPreviewUrl && pathinfo($quickReviewPreviewUrl, PATHINFO_EXTENSION) === 'pdf')
+                                <div wire:key="pdf-viewer-{{ $quickReviewDoc?->id }}-{{ $viewingIndividualFileId }}-{{ $quickReviewPreviewUrl }}"
+                                    wire:ignore
+                                    x-data
+                                    x-init="renderReviewPdf(@js($quickReviewPreviewUrl), $el)"
+                                    class="pdf-render-target w-full h-full overflow-y-auto"
+                                    style="background-color: var(--color-contenedor-view); padding: 24px;">
                                 </div>
-                                <p class="text-sm font-medium" style="color: var(--color-secondary);">No hay documentos base disponibles</p>
-                            </div>
-                        @endif
 
-                    @else
-
-                        @if($quickReviewPreviewUrl)
-                            @if(pathinfo($quickReviewPreviewUrl, PATHINFO_EXTENSION) === 'pdf')
-                                <iframe src="{{ $quickReviewPreviewUrl }}" class="w-full h-full" style="background-color: var(--color-icon-bg);"></iframe>
-                            @else
-                                <div class="flex flex-col items-center justify-center flex-1 text-center px-6 py-8">
+                                <div class="absolute bottom-5 right-5 flex items-center gap-1 rounded-full px-1.5 py-1.5"
+                                    style="background-color: var(--color-card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.15);">
+                                    <button type="button" class="review-icon-btn" style="width: 28px; height: 28px; background-color: transparent;"
+                                        onclick="zoomReviewPdf(document.querySelector('.pdf-render-target'), -0.15)"
+                                        onmouseover="this.style.backgroundColor='var(--color-bg)'"
+                                        onmouseout="this.style.backgroundColor='transparent'">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                                    </button>
+                                    <span id="pdf-zoom-label" class="text-xs" style="color: var(--color-secondary); min-width: 38px; text-align: center;">100%</span>
+                                    <button type="button" class="review-icon-btn" style="width: 28px; height: 28px; background-color: transparent;"
+                                        onclick="zoomReviewPdf(document.querySelector('.pdf-render-target'), 0.15)"
+                                        onmouseover="this.style.backgroundColor='var(--color-bg)'"
+                                        onmouseout="this.style.backgroundColor='transparent'">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                                    </button>
+                                </div>
+                            @elseif($quickReviewPreviewUrl)
+                                <div class="flex flex-col items-center justify-center h-full text-center px-6">
                                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
-                                        style="background-color: var(--color-icon-bg);">
-                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            style="color: var(--color-secondary);">
+                                        style="background-color: var(--color-card-bg);">
+                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-secondary);">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
@@ -149,240 +233,193 @@
                                     <p class="text-sm font-medium mb-1" style="color: var(--color-primary-2);">Vista previa no disponible</p>
                                     <p class="text-xs mb-3" style="color: var(--color-secondary);">Este formato no puede visualizarse en el navegador</p>
                                     <a href="{{ $quickReviewPreviewUrl }}" download
-                                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                                        style="background-color: var(--color-primary); color: var(--color-card-bg);"
-                                        onmouseover="this.style.backgroundColor='var(--color-primary-2)'"
-                                        onmouseout="this.style.backgroundColor='var(--color-primary)'">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                        </svg>
+                                        class="btn-primary" style="height: 36px; padding: 0 16px; font-size: 13px;">
                                         Descargar para ver
                                     </a>
                                 </div>
-                            @endif
-                        @else
-                            <div class="flex flex-col items-center justify-center flex-1 text-center px-6 py-8">
-                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
-                                    style="background-color: var(--color-icon-bg);">
-                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--color-secondary);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
+                            @else
+                                <div class="flex flex-col items-center justify-center h-full text-center px-6">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
+                                        style="background-color: var(--color-card-bg);">
+                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-secondary);">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-medium" style="color: var(--color-primary-2);">Todavía no hay ningún archivo subido</p>
+                                    <p class="text-xs mt-1" style="color: var(--color-secondary);">Sube uno desde el panel de la derecha.</p>
                                 </div>
-                                <p class="text-sm font-medium" style="color: var(--color-secondary);">No se ha cargado ningún documento</p>
+                            @endif
+                        </div>
+                    @else
+                        <div class="flex-1 flex flex-col items-center justify-center text-center px-6"
+                            style="background-color: var(--color-contenedor-view);">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
+                                style="background-color: var(--color-icon-bg);">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-secondary);">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
                             </div>
-                        @endif
-
+                            <p class="text-sm font-medium" style="color: var(--color-secondary);">
+                                Este estudiante todavía no ha subido documentos para revisar.
+                            </p>
+                        </div>
                     @endif
                 </div>
-            </div>
 
-            {{-- ── Columna derecha: Acciones ── --}}
-            <div class="flex flex-col overflow-y-auto"
-                style="background-color: var(--color-icon-bg);">
+                {{-- ── Columna derecha: acciones ── --}}
+                <div class="flex flex-col overflow-y-auto flex-shrink-0"
+                    style="width: var(--sidebar-width); background-color: var(--sidebar-color-bg); box-shadow: -1px 0 3px rgba(0,0,0,0.04);">
 
-                <div class="flex flex-col gap-3 p-3 sm:p-4 flex-1">
+                    @if($viewingIndividualFile)
+                        <div class="flex flex-col flex-1">
+                            <div class="p-4">
+                                <p class="text-xs font-semibold mb-1 flex items-center gap-1.5"
+                                    style="color: var(--color-primary-2);">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                    Subir Documento
+                                </p>
+                                <p class="text-xs mb-3" style="color: var(--color-secondary);">Solo el administrador puede subir este archivo.</p>
 
-                    {{-- Subir archivo individual --}}
-                    @if($quickReviewDoc->file->upload_mode === 'admin_only' && $quickReviewDoc->file->is_individual)
-                        <div class="p-3 rounded-lg border"
-                            style="background-color: var(--color-card-bg); border-color: var(--color-border-hover);">
-
-                            <p class="text-xs font-semibold mb-2 flex items-center gap-1.5"
-                                style="color: var(--color-primary-2);">
-                                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                Subir Documento
-                            </p>
-
-                            @if($currentIndividualUpload)
-                                <div class="mb-2 p-2 rounded-lg border flex items-center justify-between gap-2"
-                                    style="background-color: var(--color-icon-bg); border-color: var(--color-border-hover);">
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-medium truncate" style="color: var(--color-primary-2);">{{ $currentIndividualUpload->name_file }}</p>
-                                        <p class="text-xs" style="color: var(--color-secondary);">{{ $currentIndividualUpload->created_at->diffForHumans() }}</p>
+                                @if($currentIndividualUpload)
+                                    <div class="mb-3 p-2.5 rounded-lg flex items-center justify-between gap-2" style="background-color: var(--color-bg);">
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium truncate" style="color: var(--color-primary-2);">{{ $currentIndividualUpload->name_file }}</p>
+                                            <p class="text-xs" style="color: var(--color-secondary);">{{ $currentIndividualUpload->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <button wire:click="deleteIndividualFile" wire:confirm="¿Eliminar este archivo?"
+                                            class="review-icon-btn flex-shrink-0" style="width: 28px; height: 28px; background-color: transparent; color: #DC2626;"
+                                            onmouseover="this.style.backgroundColor='rgba(220,38,38,0.1)'"
+                                            onmouseout="this.style.backgroundColor='transparent'">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
                                     </div>
-                                    <button wire:click="deleteIndividualFile" wire:confirm="¿Eliminar este archivo?"
-                                        class="w-6 h-6 flex items-center justify-center rounded-lg transition-all duration-200 flex-shrink-0"
-                                        style="background-color: rgba(239,68,68,0.1); color: rgb(248,113,113);"
-                                        onmouseover="this.style.backgroundColor='rgba(239,68,68,0.2)'"
-                                        onmouseout="this.style.backgroundColor='rgba(239,68,68,0.1)'">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                @endif
+
+                                <input type="file" wire:model="individualUploadFile" accept=".pdf,.doc,.docx"
+                                    class="w-full text-xs file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:cursor-pointer cursor-pointer"
+                                    style="color: var(--color-secondary);">
+
+                                @error('individualUploadFile')
+                                    <p class="mt-1.5 text-xs" style="color: #DC2626;">{{ $message }}</p>
+                                @enderror
+
+                                @if($individualUploadFile)
+                                    <button wire:click="uploadIndividualFile" wire:loading.attr="disabled" class="btn-primary w-full mt-3" style="height: 38px; font-size: 13px; outline: none;">
+                                        <span wire:loading.remove wire:target="uploadIndividualFile">Subir Archivo</span>
+                                        <span wire:loading wire:target="uploadIndividualFile">Subiendo...</span>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @elseif($quickReviewDoc)
+                        <div class="flex flex-col flex-1">
+
+                            {{-- Observaciones --}}
+                            <div class="p-4" style="box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+                                wire:key="obs-{{ $quickReviewDoc->id }}-{{ $quickReviewDoc->comments }}"
+                                x-data="{ original: @js($quickReviewDoc->comments ?? ''), changed: false }">
+                                <p class="text-xs font-semibold mb-1 flex items-center gap-1.5"
+                                    style="color: var(--color-primary-2);">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                    </svg>
+                                    Observaciones
+                                </p>
+                                <p class="text-xs mb-2" style="color: var(--color-secondary);">Visible para el estudiante.</p>
+
+                                <textarea wire:model.defer="quickReviewComments"
+                                    placeholder="Escribe aquí..."
+                                    rows="4"
+                                    @input="changed = ($event.target.value !== original)"
+                                    class="review-field w-full px-3 py-2 rounded-lg text-xs resize-none"
+                                    style="color: var(--color-primary-2);">
+                                </textarea>
+
+                                @error('quickReviewComments')
+                                    <p class="mt-1.5 text-xs flex items-center gap-1.5" style="color: #ee6e6c;">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+
+                                <button wire:click="saveComments"
+                                    x-show="changed" x-cloak
+                                    class="mt-2 px-4 h-8 text-xs font-semibold rounded-full transition-all duration-200 self-end"
+                                    style="color: var(--color-primary-2); background-color: var(--color-bg); outline: none;"
+                                    onmouseover="this.style.backgroundColor='#EDEDED'"
+                                    onmouseout="this.style.backgroundColor='var(--color-bg)'">
+                                    Guardar
+                                </button>
+                            </div>
+
+                            {{-- Fecha límite personalizada --}}
+                            @php
+                                $periodStart = optional($quickReviewDoc->file->period)->start_date;
+                                $periodEnd   = optional($quickReviewDoc->file->period)->end_date;
+                                $currentDateValue = $editingDates[$quickReviewDoc->id] ?? '';
+                            @endphp
+                            <div class="p-4"
+                                style="box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+                                wire:key="fecha-{{ $quickReviewDoc->id }}-{{ $quickReviewDoc->custom_limit_date }}"
+                                x-data="{ original: @js($currentDateValue), changed: false }"
+                                @date-change="changed = ($event.detail !== original)">
+                                <p class="text-xs font-semibold mb-2 flex items-center gap-1.5"
+                                    style="color: var(--color-primary-2);">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    Fecha Límite Personalizada
+                                </p>
+
+                                <x-date-picker
+                                    wire-model="editingDates.{{ $quickReviewDoc->id }}"
+                                    :value="$currentDateValue"
+                                    :min="$periodStart ? \Carbon\Carbon::parse($periodStart)->format('Y-m-d') : null"
+                                    :max="$periodEnd ? \Carbon\Carbon::parse($periodEnd)->format('Y-m-d') : null"
+                                    :overlay="true"
+                                    class="mb-2" />
+
+                                <button wire:click="updateDocumentDate({{ $quickReviewDoc->id }})"
+                                    x-show="changed" x-cloak
+                                    class="px-4 h-8 text-xs font-semibold rounded-full transition-all duration-200 self-end"
+                                    style="color: var(--color-primary-2); background-color: var(--color-bg); outline: none;"
+                                    onmouseover="this.style.backgroundColor='#EDEDED'"
+                                    onmouseout="this.style.backgroundColor='var(--color-bg)'">
+                                    Actualizar
+                                </button>
+                            </div>
+
+                            {{-- Botones aprobar / rechazar --}}
+                            <div class="p-4 mt-auto">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button wire:click="quickApproveDocument" class="btn-success" style="height: 40px; font-size: 13px; outline: none;">
+                                        Aprobar
+                                    </button>
+                                    <button wire:click="quickRejectDocument" class="btn-danger" style="height: 40px; font-size: 13px; outline: none;">
+                                        Rechazar
                                     </button>
                                 </div>
-                            @endif
-
-                            <input type="file" wire:model="individualUploadFile" accept=".pdf,.doc,.docx"
-                                class="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:cursor-pointer cursor-pointer"
-                                style="color: var(--color-secondary);">
-
-                            @error('individualUploadFile')
-                                <p class="mt-1.5 text-xs flex items-center gap-1.5" style="color: #ee6e6c;">
-                                    <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    {{ $message }}
-                                </p>
-                            @enderror
-
-                            @if($individualUploadFile)
-                                <button wire:click="uploadIndividualFile" wire:loading.attr="disabled"
-                                    class="w-full mt-2 px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-                                    style="background-color: rgba(16,185,129,0.9); color: white;">
-                                    <span wire:loading.remove wire:target="uploadIndividualFile">Subir Archivo</span>
-                                    <span wire:loading wire:target="uploadIndividualFile">Subiendo...</span>
-                                </button>
-                            @endif
+                            </div>
                         </div>
-                    @endif
-
-                    {{-- Observaciones --}}
-                    <div class="p-3 rounded-lg border flex flex-col"
-                        style="background-color: var(--color-card-bg); border-color: var(--color-border-hover);">
-
-                        <p class="text-xs font-semibold mb-1 flex items-center gap-1.5"
-                            style="color: var(--color-primary-2);">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                            </svg>
-                            Observaciones
-                        </p>
-                        <p class="text-xs mb-2" style="color: var(--color-secondary);">Visible para el estudiante.</p>
-
-                        <textarea wire:model.defer="quickReviewComments"
-                            placeholder="Escribe aquí..."
-                            rows="4"
-                            class="w-full px-3 py-2 rounded-lg border text-xs resize-none transition-all focus:outline-none focus:ring-1"
-                            style="background-color: var(--color-icon-bg);
-                                   border-color: var(--color-border-hover);
-                                   color: var(--color-primary-2);
-                                   --tw-ring-color: var(--color-indicator);">
-                        </textarea>
-
-                        @error('quickReviewComments')
-                            <p class="mt-1.5 text-xs flex items-center gap-1.5" style="color: #ee6e6c;">
-                                <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                                {{ $message }}
+                    @else
+                        <div class="flex-1 flex items-center justify-center p-6 text-center">
+                            <p class="text-xs" style="color: var(--color-secondary);">
+                                Selecciona un documento de la lista para revisarlo.
                             </p>
-                        @enderror
-
-                        <button wire:click="saveComments"
-                            class="mt-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md self-end"
-                            style="color: var(--color-secondary); background-color: transparent;"
-                            onmouseover="if(!this.disabled) { this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'; }"
-                            onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent';">
-                            Guardar
-                        </button>
-                    </div>
-
-                    {{-- Fecha límite personalizada --}}
-                    @if($quickReviewDoc->file->upload_mode !== 'admin_only')
-                        @php
-                            $periodStart = optional($quickReviewDoc->file->period)->start_date;
-                            $periodEnd   = optional($quickReviewDoc->file->period)->end_date;
-                        @endphp
-                        <div class="p-3 rounded-lg border"
-                            style="background-color: var(--color-card-bg); border-color: var(--color-border-hover);">
-
-                            <p class="text-xs font-semibold mb-2 flex items-center gap-1.5"
-                                style="color: var(--color-primary-2);">
-                                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                Fecha Límite Personalizada
-                            </p>
-
-                            <input
-                                type="date"
-                                wire:model.defer="editingDates.{{ $quickReviewDoc->id }}"
-                                min="{{ $periodStart ? \Carbon\Carbon::parse($periodStart)->format('Y-m-d') : '' }}"
-                                max="{{ $periodEnd ? \Carbon\Carbon::parse($periodEnd)->format('Y-m-d') : '' }}"
-                                class="w-full px-3 py-2 rounded-lg border text-xs transition-all focus:outline-none focus:ring-1 mb-2"
-                                style="background-color: var(--color-icon-bg);
-                                       border-color: var(--color-border-hover);
-                                       color: var(--color-primary-2);
-                                       --tw-ring-color: var(--color-indicator);">
-
-                            <button wire:click="updateDocumentDate({{ $quickReviewDoc->id }})"
-                                class="mt-2 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md self-end"
-                                style="color: var(--color-secondary); background-color: transparent;"
-                                onmouseover="if(!this.disabled) { this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'; }"
-                                onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent';">
-                                Actualizar
-                            </button>
                         </div>
                     @endif
-
-                    {{-- Botones aprobar / rechazar --}}
-                    @if($quickReviewDoc->file->upload_mode !== 'admin_only' && $quickReviewDoc->student_file_path)
-                        <div class="grid grid-cols-2 gap-2 flex-shrink-0">
-                            <button wire:click="quickApproveDocument"
-                                class="px-3 py-2 text-xs font-semibold rounded-lg border border-transparent shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-1.5"
-                                style="background-color: rgba(16,185,129,0.9); color: white;"
-                                onmouseover="this.style.opacity='0.85'"
-                                onmouseout="this.style.opacity='1'">
-                                Aprobar
-                            </button>
-                            <button wire:click="quickRejectDocument"
-                                class="px-3 py-2 text-xs font-semibold rounded-lg border border-transparent shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-1.5"
-                                style="background-color: rgba(239,68,68,0.9); color: white;"
-                                onmouseover="this.style.opacity='0.85'"
-                                onmouseout="this.style.opacity='1'">
-                                Rechazar
-                            </button>
-                        </div>
-                    @endif
-
                 </div>
 
-                {{-- ── Footer col derecha: Navegación + Cerrar ── --}}
-                <div class="flex-shrink-0 px-3 sm:px-4 py-3"
-                    style="border-top: 1px solid var(--color-border-hover);">
-
-                    @if($nextPendingDoc || $previousPendingDoc)
-                        <div class="flex gap-2 mb-2">
-                            <button wire:click="navigateToPreviousDoc"
-                                @disabled(!$previousPendingDoc)
-                                class="flex-1 px-3 py-1.5 text-xs rounded-lg transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 text-center"
-                                style="color: var(--color-secondary); background-color: transparent;"
-                                onmouseover="if(!this.disabled) { this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'; }"
-                                onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent';">
-                                ← Anterior
-                            </button>
-                            <button wire:click="navigateToNextDoc"
-                                @disabled(!$nextPendingDoc)
-                                class="flex-1 px-3 py-1.5 text-xs rounded-lg transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 text-center"
-                                style="color: var(--color-secondary); background-color: transparent;"
-                                onmouseover="if(!this.disabled) { this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'; }"
-                                onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent';">
-                                Siguiente →
-                            </button>
-                        </div>
-                    @endif
-
-                    <button wire:click="closeQuickReview"
-                        class="w-full px-4 py-2 text-xs font-medium rounded-lg transition-all duration-200 hover:-translate-y-0.5 text-center"
-                        style="color: var(--color-secondary); background-color: transparent;"
-                        onmouseover="this.style.color='var(--color-primary-2)'; this.style.backgroundColor='var(--color-border-hover)'"
-                        onmouseout="this.style.color='var(--color-secondary)'; this.style.backgroundColor='transparent'">
-                        Cerrar
-                    </button>
-
-                </div>
             </div>
-        </div>
-
+        @endif
     </div>
-    @endif
 </flux:modal>

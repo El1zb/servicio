@@ -10,12 +10,14 @@ trait ManagesSemesters
     // ─── Propiedades ────────────────────────────────────────────────────────────
 
     public string $search            = '';
+    public string $statusFilter      = 'all';
     public ?int   $semesterId        = null;
     public string $name              = '';
     public bool   $is_active         = true;
     public bool   $isOpen            = false;
     public bool   $isDeleteModalOpen = false;
     public ?int   $semesterToDelete  = null;
+    public int    $formInstance      = 0;
 
     // ─── Watcher de paginación ───────────────────────────────────────────────────
 
@@ -24,11 +26,25 @@ trait ManagesSemesters
         $this->resetPage();
     }
 
+    public function setStatusFilter(string $value): void
+    {
+        $this->statusFilter = $value;
+        $this->resetPage();
+    }
+
+    // ─── Limpiar errores por campo ───────────────────────────────────────────────
+
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
+    }
+
     // ─── Abrir modal creación ────────────────────────────────────────────────────
 
     public function create(): void
     {
         $this->resetSemesterInput();
+        $this->formInstance++;
         $this->isOpen = true;
     }
 
@@ -39,6 +55,8 @@ trait ManagesSemesters
         $this->semesterId = $semester->id;
         $this->name       = $semester->name;
         $this->is_active  = (bool) $semester->is_active;
+        $this->resetValidation();
+        $this->formInstance++;
         $this->isOpen     = true;
     }
 
@@ -79,6 +97,7 @@ trait ManagesSemesters
 
     public function confirmDelete(int $id): void
     {
+        $this->isOpen            = false;
         $this->semesterToDelete  = $id;
         $this->isDeleteModalOpen = true;
     }
@@ -89,9 +108,15 @@ trait ManagesSemesters
     {
         if (! $this->semesterToDelete) return;
 
-        $semester = Semester::find($this->semesterToDelete);
+        $semester = Semester::withCount('students')->find($this->semesterToDelete);
 
         if (! $semester) return;
+
+        if ($semester->students_count > 0) {
+            $this->dispatch('notify', type: 'warning', message: 'No puedes eliminar un semestre con estudiantes registrados. Desactívalo en su lugar.');
+            $this->isDeleteModalOpen = false;
+            return;
+        }
 
         $semester->delete();
 
@@ -99,17 +124,6 @@ trait ManagesSemesters
 
         $this->semesterToDelete  = null;
         $this->isDeleteModalOpen = false;
-    }
-
-    // ─── Activar / desactivar ────────────────────────────────────────────────────
-
-    public function toggleActive(int $id): void
-    {
-        $semester            = Semester::findOrFail($id);
-        $semester->is_active = ! $semester->is_active;
-        $semester->save();
-
-        session()->flash('message', 'Visibilidad actualizada correctamente.');
     }
 
     // ─── Cerrar modal ────────────────────────────────────────────────────────────

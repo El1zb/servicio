@@ -8,7 +8,7 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navbar.item icon="layout-grid" :href="route('periods')" :current="request()->routeIs('periods')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
             </flux:navbar>
@@ -90,7 +90,7 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')">
-                    <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:navlist.item icon="layout-grid" :href="route('periods')" :current="request()->routeIs('periods')" wire:navigate>
                       {{ __('Dashboard') }}
                     </flux:navlist.item>
                 </flux:navlist.group>

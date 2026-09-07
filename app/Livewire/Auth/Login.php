@@ -12,7 +12,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-#[Layout('components.layouts.auth')]
+#[Layout('components.layouts.auth.portal', ['authCta' => 'Iniciar sesión'])]
 class Login extends Component
 {
     #[Validate('required|string|email')]
@@ -55,7 +55,7 @@ class Login extends Component
 
         // 🔹 Usuario normal / estudiante
         $this->redirectIntended(
-            default: route('students.profile', absolute: false),
+            default: route('student-documents.index', absolute: false),
             navigate: true
         );
 

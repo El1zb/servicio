@@ -1,41 +1,26 @@
-{{-- Header --}}
-<div class="w-full mb-8 rounded-xl shadow-sm p-6"
-    style="background-color: var(--color-card-bg);">
-
-    <a wire:navigate href="{{ route('dashboard') }}"
-        class="flex items-center gap-2 mb-6 transition-all duration-200 group"
-        style="color: var(--color-secondary);">
-        <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform"
-            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-        <span class="font-medium" style="color: var(--color-primary-2);">Volver a periodos</span>
+{{-- Header: el nombre del periodo ya se muestra en el título compartido del
+     topbar (pasado como :title al layout); aquí solo va el link de regreso
+     y el meta del periodo (fechas + estado). --}}
+<div class="flex flex-wrap items-center justify-between gap-4">
+    <a wire:navigate href="{{ route('periods') }}"
+       class="inline-flex items-center gap-1.5 text-sm transition-colors duration-150"
+       style="color: var(--color-secondary);"
+       onmouseover="this.style.color='var(--color-primary-2)'"
+       onmouseout="this.style.color='var(--color-secondary)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+        Volver a periodos
     </a>
 
-    <div class="flex items-start justify-between w-full">
-        <div class="flex-1">
-            <x-auth-header
-                title="{{ $period->name }}"
-                description="{{ \Carbon\Carbon::parse($period->start_date)->translatedFormat('d M') }} - {{ \Carbon\Carbon::parse($period->end_date)->translatedFormat('d M Y') }}"
-                :center="false"
-            />
-        </div>
+    <div class="flex items-center gap-3">
+        <span class="text-sm" style="color: var(--color-secondary);">
+            {{ \Carbon\Carbon::parse($period->start_date)->translatedFormat('d M') }}
+            –
+            {{ \Carbon\Carbon::parse($period->end_date)->translatedFormat('d M Y') }}
+        </span>
 
-        @if($period->is_active)
-            <div class="px-5 py-2.5 rounded-full border"
-                style="border-color: rgba(16, 185, 129, 0.3);
-                       background-color: rgba(16, 185, 129, 0.1);">
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full"
-                            style="background-color: rgb(52, 211, 153); opacity: 0.75;"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2"
-                            style="background-color: rgb(52, 211, 153);"></span>
-                    </span>
-                    <span class="font-semibold text-sm"
-                        style="color: rgb(52, 211, 153);">Activo</span>
-                </div>
-            </div>
-        @endif
+        <span class="period-card-status {{ $period->is_active ? 'is-active' : '' }}">
+            <span class="period-card-status-dot"></span>
+            {{ $period->is_active ? 'Activo' : 'Inactivo' }}
+        </span>
     </div>
 </div>

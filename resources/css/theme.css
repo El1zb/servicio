@@ -5,51 +5,70 @@
     color-scheme: light dark;
 }
 
-/* Claro */
+/* Claro — paleta inspirada en el diseño de referencia (fondo lavanda,
+   panel blanco, acento azul). Todo el tema claro vive aquí; para ajustar
+   el look completo de la app en modo claro, se cambia solo en este bloque. */
 :root:not(.dark) {
     --toast-notification-bg:             #FFFFFF;
     --toast-notification-success:        #059669;
     --toast-notification-error:          #DC2626;
     --toast-notification-info:           #2563EB;
     --toast-notification-warning:        #D97706;
-    --toast-notification-text-primary:   #0A1628;
-    --toast-notification-text-secondary: #64748B;
+    --toast-notification-text-primary:   #0B0E14;
+    --toast-notification-text-secondary: #6B7280;
 
-    --color-bg:    #F5F6FA;
-    --color-hover: #ECEEF5;
+    --color-bg:    #F6F6F6;
+    --color-hover: #E5E8F2;
+    --page-bg:     #E7E8F5;
 
-    --color-card-bg:       #FDFEFF;
-    --color-card-bg-hover: #F5F6FA;
-    --color-card-hover:    #F5F6FA;
+    --color-card-bg:       #FFFFFF;
+    --color-card-bg-hover: #F7F8FC;
+    --color-card-hover:    #F7F8FC;
+    
+    --color-contenedor-view:       #F6F6F6;
+    /* Un pelo más oscuro que --color-card-bg: para las cards con las que
+       se interactúa (period-card), así se distinguen de las de estadística
+       (stat-card), que se quedan en blanco puro. */
+    --color-card-bg-utility: #FCFCFC;
+    /* Fondo del panel de los modales (flux:modal) — sin cambio pedido en
+       claro, igual a --color-card-bg. */
+    --color-modal-bg: #FFFFFF;
 
-    --color-border:       #E0E3EE;
-    --color-border-hover: #D2D6E8;
+    --color-border:       #ECEDF5;
+    --color-border-hover: #DFE1EE;
 
-    --color-primary:   #213561;
-    --color-primary-2: #0A1628;
-    --color-secondary: #475569;
-    --color-text:      #475569;
+    --color-primary:   #0B0E14;
+    --color-primary-2: #0B0E14;
+    --color-secondary: #6B7280;
+    --color-text:      #6B7280;
 
-    --color-icon:          #475569;
-    --color-icon-hover:    #0A1628;
-    --color-icon-bg:       #F5F6FA;
-    --color-icon-bg-hover: #ECEEF5;
-    --color-bg-icon:       rgba(33, 53, 97, 0.1);
+    --color-icon:          #6B7280;
+    --color-icon-hover:    #0B0E14;
+    --color-icon-bg:       #F3F4FB;
+    --color-icon-bg-hover: #EAECF7;
+    --color-bg-icon:       rgba(11, 14, 20, 0.08);
 
-    --color-nav:          #475569;
-    --color-nav-activate: #0A1628;
-    --color-indicator:    #D2D6E8;
+    --color-nav:          #6B7280;
+    --color-nav-activate: #0B0E14;
+    --color-indicator:    #DFE1EE;
 
     --font-weight-medium: 500;
 
-    --sidebar-color-bg:           #213561;
-    --sidebar-color-hover:        #1a2c52;
-    --sidebar-color-border:       #162449;
-    --sidebar-color-primary:      #FFFFFF;
-    --sidebar-color-secondary:    #a8b8d8;
-    --sidebar-color-nav:          #a8b8d8;
-    --sidebar-color-nav-activate: #FFFFFF;
-    --sidebar-color-bg-icon:      #162449;
+    /* Sidebar claro: gris (igual que el topbar), sin acento de color — el
+       item activo/hover se distingue con fondo BLANCO (invertido respecto
+       al contenido) y texto/ícono negro (en dark mode el sidebar sigue
+       siendo oscuro, ver abajo). */
+    --sidebar-color-bg:           #FFFFFF;
+    --sidebar-color-hover:        #F6F6F6;
+    --sidebar-color-border:       #ECEDF5;
+    --sidebar-color-primary:      #0B0E14;
+    --sidebar-color-secondary:    #6B7280;
+    --sidebar-color-nav:          #6B7280;
+    --sidebar-color-nav-activate: #0B0E14;
+    --sidebar-color-bg-icon:      #F6F6F6;
+
+    --sidebar-color-active-bg:   #0B0E14;
+    --sidebar-color-active-text: #FFFFFF;
 }
 
 /* Oscuro */
@@ -62,19 +81,23 @@
     --toast-notification-text-primary:   #e6edf3;
     --toast-notification-text-secondary: #a5afbd;
 
-    --color-bg:    #07080A;
-    --color-hover: #0C0D0F;
+    --color-bg:    #141414;
+    --color-hover: #1E1E1E;
+    --page-bg:     #000000;
 
-    --color-card-bg:       #0C0D0F;
-    --color-card-bg-hover: #18191B;
-    --color-card-hover:    #121417;
+    --color-card-bg:       #1C1C1C;
+    --color-contenedor-view:       #1C1C1C;
+    --color-card-bg-hover: #242424;
+    --color-card-hover:    #222222;
+    --color-card-bg-utility: #181818;
+    --color-modal-bg: #141414;
 
-    --color-border:       #060606;
-    --color-border-hover: #191b1e;
+    --color-border:       #2A2A2A;
+    --color-border-hover: #3A3A3A;
 
     --color-primary:   #FAFDF8;
     --color-primary-2: #dadada;
-    --color-secondary: #696868;
+    --color-secondary: #8A8A8A;
     --color-text:      #A5ABA7;
 
     --color-icon:          #767779;
@@ -83,20 +106,39 @@
     --color-icon-bg-hover: #202224;
     --color-bg-icon:       #1F2022;
 
-    --color-nav:          #595B55;
+    --color-nav:          #7C7E78;
     --color-nav-activate: #E5E8EA;
     --color-indicator:    #3f3f3f;
 
     --font-weight-medium: 500;
 
-    --sidebar-color-bg:           #07080A;
-    --sidebar-color-hover:        #0C0D0F;
+    --sidebar-color-bg:           #0D0D0D;
+    --sidebar-color-hover:        #151515;
     --sidebar-color-border:       #060606;
     --sidebar-color-primary:      #FAFDF8;
-    --sidebar-color-secondary:    #696868;
-    --sidebar-color-nav:          #595B55;
+    --sidebar-color-secondary:    #8A8A8A;
+    --sidebar-color-nav:          #7C7E78;
     --sidebar-color-nav-activate: #E5E8EA;
     --sidebar-color-bg-icon:      #1F2022;
+
+    --sidebar-color-active-bg:   #1D1D1D;
+    --sidebar-color-active-text: #FAFDF8;
+}
+
+body {
+    background-color: var(--page-bg);
+}
+
+/* Portal de acceso (login/registro): siempre debe verse en modo claro,
+   sin importar la apariencia (clara/oscura) elegida por el usuario. */
+.auth-portal {
+    --color-bg:           #F6F6F6;
+    --color-card-bg:      #FFFFFF;
+    --color-border:       #ECEDF5;
+    --color-border-hover: #DFE1EE;
+    --color-primary:      #0B0E14;
+    --color-primary-2:    #0B0E14;
+    --color-secondary:    #6B7280;
 }
 
 /* Oculta contenido durante navegación SPA para eliminar el flash */

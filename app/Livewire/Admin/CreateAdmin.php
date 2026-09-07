@@ -2,12 +2,14 @@
 
 namespace App\Livewire\Admin;
 
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+#[Layout('components.layouts.app', ['title' => 'Administradores'])]
 class CreateAdmin extends Component
 {
     use WithPagination;
@@ -40,6 +42,11 @@ class CreateAdmin extends Component
     public function updatingSearch()
     {
         $this->resetPage(); // Reinicia la página cuando se filtra
+    }
+
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
     }
 
     public function render()
@@ -95,7 +102,14 @@ class CreateAdmin extends Component
             $rules['password'] = ['required', 'string', 'confirmed', Rules\Password::defaults()];
         }
 
-        $validated = $this->validate($rules);
+        $validated = $this->validate($rules, [
+            'name.required'     => 'El nombre completo es obligatorio.',
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'Ingresa un correo electrónico válido.',
+            'email.unique'      => 'Ya existe un administrador con este correo.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
 
         if ($this->editingId) {
             $user = User::findOrFail($this->editingId);
@@ -111,6 +125,7 @@ class CreateAdmin extends Component
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
+                'created_by' => auth()->id(),
             ]);
             $user->assignRole('admin');
             $this->dispatch('notify', type: 'success', message: "Administrador creado correctamente");
@@ -123,6 +138,7 @@ class CreateAdmin extends Component
     // Confirmar eliminación
     public function confirmDelete($id)
     {
+        $this->isModalOpen = false;
         $this->adminToDelete = User::findOrFail($id);
         $this->isDeleteModalOpen = true;
     }

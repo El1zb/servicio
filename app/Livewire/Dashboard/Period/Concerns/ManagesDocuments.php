@@ -38,7 +38,15 @@ trait ManagesDocuments
     public ?int    $deleteDocumentId              = null;
     public bool    $isDeleteDocumentModalOpen     = false;
 
+    public bool    $isDocumentModalOpen           = false;
+    public int     $documentFormInstance          = 0;
+
     // ========================= Watchers =========================
+
+    public function updated($propertyName): void
+    {
+        $this->resetValidation($propertyName);
+    }
 
     public function updatedSearchDocuments(): void
     {
@@ -84,6 +92,21 @@ trait ManagesDocuments
             ->paginate(10, ['*'], 'filesPage');
     }
 
+    // ========================= Modal =========================
+
+    public function openCreateDocumentModal(): void
+    {
+        $this->cancelEditDocument();
+        $this->resetValidation();
+        $this->documentFormInstance++;
+        $this->isDocumentModalOpen = true;
+    }
+
+    public function closeDocumentModal(): void
+    {
+        $this->cancelEditDocument();
+    }
+
     // ========================= CRUD =========================
 
     public function createDocument(): void
@@ -93,8 +116,8 @@ trait ManagesDocuments
 
         $isIndividualAdmin = $this->documentUploadMode === 'admin_only' && $this->isIndividual;
 
-        $filePath    = (! $isIndividualAdmin && $this->documentFile)    ? $this->documentFile->store('files', 'public')            : null;
-        $examplePath = (! $isIndividualAdmin && $this->documentExample) ? $this->documentExample->store('files/examples', 'public') : null;
+        $filePath    = (! $isIndividualAdmin && $this->documentFile)    ? $this->documentFile->store('files', 'local')            : null;
+        $examplePath = (! $isIndividualAdmin && $this->documentExample) ? $this->documentExample->store('files/examples', 'local') : null;
 
         File::create([
             'period_id'          => $this->periodId,
@@ -113,6 +136,7 @@ trait ManagesDocuments
 
         $this->dispatch('notify', type: 'success', message: 'Documento creado correctamente');
         $this->resetDocumentFields();
+        $this->isDocumentModalOpen = false;
         $this->loadPeriod();
     }
 
@@ -122,7 +146,7 @@ trait ManagesDocuments
 
         $this->documentId           = $file->id;
         $this->documentName         = $file->name;
-        $this->documentDeadline     = $file->limit_date;
+        $this->documentDeadline     = $file->limit_date ? \Carbon\Carbon::parse($file->limit_date)->format('Y-m-d') : null;
         $this->maxSize              = $file->max_size;
         $this->documentFirman       = $file->firman;
         $this->documentObservations = $file->observations;
@@ -133,6 +157,9 @@ trait ManagesDocuments
         $this->removeDocumentFile   = false;
         $this->removeExampleFile    = false;
         $this->editingDocumentId    = $id;
+        $this->resetValidation();
+        $this->documentFormInstance++;
+        $this->isDocumentModalOpen  = true;
     }
 
     public function saveDocument(): void
@@ -149,6 +176,7 @@ trait ManagesDocuments
 
         // Detectar cambio de upload_mode → pedir confirmación
         if ($file->upload_mode !== $this->documentUploadMode) {
+            $this->isDocumentModalOpen         = false;
             $this->isUploadModeChangeModalOpen = true;
             $this->pendingUploadModeChangeFile = $file;
             return;
@@ -168,8 +196,16 @@ trait ManagesDocuments
             'documentFirman', 'documentObservations',
             'documentUploadMode', 'isIndividual',
             'removeDocumentFile', 'removeExampleFile', 'editingDocumentId',
+            'isDocumentModalOpen',
         ]);
         $this->documentUploadMode = 'bidirectional';
+    }
+
+    public function cancelUploadModeChange(): void
+    {
+        $this->isUploadModeChangeModalOpen = false;
+        $this->pendingUploadModeChangeFile = null;
+        $this->isDocumentModalOpen         = true;
     }
 
     public function confirmUploadModeChange(): void
@@ -198,11 +234,11 @@ trait ManagesDocuments
         // Subir nuevos si corresponde
         if (! ($this->documentUploadMode === 'admin_only' && $this->isIndividual)) {
             if ($this->documentFile) {
-                $file->file_path = $this->documentFile->store('files', 'public');
+                $file->file_path = $this->documentFile->store('files', 'local');
                 $file->name_file = $this->documentFile->getClientOriginalName();
             }
             if ($this->documentExample) {
-                $file->example_path      = $this->documentExample->store('files/examples', 'public');
+                $file->example_path      = $this->documentExample->store('files/examples', 'local');
                 $file->example_name_file = $this->documentExample->getClientOriginalName();
             }
         }
@@ -226,6 +262,7 @@ trait ManagesDocuments
 
     public function deleteDocument(int $id): void
     {
+        $this->isDocumentModalOpen       = false;
         $this->deleteDocumentId          = $id;
         $this->isDeleteDocumentModalOpen = true;
     }
@@ -233,12 +270,13 @@ trait ManagesDocuments
     public function confirmDeleteDocument(): void
     {
         if ($this->deleteDocumentId) {
+            // Solo baja lógica: los archivos físicos y el registro se conservan
+            // en la papelera (Configuración > Papelera) hasta que se restaure
+            // o se elimine permanentemente (o pasen 30 días).
             $file = File::findOrFail($this->deleteDocumentId);
-            $this->deleteFileFromStorage($file->file_path);
-            $this->deleteFileFromStorage($file->example_path);
             $file->delete();
             $this->loadPeriod();
-            $this->dispatch('notify', type: 'error', message: 'Documento eliminado correctamente');
+            $this->dispatch('notify', type: 'error', message: 'Documento movido a la papelera');
         }
 
         $this->isDeleteDocumentModalOpen = false;
@@ -251,6 +289,12 @@ trait ManagesDocuments
     {
         $this->previewPath = $path;
         $this->previewName = $name;
+    }
+
+    public function closePreview(): void
+    {
+        $this->previewPath = null;
+        $this->previewName = null;
     }
 
     // ========================= Manejo de archivos existentes =========================
@@ -289,12 +333,12 @@ trait ManagesDocuments
             }
             if ($this->documentFile) {
                 $this->deleteFileFromStorage($file->file_path);
-                $file->file_path = $this->documentFile->store('files', 'public');
+                $file->file_path = $this->documentFile->store('files', 'local');
                 $file->name_file = $this->documentFile->getClientOriginalName();
             }
             if ($this->documentExample) {
                 $this->deleteFileFromStorage($file->example_path);
-                $file->example_path      = $this->documentExample->store('files/examples', 'public');
+                $file->example_path      = $this->documentExample->store('files/examples', 'local');
                 $file->example_name_file = $this->documentExample->getClientOriginalName();
             }
         }
@@ -305,7 +349,7 @@ trait ManagesDocuments
     private function deleteFileFromStorage(?string $path): void
     {
         if ($path) {
-            Storage::disk('public')->delete($path);
+            Storage::disk('local')->delete($path);
         }
     }
 

@@ -10,7 +10,7 @@ use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('components.layouts.auth')]
+#[Layout('components.layouts.auth.portal', ['authCta' => 'Crear cuenta'])]
 class Register extends Component
 {
     public string $name = '';
@@ -39,7 +39,7 @@ class Register extends Component
         Auth::login($user);
 
         //$this->redirect(route('dashboard', absolute: false), navigate: true);
-        $this->redirect(route('students.profile', absolute: false), navigate: true);
+        $this->redirect(route('student-documents.index', absolute: false), navigate: true);
 
     }
 }

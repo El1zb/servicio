@@ -13,7 +13,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: sans-serif;
     
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -65,15 +65,17 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
-/* Radio segmented - botón activo en modo claro */
+/* Radio segmented - botón activo en modo claro: fondo blanco, ícono oscuro
+   (sin negro fuerte, para no llamar la atención de más en un control que
+   se usa poco). */
 :root:not(.dark) [data-flux-radio-segmented][data-checked] {
-    background-color: #f0f0f0 !important;
-    color: #000 !important;
+    background-color: #FFFFFF !important;
+    color: #0B0E14 !important;
 }
 
 /* Icono dentro del botón activo en modo claro */
 :root:not(.dark) [data-flux-radio-segmented][data-checked] [data-flux-icon] {
-    color: #000 !important;
+    color: #0B0E14 !important;
 }
 
 /* \[:where(&)\]:size-4 {

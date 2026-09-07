@@ -19,12 +19,16 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
     protected $careerId;
     protected $periodId;
     protected $search;
+    protected $statusFilter;
+    protected $individualFileIds;
 
-    public function __construct($careerId = null, $periodId = null, $search = null)
+    public function __construct($careerId = null, $periodId = null, $search = null, $statusFilter = null, $individualFileIds = null)
     {
-        $this->careerId = $careerId;
-        $this->periodId = $periodId;
-        $this->search = $search;
+        $this->careerId          = $careerId;
+        $this->periodId          = $periodId;
+        $this->search            = $search;
+        $this->statusFilter      = $statusFilter;
+        $this->individualFileIds = $individualFileIds ?? collect();
     }
 
     public function collection()
@@ -42,6 +46,31 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
                   ->orWhere('last_name_materno', 'like', '%'.$this->search.'%')
                   ->orWhere('control_number', 'like', '%'.$this->search.'%');
             });
+        }
+
+        // Mismo filtro de estatus que la vista de Revisión de Documentos
+        // (ManagesRevision::applyRevisionStatusFilter) — mantener sincronizados.
+        if ($this->statusFilter === 'pending') {
+            $query->whereHas('documents', function ($q) {
+                $q->whereNotNull('student_file_path')
+                  ->where(fn ($q2) => $q2->where('status', 'en_revision')->orWhereNull('status'));
+            });
+        } elseif ($this->statusFilter === 'approved') {
+            $query->whereHas('documents', fn ($q) => $q->where('status', 'revisado'));
+        } elseif ($this->statusFilter === 'rejected') {
+            $query->whereHas('documents', fn ($q) => $q->where('status', 'rechazado'));
+        } elseif ($this->statusFilter === 'missing_individual') {
+            if ($this->individualFileIds->isNotEmpty()) {
+                $placeholders = implode(',', array_fill(0, $this->individualFileIds->count(), '?'));
+                $query->whereRaw(
+                    "(select count(*) from file_student_uploads
+                        where file_student_uploads.student_id = students.id
+                        and file_student_uploads.file_id in ($placeholders)) < ?",
+                    [...$this->individualFileIds->all(), $this->individualFileIds->count()]
+                );
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         $students = $query->get();

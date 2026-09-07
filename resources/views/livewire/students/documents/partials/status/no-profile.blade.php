@@ -1,25 +1,23 @@
-{{-- Sin perfil de estudiante --}}
 <div class="flex items-center justify-center min-h-[80vh] px-4">
-    <div class="max-w-md w-full">
-        <div class="bg-[var(--color-card-bg)] rounded-2xl p-8 text-center">
-            <div class="relative w-20 h-20 bg-[var(--color-icon-bg)] rounded-full flex items-center justify-center mx-auto mb-6
-                        before:content-[''] before:absolute before:inset-0 before:rounded-full before:bg-[var(--color-icon-bg)]
-                        before:animate-ping before:opacity-20">
-                <i class="fas fa-user-slash text-4xl text-[var(--color-secondary)] relative z-10"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-[var(--color-primary-2)] mb-3">Sin Perfil de Estudiante</h2>
-            <p class="text-[var(--color-secondary)] mb-8 leading-relaxed max-w-sm mx-auto">
-                Para acceder a los documentos académicos, necesitas tener un perfil de estudiante activo en el sistema.
-            </p>
-            <a href="{{ route('students.profile') }}"
-               class="group inline-flex items-center justify-center px-4 py-2 rounded-lg gap-2
-                      bg-[var(--color-icon-bg)] text-[var(--color-primary-2)]
-                      border border-[var(--color-border-hover)]
-                      hover:bg-[var(--color-icon-bg-hover)] hover:text-[var(--color-icon-hover)] hover:-translate-y-0.5
-                      transition-all duration-300">
-                <span>Completar perfil</span>
-                <i class="fas fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-            </a>
-        </div>
+    <div class="max-w-sm w-full text-center">
+
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" class="mx-auto mb-6" style="color: var(--color-primary-2);">
+            <path d="M22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.99998 3H8.99998C7.04998 8.84 7.04998 15.16 8.99998 21H7.99998" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 3C15.97 5.92 16.46 8.96 16.46 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 16V15C5.92 15.97 8.96 16.46 12 16.46" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 9.0001C8.84 7.0501 15.16 7.0501 21 9.0001" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.2 21.4C19.9673 21.4 21.4 19.9673 21.4 18.2C21.4 16.4327 19.9673 15 18.2 15C16.4327 15 15 16.4327 15 18.2C15 19.9673 16.4327 21.4 18.2 21.4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 22L21 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <h2 class="text-2xl font-bold mb-3" style="color: var(--color-primary-2);">Sin Perfil de Estudiante</h2>
+        <p class="text-sm leading-relaxed mb-8" style="color: var(--color-secondary);">
+            Para acceder a los documentos académicos, necesitas tener un perfil de estudiante activo en el sistema.
+        </p>
+
+        <button type="button" wire:click="openProfileModal" class="btn-primary">
+            Completar perfil
+        </button>
     </div>
 </div>
