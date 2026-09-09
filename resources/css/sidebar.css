@@ -1497,6 +1497,10 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 
     .sidebar-toggle-btn { display: none; }
 
+    body {
+        background-color: var(--color-bg);
+    }
+
     .app-shell {
         display: block;
         height: auto;

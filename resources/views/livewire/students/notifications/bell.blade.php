@@ -45,8 +45,9 @@
 
             <div class="notif-panel-list">
                 @forelse($notifications as $n)
-                    <a href="{{ $n->data['url'] ?? route('student-documents.index') }}"
-                       wire:click="markAsRead('{{ $n->id }}')"
+                    {{-- Solo informativa: al hacer click únicamente se marca como
+                         leída (apaga el punto), sin navegar a ningún lado. --}}
+                    <div wire:click="markAsRead('{{ $n->id }}')"
                        class="notif-item {{ $n->read_at ? '' : 'is-unread' }}">
                         <div class="notif-item-title-row">
                             <span class="notif-item-title">{{ $n->data['title'] ?? '' }}</span>
@@ -56,7 +57,7 @@
                         @unless($n->read_at)
                             <span class="notif-item-dot"></span>
                         @endunless
-                    </a>
+                    </div>
                 @empty
                     <div class="notif-empty">Sin notificaciones por ahora.</div>
                 @endforelse

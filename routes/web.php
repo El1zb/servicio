@@ -33,7 +33,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('push/subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
     Route::delete('push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
+});
 
+Route::middleware(['auth', 'no-back-cache'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
@@ -58,7 +60,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // 🔹 SECCIÓN ESTUDIANTES
-    Route::get('students/documents', StudentDocumentsIndex::class)->name('student-documents.index');
+    Route::get('students/documents', StudentDocumentsIndex::class)
+        ->middleware('role:student')
+        ->name('student-documents.index');
 });
 
 require __DIR__.'/auth.php';

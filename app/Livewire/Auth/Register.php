@@ -36,10 +36,10 @@ class Register extends Component
 
         event(new Registered(($user = User::create($validated))));
 
+        $user->assignRole('student');
+
         Auth::login($user);
 
-        //$this->redirect(route('dashboard', absolute: false), navigate: true);
-        $this->redirect(route('student-documents.index', absolute: false), navigate: true);
-
+        $this->redirect(route('student-documents.index', absolute: false));
     }
 }

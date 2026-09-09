@@ -143,12 +143,17 @@ trait ManagesUploads
     // cuenta" en configuración) ──────────────────────────────────────────────
     // isCancelModalOpen separado de cancelDocId por el mismo motivo que
     // isUploadModalOpen/uploadDocId arriba.
+    //
+    // Se puede cancelar tanto una entrega rechazada como una en revisión
+    // (para corregir/reemplazar el archivo antes de que el admin la revise) —
+    // aprobada no se toca.
+    private const CANCELABLE_STATUSES = ['rechazado', 'en_revision'];
 
     public function openCancelModal(int $docId): void
     {
         $document = Document::find($docId);
 
-        if (! $document || ! $document->canUploadFile() || $document->status !== 'rechazado') return;
+        if (! $document || ! $document->canUploadFile() || ! in_array($document->status, self::CANCELABLE_STATUSES, true)) return;
 
         $this->cancelDocId       = $docId;
         $this->isCancelModalOpen = true;
@@ -178,9 +183,9 @@ trait ManagesUploads
 
         if (! $document->canUploadFile()) return;
 
-        // Solo se puede cancelar una entrega rechazada — aprobada o en
-        // revisión no se tocan (ver mismo criterio en submission-documents.blade.php).
-        if ($document->status !== 'rechazado') return;
+        // Solo se puede cancelar una entrega rechazada o en revisión —
+        // aprobada no se toca (ver mismo criterio en submission-documents.blade.php).
+        if (! in_array($document->status, self::CANCELABLE_STATUSES, true)) return;
 
         if ($document->student_file_path && Storage::disk('local')->exists($document->student_file_path)) {
             Storage::disk('local')->delete($document->student_file_path);

@@ -17,11 +17,11 @@
             wire:model="isViewerOpen"
             :dismissible="false"
             :closable="false"
-            class="!p-0 !max-w-none !rounded-none !shadow-none w-screen h-screen !m-0 overflow-hidden !outline-none"
-            style="outline: none; max-width: 100vw; max-height: 100vh; margin: 0; inset: 0;">
+            class="!p-0 !max-w-none !rounded-none !shadow-none w-screen h-dvh !m-0 overflow-hidden !outline-none"
+            style="outline: none; max-width: 100vw; max-height: 100dvh; margin: 0; inset: 0;">
 
             <div class="flex flex-col"
-                style="height: 100vh; background-color: var(--color-contenedor-view);"
+                style="height: 100dvh; background-color: var(--color-contenedor-view);"
                 x-data
                 @keydown.window="
                     const el = document.activeElement;
@@ -54,7 +54,7 @@
                     $vCanUpload  = $viewerDoc->canUploadFile();
                     $vLimitDate  = $viewerDoc->effectiveLimitDate();
                     $vIsExpired  = $vLimitDate && now()->gt($vLimitDate->copy()->endOfDay());
-                    $vCanCancel  = $vCanUpload && $vHasFile && $viewerDoc->status === 'rechazado' && ! $vIsExpired;
+                    $vCanCancel  = $vCanUpload && $vHasFile && in_array($viewerDoc->status, ['rechazado', 'en_revision']) && ! $vIsExpired;
                     $vComments   = trim($viewerDoc->comments ?? '');
                     $vDockLabels = ['admin_word' => 'Word', 'admin_pdf' => 'PDF', 'individual' => 'Documento'];
                     $vDockIcons  = ['admin_word' => 'word', 'admin_pdf' => 'pdf', 'individual' => 'documento'];

@@ -110,9 +110,9 @@
                             </button>
                         @endif
 
-                        {{-- Cancelar entrega — solo si fue rechazado (para poder
-                             corregir y reenviar). En revisión o aprobado no se toca. --}}
-                        @if($canUpload && $hasFile && $document->status === 'rechazado' && !$isExpired)
+                        {{-- Cancelar entrega — si fue rechazado o sigue en revisión
+                             (para poder corregir y reenviar). Aprobado no se toca. --}}
+                        @if($canUpload && $hasFile && in_array($document->status, ['rechazado', 'en_revision']) && !$isExpired)
                             <button type="button"
                                     wire:click.stop="openCancelModal({{ $document->id }})"
                                     title="Cancelar entrega"
