@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: servicio-social
-    env: php
-    buildCommand: composer install --no-dev && php artisan migrate --force && php artisan db:seed --force
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    name: servicio-social-preview
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
     envVars:
       - key: APP_NAME
         value: Laravel
@@ -14,7 +14,7 @@ services:
       - key: APP_DEBUG
         value: false
       - key: APP_URL
-        value: https://servicio-social.onrender.com
+        value: https://servicio-social-preview.onrender.com
       - key: APP_LOCALE
         value: es
       - key: APP_FALLBACK_LOCALE
@@ -35,23 +35,23 @@ services:
         value: pgsql
       - key: DB_HOST
         fromDatabase:
-          name: servicio-social-db
+          name: servicio-social-preview-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: servicio-social-db
+          name: servicio-social-preview-db
           property: port
       - key: DB_DATABASE
         fromDatabase:
-          name: servicio-social-db
+          name: servicio-social-preview-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: servicio-social-db
+          name: servicio-social-preview-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: servicio-social-db
+          name: servicio-social-preview-db
           property: password
       - key: SESSION_DRIVER
         value: database
@@ -85,7 +85,7 @@ services:
         sync: false
 
 databases:
-  - name: servicio-social-db
+  - name: servicio-social-preview-db
     databaseName: servicio
     user: servicio_user
     plan: free
