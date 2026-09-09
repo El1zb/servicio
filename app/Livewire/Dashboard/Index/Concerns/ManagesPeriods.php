@@ -20,6 +20,7 @@ trait ManagesPeriods
     public $is_active        = false;
 
     public $periodToDelete   = null;
+    public ?string $periodToDeleteName = null;
     public int $formInstance = 0;
 
     // ─── Watchers de paginación ──────────────────────────────────────────────────
@@ -132,9 +133,10 @@ trait ManagesPeriods
 
     public function confirmDelete(int $id): void
     {
-        $this->isOpen            = false;
-        $this->periodToDelete    = $id;
-        $this->isDeleteModalOpen = true;
+        $this->isOpen             = false;
+        $this->periodToDelete     = $id;
+        $this->periodToDeleteName = Period::find($id)?->name;
+        $this->isDeleteModalOpen  = true;
     }
 
     // ─── Eliminar periodo ────────────────────────────────────────────────────────
@@ -149,8 +151,9 @@ trait ManagesPeriods
 
         if ($period->is_active) {
             $this->dispatch('notify', type: 'error', message: 'No puedes eliminar un periodo activo');
-            $this->periodToDelete    = null;
-            $this->isDeleteModalOpen = false;
+            $this->periodToDelete     = null;
+            $this->periodToDeleteName = null;
+            $this->isDeleteModalOpen  = false;
             return;
         }
 
@@ -161,8 +164,9 @@ trait ManagesPeriods
 
         $this->dispatch('notify', type: 'error', message: 'Periodo movido a la papelera');
 
-        $this->periodToDelete    = null;
-        $this->isDeleteModalOpen = false;
+        $this->periodToDelete     = null;
+        $this->periodToDeleteName = null;
+        $this->isDeleteModalOpen  = false;
     }
 
     // ─── Reset de campos ─────────────────────────────────────────────────────────

@@ -1,7 +1,18 @@
 {{-- Period Cards Grid --}}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+<div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
     @foreach($periods as $period)
-        <a href="{{ route('periods.detail', $period->id) }}" class="period-card group">
+        {{-- Desktop: card completa con acciones (se oculta en mobile, ver
+             .document-card-desktop en sidebar.css). Click normal entra al
+             periodo; mantener presionado (>450ms) lo edita. --}}
+        <a href="{{ route('periods.detail', $period->id) }}" class="period-card document-card-desktop group"
+           x-data="{ pressTimer: null, longPressed: false }"
+           @mousedown="pressTimer = setTimeout(() => { longPressed = true; window.Livewire.first().call('editPeriod', {{ $period->id }}) }, 450)"
+           @mouseup="clearTimeout(pressTimer)"
+           @mouseleave="clearTimeout(pressTimer)"
+           @touchstart="pressTimer = setTimeout(() => { longPressed = true; window.Livewire.first().call('editPeriod', {{ $period->id }}) }, 450)"
+           @touchend="clearTimeout(pressTimer)"
+           @touchmove="clearTimeout(pressTimer)"
+           @click="if (longPressed) { $event.preventDefault(); longPressed = false }">
 
             <div class="period-card-header">
                 <div class="min-w-0">
@@ -56,6 +67,60 @@
                 </button>
             </div>
 
+        </a>
+
+        {{-- Mobile: card compacta, 2 por hilera, sin botones — mismo contenido
+             que la card desktop (título, fechas, stats con iconos), solo que
+             el badge sube a su propia fila arriba, alineado a la derecha.
+             Tap normal entra al periodo; mantener presionado (>450ms) lo edita. --}}
+        <a href="{{ route('periods.detail', $period->id) }}" class="document-mobile-card"
+           x-data="{ pressTimer: null, longPressed: false }"
+           @mousedown="pressTimer = setTimeout(() => { longPressed = true; window.Livewire.first().call('editPeriod', {{ $period->id }}) }, 450)"
+           @mouseup="clearTimeout(pressTimer)"
+           @mouseleave="clearTimeout(pressTimer)"
+           @touchstart="pressTimer = setTimeout(() => { longPressed = true; window.Livewire.first().call('editPeriod', {{ $period->id }}) }, 450)"
+           @touchend="clearTimeout(pressTimer)"
+           @touchmove="clearTimeout(pressTimer)"
+           @click="if (longPressed) { $event.preventDefault(); longPressed = false }">
+            <div class="flex items-start justify-end gap-2">
+                <span class="period-card-status {{ $period->is_active ? 'is-active' : '' }}">
+                    <span class="period-card-status-dot"></span>
+                    {{ $period->is_active ? 'Activo' : 'Inactivo' }}
+                </span>
+            </div>
+
+            <div class="min-w-0">
+                <h3 class="period-card-name">{{ $period->name }}</h3>
+                <p class="period-card-dates">{{ $period->startFormatted }} — {{ $period->endFormatted }}</p>
+            </div>
+
+            @if($period->hasStudents)
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col gap-0.5">
+                        <span class="flex items-center gap-1.5">
+                            <span class="period-card-stat-value">{{ $period->pending_review_documents_count }}</span>
+                            <svg width="14" height="14" viewBox="0 0 52 52" fill="var(--color-icon)" class="flex-shrink-0">
+                                <path d="M44.4,19H33.2c-2.6,0-4.2-1.6-4.2-4.2V3.6C29,2.7,28.3,2,27.4,2H10.8C8.2,2,6,4.2,6,6.8v38.4 c0,2.6,2.2,4.8,4.8,4.8h30.4c2.6,0,4.8-2.2,4.8-4.8V20.6C46,19.7,45.3,19,44.4,19z"/>
+                                <path d="M45.7,12.9L35.1,2.3C34.9,2.1,34.5,2,34.2,2l0,0C33.6,2,33,2.5,33,3.1v8.5c0,1.8,1.6,3.4,3.4,3.4h8.5 c0.6,0,1.1-0.6,1.1-1.2l0,0C46,13.5,45.9,13.1,45.7,12.9z"/>
+                            </svg>
+                        </span>
+                        <span class="period-card-stat-label">Por revisar</span>
+                    </div>
+
+                    <div class="flex flex-col gap-0.5">
+                        <span class="flex items-center gap-1.5">
+                            <span class="period-card-stat-value">{{ $period->pending_students_count }}</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-icon)" class="flex-shrink-0">
+                                <circle cx="12" cy="6" r="4"/>
+                                <ellipse cx="12" cy="17" rx="7" ry="4"/>
+                            </svg>
+                        </span>
+                        <span class="period-card-stat-label">Por aceptar</span>
+                    </div>
+                </div>
+            @else
+                <p class="period-card-empty">Sin estudiantes registrados</p>
+            @endif
         </a>
     @endforeach
 </div>

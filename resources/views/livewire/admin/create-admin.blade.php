@@ -6,22 +6,25 @@
         </button>
     @endpush
 
-    <x-settings.layout subheading="Gestión completa de cuentas administrativas.">
-        <div class="space-y-6 max-w-3xl">
+    <x-settings.layout heading="Administradores" subheading="Gestión completa de cuentas administrativas.">
+        <x-slot:mobileAction>
+            {{-- Mobile: mismo botón "Nuevo Admin" del topbar de escritorio,
+                 pero solo con "+", junto al nombre/descripción de la sección. --}}
+            <button type="button" wire:click="create" class="btn-primary !w-10 !h-10 !p-0" aria-label="Nuevo Administrador">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+        </x-slot:mobileAction>
 
-            {{-- Botón Nuevo Admin: solo mobile, en desktop ya está en el topbar --}}
-            <div class="lg:hidden">
-                <button type="button" wire:click="create" class="btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                    Nuevo Administrador
-                </button>
-            </div>
+        <div class="space-y-6 max-w-3xl">
 
             {{-- Lista de Administradores --}}
             @if($admins->count())
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     @foreach($admins as $admin)
-                        <div class="period-card group">
+                        {{-- Toda la card abre "editar" de un clic (el botón detiene la
+                             propagación para no disparar los dos), igual que en
+                             campus/career/semester-cards.blade.php. --}}
+                        <div wire:click="edit({{ $admin->id }})" class="period-card period-card--clickable group">
                             <div class="stat-card-top">
                                 <div class="min-w-0 flex-1 flex flex-col gap-1">
                                     <p class="stat-card-label truncate">{{ $admin->name }}</p>
@@ -42,8 +45,10 @@
                                     Creado el {{ $admin->created_at->format('d/m/Y') }}
                                 </p>
 
-                                <button wire:click="edit({{ $admin->id }})"
-                                        class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
+                                {{-- Editar por botón: solo escritorio (mobile ya abre
+                                     la edición con un toque en cualquier parte de la card). --}}
+                                <button wire:click.stop="edit({{ $admin->id }})"
+                                        class="hidden lg:flex w-7 h-7 items-center justify-center rounded-full flex-shrink-0
                                                text-[var(--color-icon)] bg-transparent cursor-pointer
                                                opacity-0 group-hover:opacity-100
                                                transition-all duration-150

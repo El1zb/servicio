@@ -13,7 +13,7 @@
                 ¿Eliminar este periodo?
             </p>
             <p class="text-sm" style="color: var(--color-secondary);">
-                {{ $periodToDelete ? optional(App\Models\Period::find($periodToDelete))->name : '' }}
+                {{ $periodToDeleteName }}
                 — se moverá a la papelera; podrás restaurarlo desde Configuración &gt; Papelera durante 30 días.
             </p>
         </div>

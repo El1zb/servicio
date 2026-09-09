@@ -1,5 +1,5 @@
 {{-- Stats — mismo patrón que dashboard/index/partials/stats.blade.php --}}
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+<div class="flex overflow-x-auto snap-x scrollbar-none gap-4 pb-2 md:grid md:grid-cols-2 lg:grid-cols-5 md:gap-5 md:overflow-visible md:pb-0">
 
     @php
         $statCards = [
@@ -52,7 +52,7 @@
     @endphp
 
     @foreach($statCards as $card)
-        <div class="stat-card {{ $card['dark'] ? 'stat-card-dark' : '' }}">
+        <div class="stat-card {{ $card['dark'] ? 'stat-card-dark' : '' }} shrink-0 w-[75%] max-w-xs snap-start md:w-auto md:max-w-none md:shrink md:snap-align-none">
             <div class="stat-card-top">
                 <p class="stat-card-label">{{ $card['label'] }}</p>
                 <div class="stat-card-icon">

@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProtectedFileController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
 
-use App\Livewire\Campuses\Index as CampusesIndex;
-use App\Livewire\Careers\Index as CareersIndex;
-use App\Livewire\Semesters\Index as SemestersIndex;
+use App\Livewire\Admin\Campuses\Index as CampusesIndex;
+use App\Livewire\Admin\Careers\Index as CareersIndex;
+use App\Livewire\Admin\Semesters\Index as SemestersIndex;
 use App\Livewire\Admin\CreateAdmin as CreateAdmin;
 use App\Livewire\Admin\Trash as Trash;
 use App\Livewire\Dashboard\Index as DashboardIndex;
@@ -29,6 +30,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('secure-file', [ProtectedFileController::class, 'show'])->name('files.show');
+
+    Route::post('push/subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    Route::delete('push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 
     Route::redirect('settings', 'settings/profile');
 

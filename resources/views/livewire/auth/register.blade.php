@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-6 px-3 sm:px-0">
 
     {{-- Encabezado --}}
     <div class="text-center">

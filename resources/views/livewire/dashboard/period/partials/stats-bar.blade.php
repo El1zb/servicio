@@ -2,14 +2,10 @@
      enfocadas en lo que de verdad importa revisar aquí (no cifras
      genéricas repetidas). --}}
 @php
-    $totalStudents    = $period->students()->count();
-    $pendingStudents  = $period->students()->where('status', 'pendiente')->count();
-    $approvedStudents = $period->students()->where('status', 'aprobado')->count();
-
-    $pendingDocuments = \App\Models\Document::whereHas('file', fn ($q) => $q->where('period_id', $period->id))
-        ->whereNotNull('student_file_path')
-        ->where(fn ($q) => $q->where('status', 'en_revision')->orWhereNull('status'))
-        ->count();
+    $totalStudents    = $stats['total'];
+    $pendingStudents  = $stats['pending'];
+    $approvedStudents = $stats['approved'];
+    $pendingDocuments = $stats['pendingDocuments'];
 
     $statCards = [
         [
@@ -45,9 +41,9 @@
     ];
 @endphp
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+<div class="flex overflow-x-auto snap-x scrollbar-none gap-4 pb-2 md:grid md:grid-cols-2 md:gap-5 md:overflow-visible md:pb-0 lg:grid-cols-4">
     @foreach($statCards as $card)
-        <div class="stat-card {{ $card['dark'] ? 'stat-card-dark' : '' }}">
+        <div class="stat-card {{ $card['dark'] ? 'stat-card-dark' : '' }} shrink-0 w-[75%] max-w-xs snap-start md:w-auto md:max-w-none md:shrink md:snap-align-none">
             <div class="stat-card-top">
                 <p class="stat-card-label">{{ $card['label'] }}</p>
                 <div class="stat-card-icon">

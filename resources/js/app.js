@@ -1,9 +1,3 @@
-import * as pdfjsLib from 'pdfjs-dist';
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import * as docxPreview from 'docx-preview';
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
 /**
  * Pinta las páginas del PDF ya cargado (container._pdfDoc) como <canvas>
  * dentro de `container`, al zoom actual (container.dataset.zoom). Separado
@@ -61,6 +55,12 @@ window.renderReviewPdf = async function (url, container) {
     container.innerHTML = '';
 
     try {
+        const [pdfjsLib, { default: pdfjsWorker }] = await Promise.all([
+            import('pdfjs-dist'),
+            import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+        ]);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
         const pdf = await pdfjsLib.getDocument({ url, withCredentials: true }).promise;
         if (container.dataset.pdfUrl !== url) return;
 
@@ -88,10 +88,72 @@ window.zoomReviewPdf = async function (container, delta) {
     updateZoomLabel(container);
 };
 
-function updateZoomLabel(container) {
+/**
+ * Pellizco (dos dedos) para hacer zoom SOLO dentro del visor, en mobile —
+ * nunca la página completa (así el topbar y el dock de navegación no se
+ * mueven). Mientras los dedos se mueven solo previsualizamos con un
+ * transform CSS (barato); al soltar, se repinta una vez a la resolución
+ * final con paintReviewPdfPages (nítido, como el +/- de escritorio).
+ * El propio contenedor ya trae `touch-action: pan-y` en CSS para que el
+ * navegador no dispare su zoom nativo de página al detectar el pellizco.
+ */
+function touchDistance(touches) {
+    const [a, b] = touches;
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
+window.initPdfPinchZoom = function (container) {
+    if (!container || container._pinchBound) return;
+    container._pinchBound = true;
+
+    let startDist = 0;
+    let startZoom = 1;
+
+    container.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 2) return;
+        startDist = touchDistance(e.touches);
+        startZoom = parseFloat(container.dataset.zoom) || 1;
+
+        const rect = container.getBoundingClientRect();
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top + container.scrollTop;
+        container.style.transformOrigin = `${midX}px ${midY}px`;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+        if (e.touches.length !== 2 || !startDist) return;
+        e.preventDefault();
+
+        const ratio = touchDistance(e.touches) / startDist;
+        const targetZoom = Math.min(Math.max(startZoom * ratio, 0.5), 3);
+        container.style.transform = `scale(${targetZoom / startZoom})`;
+        updateZoomLabel(container, targetZoom);
+    }, { passive: false });
+
+    const commit = async () => {
+        if (!startDist) return;
+        startDist = 0;
+
+        const preview = container.style.transform;
+        container.style.transform = '';
+        if (!preview) return;
+
+        const match = preview.match(/scale\(([^)]+)\)/);
+        const finalZoom = Math.min(Math.max(startZoom * parseFloat(match?.[1] ?? 1), 0.5), 3);
+        container.dataset.zoom = finalZoom;
+
+        await paintReviewPdfPages(container);
+        updateZoomLabel(container);
+    };
+
+    container.addEventListener('touchend', commit);
+    container.addEventListener('touchcancel', commit);
+};
+
+function updateZoomLabel(container, zoomOverride = null) {
     const label = document.getElementById('pdf-zoom-label');
     if (!label) return;
-    const zoom = parseFloat(container.dataset.zoom) || 1;
+    const zoom = zoomOverride ?? (parseFloat(container.dataset.zoom) || 1);
     label.textContent = Math.round(zoom * 100) + '%';
 }
 
@@ -114,6 +176,7 @@ window.renderDocxPreview = async function (url, container) {
         if (container.dataset.docxUrl !== url) return;
         container.innerHTML = '';
 
+        const docxPreview = await import('docx-preview');
         await docxPreview.renderAsync(blob, container, undefined, {
             inWrapper: true,
             ignoreWidth: false,
@@ -126,3 +189,106 @@ window.renderDocxPreview = async function (url, container) {
         console.error('renderDocxPreview error', e);
     }
 };
+
+/**
+ * Notificaciones push (switch en la campanita del estudiante, ver
+ * livewire/students/notifications/bell.blade.php). APIs nativas del
+ * navegador — nada que diferir con import() como el visor de PDF/Word.
+ */
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
+}
+
+window.enablePushNotifications = async function () {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        alert('Tu navegador no soporta notificaciones push.');
+        return false;
+    }
+
+    try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return false;
+
+        const vapidKey = document.querySelector('meta[name="vapid-key"]')?.content;
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        });
+
+        await fetch('/push/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(subscription.toJSON()),
+        });
+
+        return true;
+    } catch (e) {
+        console.error('enablePushNotifications error', e);
+        alert('No se pudieron activar las notificaciones. Revisa los permisos del navegador.');
+        return false;
+    }
+};
+
+window.disablePushNotifications = async function () {
+    try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        const subscription = await registration?.pushManager.getSubscription();
+        if (!subscription) return true;
+
+        await fetch('/push/unsubscribe', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ endpoint: subscription.endpoint }),
+        });
+
+        await subscription.unsubscribe();
+        return true;
+    } catch (e) {
+        console.error('disablePushNotifications error', e);
+        return false;
+    }
+};
+
+/**
+ * Estado real de la suscripción (no solo el permiso), para pintar el switch
+ * ya prendido/apagado al abrir la campanita sin esperar ninguna acción.
+ */
+window.pushSubscriptionStatus = async function () {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        return 'unsupported';
+    }
+    if (Notification.permission !== 'granted') return 'off';
+
+    try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        const subscription = await registration?.pushManager.getSubscription();
+        return subscription ? 'on' : 'off';
+    } catch {
+        return 'off';
+    }
+};
+
+/**
+ * El service worker avisa por postMessage cuando entra un push (ver
+ * public/sw.js) — con esto la campanita se refresca al vuelo sin depender
+ * de ningún wire:poll corriendo en segundo plano para cada alumno.
+ */
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data?.type === 'push-received') {
+            window.Livewire?.dispatch('notification-received');
+        }
+    });
+}

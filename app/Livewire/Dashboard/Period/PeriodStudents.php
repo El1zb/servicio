@@ -66,6 +66,7 @@ class PeriodStudents extends Component
             // configuración).
             'filterSemesters' => $this->period->semesters,
             'pendingCount'    => $this->pendingCount(),
+            'stats'           => $this->getPeriodStats(),
         ])->layout('components.layouts.period-detail');
     }
 }

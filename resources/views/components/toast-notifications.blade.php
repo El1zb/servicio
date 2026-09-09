@@ -3,9 +3,13 @@
     class="fixed top-4 right-4 z-50 space-y-2"
     x-data="{
         notifications: [],
+        maxVisible: 3,
         addNotification(type, message) {
-            const id = Date.now();
+            const id = Date.now() + Math.random();
             this.notifications.push({ id, type, message });
+            if (this.notifications.length > this.maxVisible) {
+                this.notifications.splice(0, this.notifications.length - this.maxVisible);
+            }
             setTimeout(() => this.removeNotification(id), 5000);
         },
         removeNotification(id) {

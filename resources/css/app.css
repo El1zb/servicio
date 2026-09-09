@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 @import './theme.css';
 @import './sidebar.css';
-@import './animations.css';
 @import '../../vendor/livewire/flux/dist/flux.css';
 
 
@@ -30,6 +29,16 @@
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
     --color-accent-foreground: var(--color-white);
+}
+
+/* Oculta la scrollbar de contenedores con scroll horizontal (carruseles
+   mobile-first). Utilidad nativa Tailwind v4, no CSS a mano. */
+@utility scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 @layer theme {

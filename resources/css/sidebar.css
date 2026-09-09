@@ -364,6 +364,111 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 }
 
 /* ===========================
+   TOPBAR (mobile) — título de sección + botón de búsqueda que expande el
+   mismo buscador pujado a 'topbar-search' (ver sidebar.blade.php). Oculto
+   por defecto; se activa en el media query móvil más abajo.
+=========================== */
+.app-topbar-mobile {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    /* Mismo padding lateral que el wrapper "p-6" de cada página (ver
+       campuses/careers/semesters/dashboard/period-detail index.blade.php),
+       y mismo fondo que .main-content-inner, para que quede alineado y sin
+       costura visible con el contenido de abajo. */
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: var(--color-bg);
+}
+
+.app-topbar-mobile-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Ajustes (General/Administradores/Papelera): el switcher ocupa este
+   contenedor pero queda pegado a su lado derecho, no al izquierdo. */
+.app-topbar-mobile-left--switcher {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+}
+
+.app-topbar-mobile-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.app-topbar-mobile-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--color-secondary);
+    background: none;
+}
+
+.app-topbar-mobile-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary-2);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.app-topbar-mobile-search {
+    display: none;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.app-topbar-mobile-search .topbar-search-input-wrap {
+    width: 100%;
+}
+
+.app-topbar-mobile-search-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background-color: var(--color-card-bg);
+    color: var(--color-primary-2);
+    appearance: none;
+    cursor: pointer;
+}
+
+.app-topbar-mobile-search-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.app-topbar-mobile-close-icon {
+    display: none;
+}
+
+.app-topbar-mobile.search-open .app-topbar-mobile-title { display: none; }
+.app-topbar-mobile.search-open .app-topbar-mobile-search { display: block; }
+.app-topbar-mobile.search-open .app-topbar-mobile-search-icon { display: none; }
+.app-topbar-mobile.search-open .app-topbar-mobile-close-icon { display: block; }
+/* El buscador ocupa ese espacio del lado derecho — la campanita se quita
+   de en medio mientras dure. */
+.app-topbar-mobile.search-open .notif-bell-wrap { display: none; }
+
+/* ===========================
    TÍTULO Y TOOLBAR (dentro de main-content-inner)
 =========================== */
 .main-content-header {
@@ -381,6 +486,32 @@ html.sidebar-collapsed .sidebar-toggle-btn {
     letter-spacing: 0.01em;
     color: var(--color-primary-2);
     margin: 0;
+}
+
+/* Mobile: nombre de sección + descripción dentro de x-settings.layout.
+   El título toma el mismo tamaño que tenía app-topbar-mobile-title (el
+   título de topbar que en estas páginas ahora ocupa el switcher).
+   display:flex vive solo en el media query de abajo (no aquí): sidebar.css
+   se importa DESPUÉS de tailwindcss en app.css, así que un display sin
+   media query en este archivo le gana a .lg:hidden en escritorio aunque
+   empate en especificidad (mismo orden de cascada que .trash-bulk-bar). */
+.settings-mobile-header {
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.settings-mobile-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary-2);
+    margin: 0;
+}
+
+.settings-mobile-subheading {
+    font-size: 12.5px;
+    color: var(--color-secondary);
+    margin: 4px 0 0;
 }
 
 .main-content-toolbar {
@@ -574,11 +705,23 @@ html.sidebar-collapsed .sidebar-toggle-btn {
    (login/registro), inspirado en el estilo "Welcome Back" de la
    referencia de diseño. */
 .auth-display-heading {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-family: 'Montserrat', Arial, sans-serif;
     font-weight: 700;
     font-size: 40px;
     line-height: 1.15;
     color: var(--color-primary-2);
+}
+
+.font-heading {
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.auth-portal-overlay-mobile {
+    background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.65) 100%);
+}
+
+.auth-portal-overlay-desktop {
+    background: linear-gradient(180deg, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.88) 100%);
 }
 
 .file-dropzone {
@@ -656,6 +799,48 @@ html.sidebar-collapsed .sidebar-toggle-btn {
     color: var(--color-bg);
 }
 
+/* Cards de Papelera en mobile: sin callout/selección de texto nativa al
+   mantener presionado (long-press marca el checkbox, ver trash.blade.php). */
+.trash-item-card {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Papelera (mobile): mismas acciones (restaurar/eliminar) que la barra de
+   escritorio, pero solo con iconos, dentro de la topbar móvil — reemplaza
+   al título mientras hay selección (ver x-show en sidebar.blade.php y el
+   push a 'topbar-mobile-meta' en trash.blade.php). */
+.topbar-select-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary-2);
+    white-space: nowrap;
+}
+
+.topbar-select-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background-color: var(--color-card-bg);
+    color: var(--color-primary-2);
+    appearance: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.topbar-select-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.topbar-select-btn--danger {
+    color: #DC2626;
+}
+
 /* ===========================
    TOAST NOTIFICATIONS
 =========================== */
@@ -712,6 +897,25 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 .toast-close:hover {
     background-color: var(--color-border-hover);
     color: var(--color-primary-2);
+}
+
+@media (max-width: 639px) {
+    .toast-card {
+        max-width: calc(100vw - 2rem);
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+
+    .toast-icon,
+    .toast-close {
+        width: 18px;
+        height: 18px;
+    }
+
+    .toast-message {
+        font-size: 12px;
+    }
 }
 
 /* ===========================
@@ -825,6 +1029,83 @@ html.sidebar-collapsed .sidebar-toggle-btn {
     cursor: not-allowed;
 }
 
+/* ===========================
+   DOCK DEL VISOR (mobile, solo estudiante)
+   Mismo patrón que el dock de navegación flotante (mobile-bottom-nav):
+   píldora + icono/etiqueta, el activo solo cambia de color de texto. El
+   fondo "glass" (blur + degradado + su variante dark) lo aportan las mismas
+   clases Tailwind del nav flotante, puestas directo en el blade — aquí solo
+   va la estructura, para no pisar ese fondo con un color plano.
+=========================== */
+.viewer-dock {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px;
+    border-radius: 999px;
+}
+
+.viewer-dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    color: var(--sidebar-color-nav);
+    cursor: pointer;
+    transition: color 150ms ease;
+}
+
+.viewer-dock-item.is-active {
+    /* nav-activate (no active-bg): esa otra variable es para fondos —
+       en modo oscuro es casi negra, invisible sobre el glass oscuro. Esta
+       sí es la pensada para texto/ícono activo (clara en modo oscuro). */
+    color: var(--sidebar-color-nav-activate);
+}
+
+.viewer-dock-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    border: none;
+    color: var(--sidebar-color-nav);
+    cursor: pointer;
+}
+
+/* Barra superior del visor: blanca en escritorio, mismo gris del documento
+   en mobile (antes quedaba blanca de más, sin motivo al ya no haber flechas
+   de navegación que "flotar" sobre ella). */
+.viewer-topbar {
+    background-color: var(--sidebar-color-bg);
+}
+
+@media (max-width: 639px) {
+    .viewer-topbar {
+        background-color: var(--color-contenedor-view);
+    }
+
+    /* Prev/Siguiente del visor: en mobile los reemplaza el dock de abajo. */
+    .viewer-nav-arrow {
+        display: none;
+    }
+}
+
+/* El zoom en mobile es a pellizco (ver initPdfPinchZoom en app.js), nunca
+   zoom nativo de página — así el topbar y el dock no se mueven. pan-y deja
+   el scroll normal de una mano intacto y libera el gesto de dos dedos para
+   que lo capture JS en vez del navegador. */
+.pdf-render-target {
+    touch-action: pan-y;
+}
+
 /* Días del calendario personalizado (Fecha Límite Personalizada). */
 .review-calendar-day {
     display: flex;
@@ -869,8 +1150,13 @@ html.sidebar-collapsed .sidebar-toggle-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     height: 32px;
     padding: 0 16px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
     border-radius: 999px;
     font-size: 13px;
     font-weight: 500;
@@ -887,6 +1173,40 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 .catalog-switcher-option.active {
     background-color: var(--color-card-bg);
     color: var(--color-primary-2);
+}
+
+.catalog-switcher-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background-color: var(--color-card-bg);
+    color: var(--color-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.catalog-switcher-option.active .catalog-switcher-count {
+    background-color: var(--color-bg);
+    color: var(--color-primary-2);
+}
+
+/* Mobile (topbar del periodo): mismo diseño, colores invertidos —
+   fondo blanco, seleccionado gris. */
+.catalog-switcher--mobile {
+    background-color: var(--color-card-bg);
+}
+
+.catalog-switcher--mobile .catalog-switcher-option.active {
+    background-color: var(--color-bg);
+}
+
+.catalog-switcher--mobile .catalog-switcher-option.active .catalog-switcher-count {
+    background-color: var(--color-card-bg);
 }
 
 [x-cloak] {
@@ -1155,94 +1475,9 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 }
 
 /* ===========================
-   MOBILE HEADER
+   MOBILE DROPDOWN MENU (usado por flux:dropdown/menu genérico, ver
+   layouts/app/header.blade.php)
 =========================== */
-.mobile-header {
-    display: none;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    background: var(--sidebar-color-bg);
-    border-bottom: 2px solid var(--sidebar-color-border);
-    padding: 0 16px;
-    height: 60px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.mobile-toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    border: 1px solid var(--sidebar-color-border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 200ms ease;
-    flex-shrink: 0;
-}
-
-.mobile-toggle:hover {
-    background: var(--sidebar-color-hover);
-}
-
-.mobile-toggle svg {
-    width: 22px;
-    height: 22px;
-    color: var(--sidebar-color-primary);
-}
-
-.mobile-header-title {
-    flex: 1;
-    text-align: center;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--sidebar-color-primary);
-    letter-spacing: 0.01em;
-    pointer-events: none;
-}
-
-.mobile-header-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--sidebar-color-bg-icon);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--sidebar-color-primary);
-    font-weight: 600;
-    font-size: 14px;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-/* ===========================
-   MOBILE DROPDOWN MENU
-=========================== */
-.mobile-menu-user-info {
-    padding: 10px 14px 8px;
-}
-
-.mobile-menu-user-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--sidebar-color-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mobile-menu-user-email {
-    font-size: 11px;
-    color: var(--sidebar-color-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 [data-flux-menu] {
     background: var(--sidebar-color-bg) !important;
     border: 1px solid var(--sidebar-color-border) !important;
@@ -1257,8 +1492,8 @@ html.sidebar-collapsed .sidebar-toggle-btn {
    RESPONSIVE MÓVIL
 =========================== */
 @media (max-width: 1024px) {
-    .mobile-header { display: flex; }
     .app-topbar { display: none; }
+    .app-topbar-mobile { display: flex; }
 
     .sidebar-toggle-btn { display: none; }
 
@@ -1270,9 +1505,22 @@ html.sidebar-collapsed .sidebar-toggle-btn {
         border-radius: 0;
         box-shadow: none;
         overflow: visible;
+        /* En desktop este fondo es --sidebar-color-bg (blanco) porque se
+           "asoma" detrás del sidebar; en mobile el sidebar está oculto y
+           ese blanco quedaba expuesto donde .main-content no llega a
+           cubrir todo el alto — aquí debe ser el mismo gris de fondo. */
+        background-color: var(--color-bg);
     }
 
     .main-content-header { display: none; }
+
+    /* Barra de acciones masivas de Papelera (con texto): solo escritorio;
+       en mobile la reemplazan los iconos de la topbar (.topbar-select-btn). */
+    .trash-bulk-bar { display: none !important; }
+
+    /* Nombre de sección + descripción de x-settings.layout: solo mobile
+       (ver comentario junto a .settings-mobile-header más arriba). */
+    .settings-mobile-header { display: flex; }
 
     .app-main-col {
         height: auto;
@@ -1280,51 +1528,13 @@ html.sidebar-collapsed .sidebar-toggle-btn {
         padding: 0;
     }
 
+    /* Reemplazado por el dock flotante inferior (partials.mobile-bottom-nav):
+       en móvil la navegación ya no vive en este panel lateral. */
     .sidebar-container,
     .sidebar-container.collapsed {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        height: 100vh !important;
-        border-radius: 0 !important;
-        border-right: none;
-        transform: translateX(-100%);
-        width: min(300px, 85vw) !important;
-        max-width: 300px !important;
-        padding-left: 0 !important;
-        transition: transform var(--transition-speed) ease !important;
-        box-shadow: none;
-        z-index: 40;
+        display: none !important;
     }
 
-    .sidebar-container.mobile-open,
-    .sidebar-container.collapsed.mobile-open {
-        transform: translateX(0) !important;
-        box-shadow: 8px 0 40px rgba(0, 0, 0, 0.7);
-    }
-
-    html.sidebar-collapsed .sidebar-container {
-        width: min(300px, 85vw) !important;
-    }
-
-    .sidebar-container.collapsed .nav-item {
-        justify-content: flex-start !important;
-        padding: 13px 16px !important;
-    }
-    .sidebar-container.collapsed .nav-item-text {
-        opacity: 1 !important;
-        width: auto !important;
-        overflow: visible !important;
-    }
-    .sidebar-container.collapsed .logo-container {
-        justify-content: flex-start !important;
-        padding: 20px 18px 16px !important;
-        gap: 10px !important;
-    }
-    .sidebar-container.collapsed .logo-text-block {
-        opacity: 1 !important;
-        width: auto !important;
-    }
     .main-content {
         overflow: visible !important;
         padding: 0 !important;
@@ -1332,75 +1542,10 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 
     .main-content-inner {
         border-radius: 0 !important;
-        padding-bottom: 24px !important;
+        /* Deja hueco bajo el contenido para el dock flotante inferior
+           (ver partials.mobile-bottom-nav) + su offset y el safe-area. */
+        padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
     }
-
-    .mobile-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.65);
-        z-index: 39;
-        display: none;
-        backdrop-filter: blur(3px);
-        -webkit-backdrop-filter: blur(3px);
-    }
-    .mobile-overlay.show { display: block; }
-
-    .logo-container {
-        height: auto;
-        padding: 20px 18px 16px;
-        gap: 10px;
-    }
-    .logo-text-block {
-        opacity: 1 !important;
-        width: auto !important;
-    }
-
-    .mobile-close-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 200ms ease;
-        flex-shrink: 0;
-    }
-    .mobile-close-btn:hover { background: var(--sidebar-color-hover) }
-    .mobile-close-btn svg { width: 18px; height: 18px; color: var(--sidebar-color-primary); }
-
-    .nav-item {
-        padding: 13px 16px;
-        margin: 3px 10px;
-        width: calc(100% - 20px);
-        font-size: 14px;
-        border-radius: 10px;
-        justify-content: flex-start !important;
-        gap: 14px;
-    }
-    .nav-item-icon { width: 22px; height: 22px; }
-    .nav-item-text {
-        opacity: 1 !important;
-        width: auto !important;
-        overflow: visible !important;
-    }
-
-    .user-menu-container {
-        position: sticky;
-        bottom: 0;
-        padding: 10px 0 18px;
-        margin-top: auto;
-    }
-}
-
-/* Pantallas muy pequeñas */
-@media (max-width: 360px) {
-    .sidebar-container {
-        width: 92vw;
-        max-width: 92vw;
-    }
-    .nav-item { font-size: 14px; padding: 12px 14px; }
 }
 
 /* ===========================
@@ -1963,6 +2108,47 @@ html.sidebar-collapsed .sidebar-toggle-btn {
     transform: translateY(-2px);
 }
 
+/* Feedback visual al mantener presionada la card (editar con hold). */
+.period-card:active {
+    transform: scale(0.97);
+}
+
+/* Cards de documentos (Entregas/Informativos) en desktop: toda la card abre
+   el visor de un clic, además de sus botones de siempre. */
+.period-card--clickable {
+    cursor: pointer;
+}
+
+/* Cards de documentos (Entregas/Informativos) en mobile: 2 por hilera,
+   compactas, clicables completas (reemplazan a .document-card-desktop). */
+.document-mobile-card {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    background-color: var(--color-card-bg-utility);
+    border-radius: 20px;
+    padding: 14px;
+    border: none;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 150ms ease;
+}
+
+.document-mobile-card:active {
+    transform: scale(0.97);
+}
+
+.document-mobile-card--static {
+    cursor: default;
+}
+
+@media (max-width: 639px) {
+    .document-card-desktop { display: none; }
+    .document-mobile-card { display: flex; }
+}
+
 button.period-card {
     border: none;
     width: 100%;
@@ -2076,5 +2262,233 @@ button.period-card-status.is-active:hover {
 
 .period-card-footer-meta svg {
     flex-shrink: 0;
+}
+
+/* ===========================
+   NOTIFICACIONES (campanita, solo estudiante) — topbar
+=========================== */
+.notif-bell-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.notif-bell-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--color-card-bg);
+    color: var(--color-primary-2);
+    cursor: pointer;
+    transition: background-color 150ms ease;
+}
+
+.notif-bell-btn:hover {
+    background-color: var(--color-card-bg-hover);
+}
+
+.notif-bell-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background-color: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+}
+
+/* Difuminado detrás del panel (escritorio y mobile): un click ahí también
+   cierra, no solo el botón de la campanita. */
+.notif-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 90;
+}
+
+/* Escritorio: tarjeta flotante bajo la topbar (68px de alto + margen),
+   separada de los bordes derecho e inferior — no pegada ni a pantalla
+   completa. Modal igual (con .notif-backdrop detrás), solo que no ocupa
+   todo el viewport. */
+.notif-dropdown-panel {
+    position: fixed;
+    top: 84px;
+    right: 24px;
+    bottom: 24px;
+    width: 400px;
+    max-width: calc(100vw - 48px);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-card-bg);
+    border-radius: 18px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.35);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.notif-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.notif-panel-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-primary-2);
+}
+
+.notif-panel-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 6px;
+}
+
+.notif-item {
+    display: block;
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding: 10px 30px 10px 12px;
+    border: none;
+    background: none;
+    border-radius: 10px;
+    font-family: inherit;
+    color: var(--color-primary-2);
+    cursor: pointer;
+    transition: background-color 150ms ease;
+}
+
+.notif-item:hover {
+    background-color: var(--color-bg);
+}
+
+.notif-item.is-unread {
+    background-color: var(--color-bg);
+}
+
+.notif-item-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.notif-item-title {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.notif-item-time {
+    font-size: 11px;
+    color: var(--color-secondary);
+    flex-shrink: 0;
+}
+
+.notif-item-body {
+    font-size: 12px;
+    color: var(--color-secondary);
+    display: block;
+    margin-top: 2px;
+}
+
+.notif-item-dot {
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #16A34A;
+}
+
+.notif-empty {
+    padding: 24px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--color-secondary);
+}
+
+/* ── Switch de notificaciones push, junto al título del encabezado ── */
+.notif-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background-color: var(--color-border);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 150ms ease;
+}
+
+.notif-switch.is-on {
+    background-color: var(--color-primary-2);
+}
+
+.notif-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--color-card-bg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 150ms ease;
+}
+
+.notif-switch.is-on .notif-switch-thumb {
+    transform: translateX(18px);
+}
+
+/* En mobile la tarjeta flotante es la misma idea que en escritorio (debajo
+   de la topbar, con padding a los lados y difuminado alrededor) solo que
+   más chica: ni todo el ancho ni todo el alto — .app-topbar-mobile mide
+   ~72px (16px padding + 40px de contenido), de ahí el mismo top que usa
+   la versión de escritorio. */
+@media (max-width: 1024px) {
+    .notif-dropdown-panel {
+        top: 84px;
+        left: 16px;
+        right: 16px;
+        bottom: auto;
+        width: auto;
+        max-width: none;
+        max-height: min(70vh, 520px);
+    }
+}
+
+/* Con el panel de notificaciones abierto (mobile), el dock flotante
+   inferior queda por encima del difuminado — se oculta mientras dure.
+   body.notif-panel-open lo pone/quita el propio bell.blade.php. */
+body.notif-panel-open #mobileBottomNav {
+    display: none;
+}
+
+/* Con el panel abierto, la página de atrás no debe poder hacer scroll
+   debajo del difuminado. */
+body.notif-panel-open {
+    overflow: hidden;
 }
 

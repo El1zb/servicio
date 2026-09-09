@@ -77,6 +77,12 @@ services:
         value: hello@example.com
       - key: MAIL_FROM_NAME
         value: Laravel
+      - key: VAPID_SUBJECT
+        value: mailto:soporte@itsco.edu.mx
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
 
 databases:
   - name: servicio-social-db

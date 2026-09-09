@@ -1,79 +1,17 @@
-{{-- Buscador: en desktop vive en el topbar, en mobile se queda acá. --}}
-@push('topbar-search')
-    <div class="topbar-search-input-wrap">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
-        </svg>
-        <input type="text" placeholder="Buscar documento..." value="{{ $searchDocuments }}" oninput="topbarSearchInput(this.value, 'searchDocuments')" class="topbar-search-input"/>
-    </div>
-@endpush
-
-{{-- Filtro de estado: junto al título de la página. Va empujado al layout
-     (fuera del wire:id del componente), así que $wire no está disponible
-     ahí — por eso, a diferencia del resto de mis selects, este habla con
-     el componente vía window.Livewire.first() igual que los demás filtros
-     de header-filters ya establecidos (revision-tab.blade.php, filters.blade.php). --}}
-@php
-    $statusFilterLabels = [
-        ''            => 'Todos los estados',
-        'pendiente'   => 'Por entregar',
-        'en_revision' => 'En revisión',
-        'aprobado'    => 'Aprobados',
-        'rechazado'   => 'Rechazados',
-        'vencido'     => 'Vencidos',
-    ];
-@endphp
-
-@push('header-filters')
-    <div class="header-filter-dropdown"
-         x-data="{ open: false, value: '{{ $statusFilter }}', label: '{{ $statusFilterLabels[$statusFilter] ?? 'Todos los estados' }}' }"
-         @click.outside="open = false">
-        <button type="button" class="header-filter-select" @click="open = !open">
-            <span x-text="label"></span>
-            <svg class="header-filter-select-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </button>
-
-        <div class="header-filter-dropdown-panel" x-show="open" x-cloak x-transition>
-            @foreach($statusFilterLabels as $value => $label)
-                <button type="button" class="header-filter-dropdown-option" :class="{ 'is-selected': value === '{{ $value }}' }"
-                        @click="value = '{{ $value }}'; label = '{{ $label }}'; open = false; window.Livewire.first().set('statusFilter', '{{ $value }}')">
-                    {{ $label }}
-                </button>
-            @endforeach
-        </div>
-    </div>
-@endpush
-
+{{-- Pestaña "Entregas": documentos que el alumno debe subir. El buscador y
+     el filtro de estado del topbar viven en topbar-controls.blade.php. --}}
 <div class="space-y-3">
 
-    {{-- Respaldo mobile: buscador y filtro. --}}
+    {{-- Respaldo mobile: filtro de estado (el buscador vive en la barra
+         superior móvil, ver sidebar.blade.php). --}}
     <div class="lg:hidden flex flex-col gap-3">
-        <div class="relative w-full">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-secondary);">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
-                </svg>
-            </div>
-            <input type="text" wire:model.live.debounce.400ms="searchDocuments"
-                   placeholder="Buscar documento..."
-                   class="app-input w-full" style="padding-left: 40px;">
-        </div>
-
         <x-select wire-model="statusFilter" :value="$statusFilter"
             :options="['' => 'Todos los estados', 'pendiente' => 'Por entregar', 'en_revision' => 'En revisión', 'aprobado' => 'Aprobados', 'rechazado' => 'Rechazados', 'vencido' => 'Vencidos']"
             placeholder="Todos los estados" />
     </div>
 
-    <div class="px-1">
-        <p class="font-bold text-[var(--color-primary-2)] truncate" style="font-size: 20px;">Por entregar</p>
-    </div>
-
     @if($submissionDocuments->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
             @foreach($submissionDocuments as $item)
                 @php
                     $document  = $item['document'];
@@ -81,8 +19,8 @@
                     $hasFile   = $item['hasFile'];
                     $limitDate = $item['limitDate'];
 
-                    $canUpload  = $this->canUploadFile($document);
-                    $adminFiles = $this->getFileToDisplay($document);
+                    $canUpload  = $document->canUploadFile();
+                    $adminFiles = $document->filesToDisplay();
 
                     $statusConfig = [
                         'revisado'    => ['label' => 'Aprobado',    'class' => 'status-badge--approved'],
@@ -97,9 +35,23 @@
                     } else {
                         $badge = ['label' => 'Sin entregar', 'class' => 'status-badge--pending'];
                     }
+
+                    $canView = count($adminFiles) > 0 || ($canUpload && $document->student_file_path);
+
+                    // Acceso rápido al visor (desktop: toda la card; mobile: única
+                    // forma de abrirlo) — más permisivo que el botón "Ver": aunque
+                    // todavía no haya nada que ver, si el alumno puede subir, el
+                    // visor ya trae ahí mismo la opción de subir.
+                    $canOpenViewer = $canView || $canUpload;
+                    $tag           = $canOpenViewer ? 'button' : 'div';
                 @endphp
 
-                <div wire:key="submission-doc-{{ $document->id }}" class="period-card group">
+                {{-- Desktop: se conservan los botones de Ver/Subir/Cancelar tal
+                     cual, pero además toda la card abre el visor de un clic (los
+                     botones detienen la propagación para no disparar los dos). --}}
+                <div wire:key="submission-doc-{{ $document->id }}"
+                    @if($canOpenViewer) wire:click="openDocumentViewer({{ $document->id }})" @endif
+                    class="period-card document-card-desktop group {{ $canOpenViewer ? 'period-card--clickable' : '' }}">
                     <div>
                         <div class="flex items-center justify-end mb-2">
                             <span class="status-badge {{ $badge['class'] }}">
@@ -124,8 +76,8 @@
                         {{-- Ver — un solo botón que abre el visor con SOLO los
                              archivos de este documento (los del admin si subió
                              algo, el mío si ya lo subí). --}}
-                        @if(count($adminFiles) > 0 || ($canUpload && $document->student_file_path))
-                            <button wire:click="openDocumentViewer({{ $document->id }})"
+                        @if($canView)
+                            <button wire:click.stop="openDocumentViewer({{ $document->id }})"
                                     title="Ver documento"
                                     class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
                                            text-[var(--color-icon)] bg-transparent cursor-pointer
@@ -144,7 +96,7 @@
                              cancelar la entrega (lo que limpia el archivo y el estado)
                              y ahí sí reaparece este botón, siempre como "Subir". --}}
                         @if($canUpload && !$isExpired && !$hasFile)
-                            <button type="button" wire:click="openUploadModal({{ $document->id }})"
+                            <button type="button" wire:click.stop="openUploadModal({{ $document->id }})"
                                     title="Subir archivo"
                                     class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
                                            text-[var(--color-icon)] bg-transparent cursor-pointer
@@ -162,7 +114,7 @@
                              corregir y reenviar). En revisión o aprobado no se toca. --}}
                         @if($canUpload && $hasFile && $document->status === 'rechazado' && !$isExpired)
                             <button type="button"
-                                    wire:click="openCancelModal({{ $document->id }})"
+                                    wire:click.stop="openCancelModal({{ $document->id }})"
                                     title="Cancelar entrega"
                                     class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
                                            text-red-400 bg-transparent cursor-pointer
@@ -176,6 +128,27 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Mobile: card completa clicable, sin botones — un tap abre el visor
+                     con lo que haya disponible (o el botón "Subir" del dock, si
+                     todavía no hay archivo). Cancelar vive dentro del visor. --}}
+                <{{ $tag }} @if($canOpenViewer) type="button" wire:click="openDocumentViewer({{ $document->id }})" @endif
+                    class="document-mobile-card {{ $canOpenViewer ? '' : 'document-mobile-card--static' }}">
+                    <div class="flex items-start justify-end gap-2">
+                        <span class="status-badge {{ $badge['class'] }}">
+                            <span class="status-badge-dot"></span>
+                            {{ $badge['label'] }}
+                        </span>
+                    </div>
+                    <p class="document-card-title">{{ $document->name }}</p>
+                    <p class="stat-card-description" style="margin:0;">
+                        @if($limitDate)
+                            Límite: {{ $limitDate->locale('es')->isoFormat('DD MMM YYYY') }}
+                        @else
+                            Sin fecha límite
+                        @endif
+                    </p>
+                </{{ $tag }}>
             @endforeach
         </div>
     @elseif($searchDocuments !== '' || $statusFilter !== '')

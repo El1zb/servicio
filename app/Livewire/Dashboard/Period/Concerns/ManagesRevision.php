@@ -13,6 +13,8 @@ use App\Models\Student;
 use App\Models\Document;
 use App\Models\File;
 use App\Models\FileStudentUpload;
+use App\Notifications\DocumentCommented;
+use App\Notifications\DocumentStatusChanged;
 
 trait ManagesRevision
 {
@@ -44,8 +46,7 @@ trait ManagesRevision
     public ?array  $adminExamplePdf  = null;
 
     // Alcance de navegación del visor rápido: null = todos los pendientes
-    // del periodo (botón "Revisar pendientes"); id = solo los documentos
-    // de ese estudiante (al entrar desde su tarjeta expandida).
+    // del periodo; id = solo los documentos de ese estudiante.
     public ?int    $reviewScopeStudentId = null;
 
     // ========================= Watchers =========================
@@ -88,13 +89,13 @@ trait ManagesRevision
     }
 
     /**
-     * Documentos que el estudiante ya entregó (con archivo subido) para
-     * revisar en el visor unificado: solo los de entrega estudiante-admin,
-     * nunca plantillas o cargas individuales administradas por el admin.
+     * Documentos entregados por el estudiante (con archivo subido), sin
+     * incluir plantillas ni cargas individuales del admin.
      */
     public function getStudentDocuments(int $studentId)
     {
         return Document::query()
+            ->with('file')
             ->where('student_id', $studentId)
             ->whereNotNull('student_file_path')
             ->whereHas('file', fn ($q) => $q->where('period_id', $this->periodId)->where('upload_mode', '!=', 'admin_only'))
@@ -123,9 +124,8 @@ trait ManagesRevision
     }
 
     /**
-     * Archivos "carga individual" (solo el admin puede subirlos, uno por
-     * estudiante) configurados en este periodo, con si ya tienen archivo
-     * subido para este estudiante en particular.
+     * Archivos de carga individual (solo el admin los sube, uno por
+     * estudiante), con si ya tienen archivo para este estudiante.
      */
     public function getStudentIndividualFiles(int $studentId)
     {
@@ -164,10 +164,8 @@ trait ManagesRevision
     }
 
     /**
-     * Todos los documentos pendientes de revisar en el periodo (entregados
-     * por el estudiante, sin decisión aún), respetando el filtro de
-     * carrera activo. Es la cola que recorre el botón "Revisar pendientes"
-     * y también el conteo que se muestra ahí.
+     * Documentos entregados y sin decisión aún, respetando el filtro de
+     * carrera — cola de "Revisar pendientes" y su conteo.
      */
     private function getPendingDocsQueueQuery()
     {
@@ -187,10 +185,7 @@ trait ManagesRevision
         return $this->getPendingDocsQueueQuery()->count();
     }
 
-    /**
-     * Carreras que de verdad tienen estudiantes aprobados en este periodo
-     * (para el filtro, no todas las carreras del sistema).
-     */
+    /** Carreras con estudiantes aprobados en este periodo (para el filtro). */
     public function getFilterCareers()
     {
         return \App\Models\Career::whereIn(
@@ -202,10 +197,8 @@ trait ManagesRevision
     // ========================= Ver documentos del estudiante =========================
 
     /**
-     * Punto de entrada al hacer click en la tarjeta de un estudiante: abre
-     * el visor unificado (lista de sus documentos + revisión) en su primer
-     * documento entregado. Si no ha subido nada todavía, abre el visor
-     * igual pero sin documento seleccionado (solo su info y la lista vacía).
+     * Abre el visor unificado en el primer documento entregado del
+     * estudiante, o vacío si todavía no ha subido nada.
      */
     public function viewStudentDocuments(int $studentId): void
     {
@@ -232,9 +225,8 @@ trait ManagesRevision
     }
 
     /**
-     * Abrir en el visor un archivo de "carga individual": no es un
-     * Document (esos solo existen una vez el estudiante entra a su
-     * portal), es un File directo — el admin sube el archivo por él.
+     * Abre un archivo de carga individual: no es un Document, es un File
+     * directo — el admin lo sube por el estudiante.
      */
     public function viewIndividualFile(int $fileId): void
     {
@@ -283,9 +275,8 @@ trait ManagesRevision
     // ========================= Quick Review =========================
 
     /**
-     * Punto de entrada del botón "Revisar pendientes": abre el primer
-     * documento pendiente de todo el periodo (respetando el filtro de
-     * carrera). Siguiente/Anterior recorren esa misma cola completa.
+     * Abre el primer documento pendiente del periodo (respetando el
+     * filtro de carrera); Siguiente/Anterior recorren esa misma cola.
      */
     public function reviewAllPending(): void
     {
@@ -316,11 +307,7 @@ trait ManagesRevision
         $this->quickReviewDocument($first->id);
     }
 
-    /**
-     * Abrir un documento puntual desde la lista del visor unificado:
-     * Siguiente/Anterior navegan solo entre los documentos de ese
-     * estudiante (no salta a otro estudiante).
-     */
+    /** Abre un documento puntual; Siguiente/Anterior no salen del estudiante. */
     public function reviewDocFromStudent(int $studentId, int $docId): void
     {
         $this->reviewScopeStudentId = $studentId;
@@ -333,7 +320,7 @@ trait ManagesRevision
         $this->resetErrorBag();
 
         $this->viewingIndividualFileId = null;
-        $this->quickReviewDoc = Document::with(['student.career', 'file'])->find($docId);
+        $this->quickReviewDoc = Document::with(['student.career', 'student.user', 'file'])->find($docId);
 
         if (! $this->quickReviewDoc) {
             session()->flash('error', 'El documento no está disponible para revisión');
@@ -393,6 +380,7 @@ trait ManagesRevision
             'reviewed_at' => now(),
         ]);
 
+        $this->quickReviewDoc->student->user?->notify(new DocumentStatusChanged($this->quickReviewDoc, 'revisado'));
         $this->dispatch('notify', type: 'success', message: 'Documento aprobado correctamente');
 
         if (! $this->navigateToNextDoc()) {
@@ -418,6 +406,7 @@ trait ManagesRevision
             'reviewed_at' => now(),
         ]);
 
+        $this->quickReviewDoc->student->user?->notify(new DocumentStatusChanged($this->quickReviewDoc, 'rechazado'));
         $this->dispatch('notify', type: 'error', message: 'Documento rechazado correctamente');
 
         if (! $this->navigateToNextDoc()) {
@@ -430,14 +419,15 @@ trait ManagesRevision
         if (! $this->quickReviewDoc) return;
 
         $this->quickReviewDoc->update(['comments' => $this->quickReviewComments]);
+
+        if (trim($this->quickReviewComments) !== '') {
+            $this->quickReviewDoc->student->user?->notify(new DocumentCommented($this->quickReviewDoc));
+        }
+
         $this->dispatch('notify', type: 'info', message: 'Comentarios guardados correctamente');
     }
 
-    /**
-     * Actualiza la fecha límite personalizada del documento.
-     * Se llama ÚNICAMENTE desde el botón "Guardar Fecha" en el modal,
-     * ya no se dispara automáticamente con wire:change.
-     */
+    /** Actualiza la fecha límite personalizada (botón "Guardar Fecha" del modal). */
     public function updateDocumentDate(int $documentId): void
     {
         $doc = Document::with('file')->findOrFail($documentId);
@@ -613,12 +603,9 @@ trait ManagesRevision
     {
         if (! $this->quickReviewDoc) return;
 
-        // Con texto en el buscador: la navegación se acota a lo que el
-        // buscador está mostrando en ese momento (sin importar el modo),
-        // así que si solo coincide un documento no hay a dónde navegar.
-        // Sin buscador: con estudiante fijado se navega entre SUS
-        // documentos (todos, sin importar estatus); sin estudiante fijado
-        // se navega por la cola completa de pendientes del periodo.
+        // Con buscador activo, la navegación se acota a sus resultados.
+        // Sin buscador: con estudiante fijado, entre SUS documentos;
+        // si no, por la cola completa de pendientes del periodo.
         if (trim($this->reviewDocSearch) !== '') {
             $allDocs = $this->getFilteredStudentDocuments($this->quickReviewDoc->student_id)->values();
         } else {

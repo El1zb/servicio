@@ -13,31 +13,25 @@ class DocxToPdfConverter
 {
     private const CACHE_DIR = 'converted';
 
-    // Tope de procesos soffice corriendo a la vez en todo el servidor. Cada
-    // conversión es pesada (CPU + ~200-300MB de RAM); sin este tope, una
-    // ráfaga de muchos estudiantes viendo documentos Word al mismo tiempo
-    // podría lanzar decenas de procesos simultáneos y ahogar el contenedor.
-    // Configurable por si el servidor real tiene más o menos núcleos.
+    // Tope de procesos soffice a la vez (cada uno pesa ~200-300MB de RAM);
+    // sin esto, una ráfaga de estudiantes viendo Word podría ahogar el
+    // contenedor. Ajustar según núcleos del servidor real.
     private const MAX_CONCURRENT_CONVERSIONS = 3;
 
     private const SLOT_WAIT_TIMEOUT = 45;
 
     /**
      * Convierte (con caché) un .docx del disco "local" a PDF vía LibreOffice
-     * headless, y devuelve la ruta relativa (mismo disco) del PDF resultante.
+     * headless, y devuelve la ruta relativa del PDF resultante.
      *
-     * La clave de caché incluye filetime(), así que reemplazar el .docx
-     * invalida automáticamente el PDF viejo. El Cache::lock por archivo evita
-     * que dos peticiones simultáneas sobre el MISMO archivo lancen dos
-     * conversiones redundantes. Para archivos DISTINTOS convertidos a la vez
-     * (varios estudiantes subiendo/viendo documentos al mismo tiempo), cada
-     * llamada usa su propio perfil de usuario de LibreOffice
-     * (--env:UserInstallation) dentro de su propio workDir — sin esto, todas
-     * las instancias de soffice comparten un mismo perfil por defecto y una
-     * pisa a la otra (falla con "cannot be started", no es hipotético). Y por
-     * encima de eso, un semáforo global (acquireConversionSlot) limita
-     * cuántas conversiones corren en paralelo en todo el servidor, para no
-     * saturar CPU/RAM si coinciden muchas a la vez.
+     * La clave de caché incluye filemtime(), así que reemplazar el .docx
+     * invalida el PDF viejo solo. Cache::lock por archivo evita conversiones
+     * redundantes sobre el MISMO archivo en paralelo; para archivos
+     * DISTINTOS, cada llamada usa su propio perfil de LibreOffice
+     * (--env:UserInstallation) — compartir el perfil por defecto hace que
+     * las instancias de soffice se pisen entre sí ("cannot be started"). Un
+     * semáforo global (acquireConversionSlot) limita además cuántas
+     * conversiones corren a la vez en todo el servidor.
      */
     public function convert(string $docxPath): string
     {
@@ -110,12 +104,10 @@ class DocxToPdfConverter
     }
 
     /**
-     * Semáforo simple con N locks nombrados: intenta tomar el primero libre
-     * y, si todos están ocupados, reintenta en ráfagas cortas hasta el
-     * timeout. Evita más de MAX_CONCURRENT_CONVERSIONS procesos soffice
-     * corriendo a la vez en todo el servidor, sin necesitar Redis ni una cola
-     * — cada slot es un Cache::lock normal, compatible con el driver de
-     * caché "database" que ya usa la app.
+     * Semáforo con N locks nombrados: toma el primero libre, o reintenta en
+     * ráfagas cortas hasta el timeout. Cada slot es un Cache::lock normal
+     * (compatible con el driver "database" que ya usa la app), sin
+     * necesitar Redis ni una cola.
      */
     private function acquireConversionSlot()
     {

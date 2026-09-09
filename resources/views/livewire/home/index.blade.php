@@ -37,8 +37,8 @@
                     <p class="dashboard-panel-title">Estudiantes por Estado</p>
                 </div>
 
-                <div class="donut-chart-row">
-                    <div class="donut-chart-wrap">
+                <div class="donut-chart-row flex-col md:flex-row w-full">
+                    <div class="donut-chart-wrap w-full max-w-[220px] aspect-square mx-auto md:w-[140px] md:h-[140px] md:max-w-none md:mx-0">
                         <svg class="donut-chart" viewBox="0 0 36 36">
                             <circle class="donut-chart-track" cx="18" cy="18" r="15.915" fill="none"/>
                             @php $offset = 25; @endphp
@@ -58,7 +58,7 @@
                         </div>
                     </div>
 
-                    <div class="donut-chart-legend">
+                    <div class="donut-chart-legend grid grid-cols-2 gap-x-4 gap-y-2 w-full self-stretch md:flex md:flex-col md:gap-2.5 md:w-auto md:self-auto">
                         @foreach($studentsByStatus as $segment)
                             <div class="donut-chart-legend-item">
                                 <span class="donut-chart-legend-dot" style="background-color: {{ $segment['color'] }};"></span>
@@ -82,7 +82,7 @@
                 @if($upcomingFiles->isEmpty())
                     <p class="dashboard-panel-empty">No hay documentos próximos a vencer.</p>
                 @else
-                    <div class="task-list">
+                    <div class="task-list w-full">
                         @foreach($upcomingFiles as $item)
                             <div class="task-item">
                                 <span class="task-checkbox"></span>

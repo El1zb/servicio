@@ -3,7 +3,7 @@
      (settings/delete-user-form.blade.php). --}}
 @if($isCancelModalOpen && $cancelDocId)
     @php
-        $cancelDocument = \App\Models\Document::find($cancelDocId);
+        $cancelDocument = $this->cancelDocument;
     @endphp
 
     @if($cancelDocument)

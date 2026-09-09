@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-6 px-3 sm:px-0">
 
     {{-- Encabezado --}}
     <div class="text-center">
@@ -56,7 +56,8 @@
         </div>
 
         {{-- Recuérdame --}}
-        <label class="flex items-center gap-2.5 cursor-pointer -mt-1" wire:click="$toggle('remember')">
+        <label class="flex items-center gap-2.5 cursor-pointer -mt-1">
+            <input type="checkbox" wire:model="remember" class="sr-only">
             <span class="individual-toggle-check {{ $remember ? 'is-checked' : '' }}">
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
             </span>
@@ -64,7 +65,7 @@
         </label>
 
         {{-- Botón de login --}}
-        <button type="submit" wire:loading.attr="disabled" class="btn-primary w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed">
+        <button type="submit" wire:loading.attr="disabled" class="flex w-full h-10 items-center justify-center gap-2 rounded-full bg-black text-white text-sm hover:bg-neutral-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
             <span wire:loading.remove>{{ __('Iniciar sesión') }}</span>
             <span wire:loading>{{ __('Validando...') }}</span>
         </button>

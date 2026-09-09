@@ -6,11 +6,12 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Livewire\Dashboard\Period\Concerns\ManagesDocuments;
+use App\Livewire\Dashboard\Period\Concerns\ManagesDocumentViewer;
 use App\Models\Period;
 
 class PeriodDocuments extends Component
 {
-    use WithPagination, WithFileUploads, ManagesDocuments;
+    use WithPagination, WithFileUploads, ManagesDocuments, ManagesDocumentViewer;
 
     public int $periodId;
     public Period $period;

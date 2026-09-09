@@ -47,8 +47,6 @@
 </head>
 <body class="min-h-screen">
 
-<div class="mobile-overlay" id="mobileOverlay"></div>
-
 <div class="app-shell">
 
 {{-- La directiva "persist" saca este nodo del DOM ANTES de que wire:navigate
@@ -77,12 +75,6 @@
                     <rect x="3" y="3" width="18" height="18" rx="2"/>
                     <rect x="3" y="3" width="6" height="18" fill="currentColor" clip-path="url(#sidebarToggleClip)"/>
                     <path d="M9 3v18"/>
-                </svg>
-            </button>
-
-            <button class="mobile-close-btn lg:hidden" onclick="toggleMobileSidebar()">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
@@ -164,10 +156,8 @@
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="nav-item">
-                    <svg class="nav-item-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <line x1="9" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M16,8 L18.5858,10.5858 C19.3668,11.3668 19.3668,12.6332 18.5858,13.4142 L16,16" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M16,4 L6,4 C4.89543,4 4,4.89543 4,6 L4,18 C4,19.1046 4.89543,20 6,20 L16,20" stroke-width="2" stroke-linecap="round"/>
+                    <svg class="nav-item-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.95,17.5A2.853,2.853,0,0,1,0,14.75v-12A2.854,2.854,0,0,1,2.95,0h8.8a.75.75,0,0,1,0,1.5H2.95A1.362,1.362,0,0,0,1.5,2.75v12A1.363,1.363,0,0,0,2.95,16h8.8a.75.75,0,0,1,0,1.5Zm9.269-4.219a.751.751,0,0,1,0-1.061L14.939,9.5H5.75a.75.75,0,0,1,0-1.5h9.19L12.219,5.28A.75.75,0,1,1,13.28,4.22l4,4a.749.749,0,0,1,0,1.06l-4,4a.751.751,0,0,1-1.061,0Z" transform="translate(3.25 3.25)"/>
                     </svg>
                     <span class="nav-item-text">{{ __('Cerrar Sesión') }}</span>
                 </button>
@@ -208,48 +198,68 @@
 
     @stack('topbar-switcher')
 
-    <div class="topbar-profile">
-        <div class="user-avatar">{{ auth()->user()->initials() }}</div>
-        <div class="user-details">
-            <span class="user-name">{{ auth()->user()->shortName() }}</span>
-            <span class="user-email">{{ auth()->user()->email }}</span>
+    <div class="flex items-center gap-3">
+        @unless(auth()->user()->hasRole('admin'))
+            <livewire:students.notifications.bell />
+        @endunless
+
+        <div class="topbar-profile">
+            <div class="user-avatar">{{ auth()->user()->initials() }}</div>
+            <div class="user-details">
+                <span class="user-name">{{ auth()->user()->shortName() }}</span>
+                <span class="user-email">{{ auth()->user()->email }}</span>
+            </div>
         </div>
     </div>
 </header>
 
-<header class="mobile-header">
-    <button class="mobile-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-    </button>
+@php
+    // Mismo stack que arriba (@stack('topbar-search')), leído sin
+    // consumirlo para poder reusarlo acá dentro del botón de búsqueda
+    // móvil, en vez de que cada página duplique otro buscador solo-mobile.
+    $topbarSearchHtml = trim((string) $__env->yieldPushContent('topbar-search'));
+@endphp
 
-    <span class="mobile-header-title">Servicio Social</span>
+@if($sectionTitle)
+<header class="app-topbar-mobile lg:hidden" id="mobileTopbar">
+    @php
+        $isSettingsRoute = request()->routeIs('settings.*', 'admin.create-admin', 'admin.trash');
+    @endphp
+    <div class="app-topbar-mobile-left {{ $isSettingsRoute ? 'app-topbar-mobile-left--switcher' : '' }}">
+        @stack('topbar-mobile-back')
+        {{-- Ajustes (General/Administradores/Papelera): el switcher va aquí
+             mismo, en vez del título, pegado al lado derecho de este
+             contenedor — mismo tamaño de topbar, solo mobile. --}}
+        @if($isSettingsRoute)
+            <x-settings-switcher class="catalog-switcher--mobile" x-show="!$store.trashSelection || $store.trashSelection.selected.length === 0" />
+        @else
+            <h1 class="app-topbar-mobile-title" x-show="!$store.trashSelection || $store.trashSelection.selected.length === 0">{{ $sectionTitle }}</h1>
+        @endif
+    </div>
 
-    <div wire:ignore>
-        <flux:dropdown position="bottom" align="end">
-            <div class="mobile-header-avatar">{{ auth()->user()->initials() }}</div>
+    <div class="app-topbar-mobile-right">
+        @unless(auth()->user()->hasRole('admin'))
+            <livewire:students.notifications.bell />
+        @endunless
 
-            <flux:menu>
-                <div class="mobile-menu-user-info">
-                    <div class="mobile-menu-user-name">{{ auth()->user()->shortName() }}</div>
-                    <div class="mobile-menu-user-email">{{ auth()->user()->email }}</div>
-                </div>
-                <flux:menu.separator/>
-                <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
-                    {{ __('Configuración') }}
-                </flux:menu.item>
-                <flux:menu.separator/>
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
-                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                        {{ __('Cerrar Sesión') }}
-                    </flux:menu.item>
-                </form>
-            </flux:menu>
-        </flux:dropdown>
+        @stack('topbar-mobile-meta')
+
+        @if($topbarSearchHtml !== '')
+            <div class="app-topbar-mobile-search">{!! $topbarSearchHtml !!}</div>
+
+            <button type="button" class="app-topbar-mobile-search-btn" onclick="toggleMobileTopbarSearch()" aria-label="{{ __('Buscar') }}">
+                <svg class="app-topbar-mobile-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+                </svg>
+                <svg class="app-topbar-mobile-close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        @endif
     </div>
 </header>
+@endif
 
 <main class="main-content">
     <div class="main-content-inner">
@@ -271,6 +281,8 @@
 </div><!-- /.app-main-col -->
 
 </div><!-- /.app-shell -->
+
+@include('partials.mobile-bottom-nav')
 
 @persist('sidebar-tooltip')
 <div id="customTooltip"></div>
@@ -320,6 +332,55 @@
         window.Livewire?.first()?.call(method);
     }
 
+    // Selección múltiple de Papelera (mobile): vive en un Alpine store
+    // porque las cards (dentro del componente Livewire) y los botones de
+    // esta topbar (fuera de él, en este layout) no comparten árbol de
+    // x-data — solo así ambos leen/escriben el mismo estado.
+    //
+    // Se registra tanto en 'alpine:init' como de inmediato si Alpine ya
+    // arrancó: este script trae "data-navigate-once", así que la PRIMERA
+    // vez que aparece en el DOM puede ser vía wire:navigate (ej. justo
+    // después del login, que redirige por soft-navigate desde un layout
+    // que no incluye este script) — en ese caso Alpine ya arrancó en la
+    // página anterior y 'alpine:init' no vuelve a disparar nunca, dejando
+    // el store sin crear (y con él, $store.trashSelection undefined en
+    // el título mobile hasta el próximo reload real).
+    function registerTrashSelectionStore() {
+        if (Alpine.store('trashSelection')) return;
+        Alpine.store('trashSelection', {
+            selected: [],
+            confirmingPurge: false,
+            toggle(key) {
+                this.selected = this.selected.includes(key)
+                    ? this.selected.filter(k => k !== key)
+                    : [...this.selected, key];
+            },
+            cancel() {
+                this.selected = [];
+                this.confirmingPurge = false;
+            },
+        });
+    }
+
+    if (window.Alpine) {
+        registerTrashSelectionStore();
+    } else {
+        document.addEventListener('alpine:init', registerTrashSelectionStore);
+    }
+
+    function trashSelectionRestore() {
+        const store = Alpine.store('trashSelection');
+        window.Livewire?.first()?.call('restoreSelected', store.selected).then(() => { store.selected = []; });
+    }
+
+    function trashSelectionPurge() {
+        const store = Alpine.store('trashSelection');
+        window.Livewire?.first()?.call('purgeSelected', store.selected).then(() => {
+            store.selected = [];
+            store.confirmingPurge = false;
+        });
+    }
+
     function updateMainContentPadding() {
         const el = document.querySelector('.main-content');
         const inner = el?.querySelector('.main-content-inner');
@@ -358,6 +419,19 @@
         });
     }
 
+    // Botón de búsqueda de la barra superior móvil: alterna entre mostrar
+    // el título de la sección o el buscador (mismo contenido pujado por la
+    // página a 'topbar-search', ver arriba) dentro de la misma barra.
+    function toggleMobileTopbarSearch() {
+        const bar = document.getElementById('mobileTopbar');
+        if (!bar) return;
+        const opening = !bar.classList.contains('search-open');
+        bar.classList.toggle('search-open', opening);
+        if (opening) {
+            setTimeout(() => bar.querySelector('.topbar-search-input')?.focus(), 50);
+        }
+    }
+
     function toggleSidebarCollapse() {
         const sidebar = document.getElementById('sidebar');
         sidebarCollapsed = !sidebarCollapsed;
@@ -366,22 +440,6 @@
         localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
         updateSidebarToggleTooltip(sidebarCollapsed);
     }
-
-    function toggleMobileSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobileOverlay');
-        sidebar?.classList.toggle('mobile-open');
-        overlay?.classList.toggle('show');
-    }
-
-    function bindOverlay() {
-        const overlay = document.getElementById('mobileOverlay');
-        if (!overlay) return;
-        const fresh = overlay.cloneNode(true);
-        overlay.parentNode.replaceChild(fresh, overlay);
-        fresh.addEventListener('click', toggleMobileSidebar);
-    }
-    bindOverlay();
 
     // Tooltip del botón de contraer/expandir sidebar: aparece con un pequeño
     // delay (como cualquier tooltip nativo) y se posiciona con JS para que
@@ -447,12 +505,6 @@
         sidebarCollapsed = saved;
         updateSidebarToggleTooltip(saved);
         updateActiveNavItem();
-
-        if (sidebar?.classList.contains('mobile-open')) {
-            sidebar.classList.remove('mobile-open');
-            document.getElementById('mobileOverlay')?.classList.remove('show');
-        }
-        bindOverlay();
         initMainContentPadding();
         setTimeout(() => document.body.classList.remove('livewire-navigating'), 50);
     });

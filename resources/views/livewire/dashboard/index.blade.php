@@ -1,3 +1,10 @@
+@php
+    // Compartidas entre header.blade.php (selects mobile) y filters.blade.php
+    // (selects desktop, vía @push('header-filters')).
+    $statusFilterLabels = ['all' => 'Todos', 'active' => 'Activos', 'inactive' => 'Inactivos'];
+    $sortByLabels = ['recent' => 'Más recientes', 'oldest' => 'Más antiguos', 'name' => 'Nombre (A–Z)'];
+@endphp
+
 <div class="space-y-8 p-6">
 
     @include('livewire.dashboard.index.partials.header')

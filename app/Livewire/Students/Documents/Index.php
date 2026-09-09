@@ -29,7 +29,7 @@ class Index extends Component
         }
 
         if ($this->student->status === 'aprobado' && $this->student->period_id) {
-            $this->assignPendingDocuments();
+            $this->student->syncPendingDocuments();
         }
     }
 

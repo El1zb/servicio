@@ -4,6 +4,7 @@ namespace App\Livewire\Students\Documents\Concerns;
 
 use App\Models\Document;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Computed;
 
 trait ManagesUploads
 {
@@ -13,6 +14,18 @@ trait ManagesUploads
 
     public ?int  $cancelDocId       = null;
     public bool  $isCancelModalOpen = false;
+
+    #[Computed]
+    public function uploadDocument(): ?Document
+    {
+        return $this->uploadDocId ? Document::with('file')->find($this->uploadDocId) : null;
+    }
+
+    #[Computed]
+    public function cancelDocument(): ?Document
+    {
+        return $this->cancelDocId ? Document::find($this->cancelDocId) : null;
+    }
 
     // ─── Modal de subida ─────────────────────────────────────────────────────────
     // isUploadModalOpen (booleano) es lo que controla la visibilidad del
@@ -25,7 +38,7 @@ trait ManagesUploads
     {
         $document = Document::find($docId);
 
-        if (! $document || ! $this->canUploadFile($document)) return;
+        if (! $document || ! $document->canUploadFile()) return;
 
         unset($this->fileUpload[$docId]);
         $this->resetValidation();
@@ -67,7 +80,7 @@ trait ManagesUploads
 
         if (! $file) return;
 
-        if (! $this->canUploadFile($document)) {
+        if (! $document->canUploadFile()) {
             $this->dispatch('notify', type: 'error', message: 'Este documento no permite subir archivos.');
             unset($this->fileUpload[$docId]);
             return;
@@ -117,6 +130,12 @@ trait ManagesUploads
         $this->uploadDocId       = null;
         $this->isUploadModalOpen = false;
 
+        // Si el visor está abierto en este mismo documento (dock mobile, botón
+        // "Subir"), lo dejamos mostrando de una vez el archivo recién subido.
+        if ($this->isViewerOpen && $this->viewerDocId === $docId) {
+            $this->viewerFilePath = $path;
+        }
+
         $this->dispatch('notify', type: 'success', message: "Archivo '{$file->name}' subido correctamente.");
     }
 
@@ -129,7 +148,7 @@ trait ManagesUploads
     {
         $document = Document::find($docId);
 
-        if (! $document || ! $this->canUploadFile($document) || $document->status !== 'rechazado') return;
+        if (! $document || ! $document->canUploadFile() || $document->status !== 'rechazado') return;
 
         $this->cancelDocId       = $docId;
         $this->isCancelModalOpen = true;
@@ -157,7 +176,7 @@ trait ManagesUploads
 
         $document = Document::findOrFail($docId);
 
-        if (! $this->canUploadFile($document)) return;
+        if (! $document->canUploadFile()) return;
 
         // Solo se puede cancelar una entrega rechazada — aprobada o en
         // revisión no se tocan (ver mismo criterio en submission-documents.blade.php).
@@ -175,6 +194,13 @@ trait ManagesUploads
         ]);
 
         unset($this->fileUpload[$docId]);
+
+        // Igual que al subir: si el visor sigue abierto en este documento, se
+        // reacomoda a lo que quede disponible (ya no está "mi archivo").
+        if ($this->isViewerOpen && $this->viewerDocId === $docId) {
+            $files = $this->getViewerFiles($document->refresh());
+            $this->viewerFilePath = $files[0]['path'] ?? null;
+        }
 
         $this->dispatch('notify', type: 'success', message: "Entrega de '{$document->name}' cancelada correctamente.");
     }

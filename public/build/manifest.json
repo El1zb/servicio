@@ -1,6 +1,24 @@
 {
+  "_pdf-viewer-B5TEbJL7.js": {
+    "file": "assets/pdf-viewer-B5TEbJL7.js",
+    "name": "pdf-viewer",
+    "isDynamicEntry": true,
+    "assets": [
+      "assets/pdf.worker.min-yatZIOMy.mjs"
+    ]
+  },
+  "node_modules/docx-preview/dist/docx-preview.mjs": {
+    "file": "assets/docx-viewer-DcWpCNLf.js",
+    "name": "docx-viewer",
+    "src": "node_modules/docx-preview/dist/docx-preview.mjs",
+    "isDynamicEntry": true
+  },
+  "node_modules/pdfjs-dist/build/pdf.worker.min.mjs": {
+    "file": "assets/pdf.worker.min-yatZIOMy.mjs",
+    "src": "node_modules/pdfjs-dist/build/pdf.worker.min.mjs"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-m2MwlA6R.css",
+    "file": "assets/app-1QtYhqrp.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -8,9 +26,14 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-l0sNRNKZ.js",
+    "file": "assets/app-rQJuz7fE.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "dynamicImports": [
+      "_pdf-viewer-B5TEbJL7.js",
+      "_pdf-viewer-B5TEbJL7.js",
+      "node_modules/docx-preview/dist/docx-preview.mjs"
+    ]
   }
 }

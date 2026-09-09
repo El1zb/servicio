@@ -74,14 +74,13 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
         }
 
         $students = $query->get();
-        
-        // Obtener todos los archivos del periodo seleccionado o todos si no hay filtro
+
         $filesQuery = File::query();
         if ($this->periodId) {
             $filesQuery->where('period_id', $this->periodId);
         }
         $allFiles = $filesQuery->get();
-        
+
         $data = [];
 
         foreach ($students as $student) {
@@ -93,17 +92,14 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
             ];
 
             foreach ($allFiles as $file) {
-                // Buscar el documento del estudiante para este archivo
                 $doc = $student->documents->firstWhere('file_id', $file->id);
-                
+
                 if ($doc) {
-                    // El estudiante tiene asignado este documento
                     $status = $this->getDocumentStatus($doc, $file);
                 } else {
-                    // El documento no está asignado a este estudiante
                     $status = 'No asignado';
                 }
-                
+
                 $row[] = $status;
             }
 
@@ -113,21 +109,15 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
         return collect($data);
     }
 
-    /**
-     * Obtiene el estado detallado del documento
-     */
     private function getDocumentStatus($doc, $file)
     {
-        // Verificar si el documento está activo
         if (!$doc->is_active) {
             return 'Inactivo';
         }
 
-        // Verificar si hay archivo subido
         if ($doc->student_file_path) {
             $status = '';
-            
-            // Estado de revisión
+
             switch ($doc->status) {
                 case 'revisado':
                     $status = '✓ Aprobado';
@@ -140,28 +130,26 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
                     $status = '⏳ En revisión';
                     break;
             }
-            
-            // Agregar comentarios si existen
+
             if (!empty($doc->comments)) {
                 $status .= ' | ' . $doc->comments;
             }
-            
+
             return $status;
         } else {
-            // No ha subido el documento
             $fechaLimite = $doc->custom_limit_date ?? $file->limit_date;
-            
+
             if ($fechaLimite) {
                 $fecha = \Carbon\Carbon::parse($fechaLimite);
                 $hoy = \Carbon\Carbon::now();
-                
+
                 if ($fecha->lt($hoy)) {
                     return '⚠ No entregado (Vencido: ' . $fecha->format('d/m/Y') . ')';
                 } else {
                     return 'Pendiente (Límite: ' . $fecha->format('d/m/Y') . ')';
                 }
             }
-            
+
             return 'Pendiente';
         }
     }
@@ -173,9 +161,9 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
             $filesQuery->where('period_id', $this->periodId);
         }
         $allFiles = $filesQuery->pluck('name')->toArray();
-        
+
         return array_merge(
-            ['Nombre Completo', 'No. Control', 'Carrera', 'Periodo'], 
+            ['Nombre Completo', 'No. Control', 'Carrera', 'Periodo'],
             $allFiles
         );
     }
@@ -183,7 +171,6 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
     public function styles($sheet)
     {
         return [
-            // Estilo para la primera fila (encabezados)
             1 => [
                 'font' => [
                     'bold' => true,
@@ -210,83 +197,66 @@ class StudentsExport implements FromCollection, WithHeadings, WithEvents, WithSt
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
 
-                // Ajustar ancho de columnas
                 for ($col = 1; $col <= $highestColumnIndex; $col++) {
                     $columnLetter = Coordinate::stringFromColumnIndex($col);
-                    
                     if ($col <= 4) {
-                        // Columnas de información del estudiante
                         $sheet->getColumnDimension($columnLetter)->setWidth(20);
                     } else {
-                        // Columnas de documentos
                         $sheet->getColumnDimension($columnLetter)->setWidth(30);
                     }
                 }
 
-                // Aplicar colores a las celdas de documentos
                 for ($row = 2; $row <= $highestRow; $row++) {
                     for ($col = 5; $col <= $highestColumnIndex; $col++) {
                         $cell = $sheet->getCellByColumnAndRow($col, $row);
                         $value = $cell->getValue();
 
-                        // Aplicar color según el estado
                         if (str_contains($value, '✓ Aprobado')) {
-                            // Verde suave - Aprobado
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('C6EFCE');
                         } elseif (str_contains($value, '✗ Rechazado')) {
-                            // Rojo suave - Rechazado
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('FFC7CE');
                         } elseif (str_contains($value, '⏳ En revisión')) {
-                            // Azul suave - En revisión
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('BDD7EE');
                         } elseif (str_contains($value, 'Vencido')) {
-                            // Naranja - Vencido
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('FFD966');
                         } elseif (str_contains($value, 'Pendiente')) {
-                            // Amarillo suave - Pendiente
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('FFF2CC');
                         } elseif (str_contains($value, 'No asignado')) {
-                            // Gris - No asignado
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('D9D9D9');
                         } elseif (str_contains($value, 'Inactivo')) {
-                            // Gris oscuro - Inactivo
                             $cell->getStyle()->getFill()
                                 ->setFillType(Fill::FILL_SOLID)
                                 ->getStartColor()->setRGB('A6A6A6');
                         }
 
-                        // Alineación y ajuste de texto
                         $cell->getStyle()->getAlignment()
                             ->setVertical(Alignment::VERTICAL_CENTER)
                             ->setWrapText(true);
                     }
                 }
 
-                // Aplicar bordes a toda la tabla
                 $sheet->getStyle('A1:'.$highestColumn.$highestRow)
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_THIN)
                     ->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('CCCCCC'));
 
-                // Congelar primera fila
                 $sheet->freezePane('A2');
 
-                // Altura de las filas
                 for ($row = 2; $row <= $highestRow; $row++) {
-                    $sheet->getRowDimension($row)->setRowHeight(-1); // Auto-height
+                    $sheet->getRowDimension($row)->setRowHeight(-1);
                 }
             }
         ];
