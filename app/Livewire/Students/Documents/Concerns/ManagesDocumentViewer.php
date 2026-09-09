@@ -92,7 +92,7 @@ trait ManagesDocumentViewer
     /**
      * Los archivos de ESTE documento nada más: el mío propio (si ya lo subí)
      * más los del admin (Word/PDF, según el upload_mode — ver
-     * getFileToDisplay). Nunca mezcla archivos de otro documento.
+     * Document::filesToDisplay). Nunca mezcla archivos de otro documento.
      *
      * Mi archivo va primero: es lo más importante para mí en ese momento —
      * si ya lo subí, el visor debe abrir mostrándomelo a él, no la plantilla
@@ -102,7 +102,7 @@ trait ManagesDocumentViewer
     {
         $files = [];
 
-        if ($this->canUploadFile($document)
+        if ($document->canUploadFile()
             && $document->student_file_path
             && Storage::disk('local')->exists($document->student_file_path)) {
             $files[] = [
@@ -112,7 +112,7 @@ trait ManagesDocumentViewer
             ];
         }
 
-        $files = array_merge($files, $this->getFileToDisplay($document));
+        $files = array_merge($files, $document->filesToDisplay());
 
         // Orden: mi archivo primero (si existe), luego el PDF (se puede ver
         // directo en el visor), al final el Word (solo sirve para descargarlo).

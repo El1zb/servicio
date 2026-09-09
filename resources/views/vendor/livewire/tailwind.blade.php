@@ -18,25 +18,23 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
             <div class="flex justify-between flex-1 sm:hidden">
                 <span>
                     @if ($paginator->onFirstPage())
-                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg cursor-default"
-                              style="background-color: var(--period-detail-card-bg);
-                                     color: var(--period-detail-text-secondary);
-                                     border: 1px solid var(--period-detail-border);
+                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-full cursor-default"
+                              style="background-color: var(--color-card-bg);
+                                     color: var(--color-secondary);
                                      opacity: 0.5;">
-                            {!! __('pagination.previous') !!}
+                            Anterior
                         </span>
                     @else
                         <button type="button"
                                 wire:click="previousPage('{{ $paginator->getPageName() }}')"
                                 x-on:click="{{ $scrollIntoViewJsSnippet }}"
                                 wire:loading.attr="disabled"
-                                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition"
-                                style="background-color: var(--period-detail-card-bg);
-                                       color: var(--period-detail-text-primary);
-                                       border: 1px solid var(--period-detail-border);"
-                                onmouseover="this.style.backgroundColor='var(--period-detail-brand-primary)'; this.style.color='var(--period-detail-text-icon)';"
-                                onmouseout="this.style.backgroundColor='var(--period-detail-card-bg)'; this.style.color='var(--period-detail-text-primary)';">
-                            {!! __('pagination.previous') !!}
+                                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-full transition"
+                                style="background-color: var(--color-card-bg);
+                                       color: var(--color-primary-2);"
+                                onmouseover="this.style.backgroundColor='var(--color-primary-2)'; this.style.color='var(--color-bg)';"
+                                onmouseout="this.style.backgroundColor='var(--color-card-bg)'; this.style.color='var(--color-primary-2)';">
+                            Anterior
                         </button>
                     @endif
                 </span>
@@ -47,21 +45,19 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                                 wire:click="nextPage('{{ $paginator->getPageName() }}')"
                                 x-on:click="{{ $scrollIntoViewJsSnippet }}"
                                 wire:loading.attr="disabled"
-                                class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium rounded-lg transition"
-                                style="background-color: var(--period-detail-card-bg);
-                                       color: var(--period-detail-text-primary);
-                                       border: 1px solid var(--period-detail-border);"
-                                onmouseover="this.style.backgroundColor='var(--period-detail-brand-primary)'; this.style.color='var(--period-detail-text-icon)';"
-                                onmouseout="this.style.backgroundColor='var(--period-detail-card-bg)'; this.style.color='var(--period-detail-text-primary)';">
-                            {!! __('pagination.next') !!}
+                                class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium rounded-full transition"
+                                style="background-color: var(--color-card-bg);
+                                       color: var(--color-primary-2);"
+                                onmouseover="this.style.backgroundColor='var(--color-primary-2)'; this.style.color='var(--color-bg)';"
+                                onmouseout="this.style.backgroundColor='var(--color-card-bg)'; this.style.color='var(--color-primary-2)';">
+                            Siguiente
                         </button>
                     @else
-                        <span class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium rounded-lg cursor-default"
-                              style="background-color: var(--period-detail-card-bg);
-                                     color: var(--period-detail-text-secondary);
-                                     border: 1px solid var(--period-detail-border);
+                        <span class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium rounded-full cursor-default"
+                              style="background-color: var(--color-card-bg);
+                                     color: var(--color-secondary);
                                      opacity: 0.5;">
-                            {!! __('pagination.next') !!}
+                            Siguiente
                         </span>
                     @endif
                 </span>

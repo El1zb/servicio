@@ -31,6 +31,11 @@ class Student extends Model
     ];
 
     // Relaciones
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function campus()
     {
         return $this->belongsTo(Campus::class);
@@ -61,4 +66,47 @@ class Student extends Model
         return $this->hasMany(FileStudentUpload::class);
     }
 
+    /**
+     * Crea/reactiva los documentos del periodo actual del estudiante y
+     * desactiva los que ya no apliquen. Corre al entrar a su panel.
+     */
+    public function syncPendingDocuments(): void
+    {
+        Document::where('student_id', $this->id)
+            ->whereHas('file', fn ($q) => $q->where('period_id', '!=', $this->period_id))
+            ->update(['is_active' => false]);
+
+        $files = File::where('period_id', $this->period_id)->get();
+
+        foreach ($files as $file) {
+            // Individual + no admin_only → solo si ya tiene archivo asignado
+            if ($file->is_individual && $file->upload_mode !== 'admin_only') {
+                $exists = FileStudentUpload::where('file_id', $file->id)
+                    ->where('student_id', $this->id)
+                    ->exists();
+
+                if (! $exists) continue;
+            }
+
+            $document = Document::firstOrNew([
+                'student_id' => $this->id,
+                'file_id'    => $file->id,
+            ]);
+            $document->name      = $file->name;
+            $document->is_active = true;
+
+            if (! $document->exists) {
+                $document->status = in_array($file->upload_mode, ['user_only', 'bidirectional'])
+                    ? 'en_revision'
+                    : 'revisado';
+            }
+
+            $document->save();
+        }
+
+        Document::where('student_id', $this->id)
+            ->where('is_active', true)
+            ->whereDoesntHave('file', fn ($q) => $q->where('period_id', $this->period_id))
+            ->update(['is_active' => false]);
+    }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Livewire\Dashboard\Period\Concerns;
 
+use App\Models\Document;
 use App\Models\Student;
+use App\Notifications\ProfileApproved;
+use App\Notifications\ProfileRejected;
 use Illuminate\Support\Arr;
 
 trait ManagesStudents
@@ -60,10 +63,7 @@ trait ManagesStudents
 
     // ========================= Query =========================
 
-    /**
-     * Devuelve el paginador de estudiantes usado en render() (visor con
-     * filtros, para buscar cualquier estudiante sin importar su estatus).
-     */
+    /** Paginador de estudiantes usado en render(), con todos los filtros. */
     public function getStudentsPaginated()
     {
         $students = Student::with(['campus', 'career', 'semester'])
@@ -95,9 +95,8 @@ trait ManagesStudents
     }
 
     /**
-     * Estudiantes pendientes, respetando los filtros de carrera/semestre
-     * activos (el buscador y el filtro de estatus no aplican aquí: la cola
-     * de revisión rápida es siempre "todos los pendientes que apliquen").
+     * Estudiantes pendientes según carrera/semestre (el buscador y el
+     * filtro de estatus no aplican a la cola de revisión rápida).
      */
     private function getPendingQueueQuery()
     {
@@ -113,10 +112,31 @@ trait ManagesStudents
         return $this->getPendingQueueQuery()->count();
     }
 
-    /**
-     * Carreras que de verdad tienen estudiantes en este periodo (no todas
-     * las carreras del sistema, que sería una lista enorme e irrelevante).
-     */
+    /** Stats del periodo para la barra de la pestaña Estudiantes (2 queries). */
+    public function getPeriodStats(): array
+    {
+        $students = Student::where('period_id', $this->periodId)
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'pendiente' THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN status = 'aprobado' THEN 1 ELSE 0 END) as approved
+            ")
+            ->first();
+
+        $pendingDocuments = Document::whereHas('file', fn ($q) => $q->where('period_id', $this->periodId))
+            ->whereNotNull('student_file_path')
+            ->where(fn ($q) => $q->where('status', 'en_revision')->orWhereNull('status'))
+            ->count();
+
+        return [
+            'total'            => (int) $students->total,
+            'pending'          => (int) $students->pending,
+            'approved'         => (int) $students->approved,
+            'pendingDocuments' => $pendingDocuments,
+        ];
+    }
+
+    /** Carreras con estudiantes en este periodo (no todas las del sistema). */
     public function getFilterCareers()
     {
         return \App\Models\Career::whereIn(
@@ -127,11 +147,7 @@ trait ManagesStudents
 
     // ========================= Visor rápido =========================
 
-    /**
-     * Abre el visor en el primer estudiante pendiente (respetando filtros
-     * de carrera/semestre activos). Punto de entrada del botón
-     * "Revisar pendientes".
-     */
+    /** Abre el visor en el primer pendiente (botón "Revisar pendientes"). */
     public function reviewPending(): void
     {
         $first = $this->getPendingQueueQuery()->first();
@@ -145,11 +161,7 @@ trait ManagesStudents
         $this->viewDetails($first->id);
     }
 
-    /**
-     * Punto de entrada al abrir una card individual (no la cola de
-     * "Revisar pendientes"): aprobar/rechazar aquí solo cierra la card,
-     * no salta automáticamente a otro pendiente.
-     */
+    /** Abre una card individual: aprobar/rechazar aquí solo la cierra. */
     public function openStudentCard(int $studentId): void
     {
         $this->isReviewingQueue = false;
@@ -280,6 +292,7 @@ trait ManagesStudents
         }
 
         $student->update(['status' => 'aprobado']);
+        $student->user?->notify(new ProfileApproved());
         $this->dispatch('notify', type: 'success', message: 'Perfil aprobado correctamente');
 
         if (! $this->isReviewingQueue || ! $this->navigateToNextPending()) {
@@ -318,6 +331,7 @@ trait ManagesStudents
             'rejection_reason' => $this->rejectionReason,
         ]);
 
+        $this->selectedStudent->user?->notify(new ProfileRejected($this->rejectionReason));
         $this->dispatch('notify', type: 'error', message: 'Perfil rechazado correctamente');
 
         $this->isRejecting     = false;

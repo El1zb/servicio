@@ -1,7 +1,7 @@
 {{-- =================== MODAL SUBIR DOCUMENTO =================== --}}
 @if($isUploadModalOpen && $uploadDocId)
     @php
-        $uploadDocument = \App\Models\Document::with('file')->find($uploadDocId);
+        $uploadDocument = $this->uploadDocument;
         $uploadFile     = $uploadDocument?->file;
         $selectedFile   = $fileUpload[$uploadDocId] ?? null;
     @endphp
@@ -41,7 +41,7 @@
 
                     <input type="file" wire:model="fileUpload.{{ $uploadDocId }}" accept=".pdf" class="hidden" id="uploadFileInput">
                     <label for="uploadFileInput" class="file-dropzone" style="padding: 28px 16px;">
-                        <i class="fas fa-cloud-upload-alt text-xl" style="color: var(--color-icon);"></i>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-icon);"><path d="M7 18a4.6 4.4 0 0 1 0-9 5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1"/><path d="M12 12v9"/><path d="M9 15l3-3 3 3"/></svg>
                         <span>Haz clic para seleccionar tu archivo</span>
                         <span class="text-xs" style="opacity: 0.8;">
                             Formato soportado: PDF
@@ -59,7 +59,7 @@
 
                     @if($selectedFile)
                         <div wire:loading.remove wire:target="fileUpload.{{ $uploadDocId }}" class="file-chip">
-                            <i class="fas fa-file-pdf flex-shrink-0"></i>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>
                             <span class="truncate flex-1">{{ $selectedFile->getClientOriginalName() }} · {{ $this->formatSize($selectedFile->getSize()) }}</span>
                             <button wire:click="removeSelectedUpload" type="button" class="file-chip-remove">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>

@@ -1,15 +1,21 @@
-{{-- Documentos informativos (admin_only) — cards estilo period-card, solo lectura --}}
-@if($informativeDocuments->count() > 0)
-    <div class="space-y-3">
-        <div class="px-1">
-            <p class="font-bold text-[var(--color-primary-2)] truncate" style="font-size: 20px;">Informativos</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+{{-- Pestaña "Informativos": documentos que solo publica el admin (admin_only),
+     de solo lectura. El título lo aporta el switcher. --}}
+<div class="space-y-3">
+    @if($informativeDocuments->count() > 0)
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
             @foreach($informativeDocuments as $document)
-                @php $adminFiles = $this->getFileToDisplay($document); @endphp
+                @php
+                    $adminFiles = $document->filesToDisplay();
+                    $canView    = count($adminFiles) > 0;
+                    $tag        = $canView ? 'button' : 'div';
+                @endphp
 
-                <div wire:key="informative-doc-{{ $document->id }}" class="period-card group">
+                {{-- Desktop: se conserva el botón de acción tal cual, pero además
+                     toda la card abre el visor de un clic (el botón detiene la
+                     propagación para no disparar los dos). --}}
+                <div wire:key="informative-doc-{{ $document->id }}"
+                    @if($canView) wire:click="openDocumentViewer({{ $document->id }})" @endif
+                    class="period-card document-card-desktop group {{ $canView ? 'period-card--clickable' : '' }}">
                     <div class="stat-card-top">
                         <div class="min-w-0 flex-1">
                             <p class="document-card-title">{{ $document->name }}</p>
@@ -22,9 +28,8 @@
                     </div>
 
                     <div class="flex items-center justify-end gap-1 mt-auto">
-
-                        @if(count($adminFiles) > 0)
-                            <button wire:click="openDocumentViewer({{ $document->id }})"
+                        @if($canView)
+                            <button wire:click.stop="openDocumentViewer({{ $document->id }})"
                                     title="Ver documento"
                                     class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0
                                            text-[var(--color-icon)] bg-transparent cursor-pointer
@@ -40,7 +45,32 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Mobile: card completa clicable, sin botones — un tap abre el visor. --}}
+                <{{ $tag }} @if($canView) type="button" wire:click="openDocumentViewer({{ $document->id }})" @endif
+                    class="document-mobile-card {{ $canView ? '' : 'document-mobile-card--static' }}">
+                    <p class="document-card-title">{{ $document->name }}</p>
+                    <p class="stat-card-description" style="margin:0;">
+                        {{ $canView ? 'Ver documento' : 'Sin archivo' }}
+                    </p>
+                </{{ $tag }}>
             @endforeach
         </div>
-    </div>
-@endif
+    @else
+        <div class="text-center py-20">
+            <svg class="w-14 h-14 mx-auto mb-4" style="color: var(--color-secondary);" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="text-lg font-bold mb-2" style="color: var(--color-primary-2);">
+                @if($searchDocuments !== '') No se encontraron documentos @else Aún no hay documentos informativos @endif
+            </h3>
+            <p class="mb-6 max-w-sm mx-auto text-sm" style="color: var(--color-secondary);">
+                @if($searchDocuments !== '')
+                    Ajusta el buscador para ver otros resultados.
+                @else
+                    Aquí aparecerán los formatos, guías y avisos que publique el administrador.
+                @endif
+            </p>
+        </div>
+    @endif
+</div>

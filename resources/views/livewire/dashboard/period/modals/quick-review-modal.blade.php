@@ -8,8 +8,8 @@
     style="outline: none; max-width: 100vw; max-height: 100vh; margin: 0; inset: 0;">
 
     <div class="flex flex-col"
-        style="height: 100vh;"
-        x-data
+        style="height: 100vh; background-color: var(--color-contenedor-view);"
+        x-data="{ docsSheetOpen: false, detailSheetOpen: false }"
         @keydown.window="
             const el = document.activeElement;
             const typing = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
@@ -53,7 +53,7 @@
                 <button type="button" wire:click="exportStudentPDF({{ $viewingStudent->id }})"
                     class="inline-flex items-center gap-2 px-4 h-9 rounded-full text-sm font-medium transition-colors flex-shrink-0"
                     style="background-color: var(--color-bg); color: var(--color-primary-2); outline: none;"
-                    onmouseover="this.style.backgroundColor='#EDEDED'"
+                    onmouseover="this.style.backgroundColor='var(--color-card-bg-hover)'"
                     onmouseout="this.style.backgroundColor='var(--color-bg)'">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M12 7L12 14M12 14L15 11M12 14L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -78,7 +78,9 @@
             <div class="flex items-center gap-3 px-4 sm:px-6 py-3 flex-shrink-0"
                 style="background-color: var(--sidebar-color-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; z-index: 1; min-height: 58px;">
 
-                <div class="topbar-search-input-wrap" style="max-width: 220px; flex-shrink: 0;">
+                {{-- En mobile el buscador vive dentro de la hoja "Documentos"
+                     (ver sheet más abajo) — aquí no cabe junto a nav+título. --}}
+                <div class="hidden sm:flex topbar-search-input-wrap" style="max-width: 220px; flex-shrink: 0;">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
@@ -90,12 +92,10 @@
 
                 @if($quickReviewDoc)
                     <div class="flex items-center gap-1.5 flex-shrink-0">
-                        <button type="button" wire:click="navigateToPreviousDoc" @disabled(!$previousPendingDoc) class="review-icon-btn" title="Documento anterior"
-                            onmouseover="this.style.backgroundColor='#EDEDED'" onmouseout="this.style.backgroundColor=''">
+                        <button type="button" wire:click="navigateToPreviousDoc" @disabled(!$previousPendingDoc) class="review-icon-btn" title="Documento anterior">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                         </button>
-                        <button type="button" wire:click="navigateToNextDoc" @disabled(!$nextPendingDoc) class="review-icon-btn" title="Siguiente documento"
-                            onmouseover="this.style.backgroundColor='#EDEDED'" onmouseout="this.style.backgroundColor=''">
+                        <button type="button" wire:click="navigateToNextDoc" @disabled(!$nextPendingDoc) class="review-icon-btn" title="Siguiente documento">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                         </button>
                     </div>
@@ -125,8 +125,9 @@
 
             <div class="flex-1 flex overflow-hidden">
 
-                {{-- ── Columna izquierda: buscador (arriba, en barra 2) + documentos + estadísticas ── --}}
-                <div class="flex flex-col overflow-hidden flex-shrink-0"
+                {{-- ── Columna izquierda: buscador (arriba, en barra 2) + documentos + estadísticas.
+                     En mobile no hay espacio para ella — la hoja "Documentos" (dock de abajo) hace su función. ── --}}
+                <div class="hidden sm:flex flex-col overflow-hidden flex-shrink-0"
                     style="width: var(--sidebar-width); background-color: var(--sidebar-color-bg); box-shadow: 1px 0 3px rgba(0,0,0,0.04); position: relative; z-index: 1;">
 
                     @php
@@ -200,12 +201,14 @@
                                 <div wire:key="pdf-viewer-{{ $quickReviewDoc?->id }}-{{ $viewingIndividualFileId }}-{{ $quickReviewPreviewUrl }}"
                                     wire:ignore
                                     x-data
-                                    x-init="renderReviewPdf(@js($quickReviewPreviewUrl), $el)"
+                                    x-init="renderReviewPdf(@js($quickReviewPreviewUrl), $el); initPdfPinchZoom($el)"
                                     class="pdf-render-target w-full h-full overflow-y-auto"
                                     style="background-color: var(--color-contenedor-view); padding: 24px;">
                                 </div>
 
-                                <div class="absolute bottom-5 right-5 flex items-center gap-1 rounded-full px-1.5 py-1.5"
+                                {{-- Solo escritorio: en mobile el pellizco (dos dedos) hace
+                                     zoom y estos botones chocarían con el dock flotante. --}}
+                                <div class="hidden sm:flex absolute bottom-5 right-5 items-center gap-1 rounded-full px-1.5 py-1.5"
                                     style="background-color: var(--color-card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.15);">
                                     <button type="button" class="review-icon-btn" style="width: 28px; height: 28px; background-color: transparent;"
                                         onclick="zoomReviewPdf(document.querySelector('.pdf-render-target'), -0.15)"
@@ -268,8 +271,9 @@
                     @endif
                 </div>
 
-                {{-- ── Columna derecha: acciones ── --}}
-                <div class="flex flex-col overflow-y-auto flex-shrink-0"
+                {{-- ── Columna derecha: acciones. En mobile vive en la hoja
+                     "Revisar" (dock de abajo) en vez de esta columna. ── --}}
+                <div class="hidden sm:flex flex-col overflow-y-auto flex-shrink-0"
                     style="width: var(--sidebar-width); background-color: var(--sidebar-color-bg); box-shadow: -1px 0 3px rgba(0,0,0,0.04);">
 
                     @if($viewingIndividualFile)
@@ -354,7 +358,7 @@
                                     x-show="changed" x-cloak
                                     class="mt-2 px-4 h-8 text-xs font-semibold rounded-full transition-all duration-200 self-end"
                                     style="color: var(--color-primary-2); background-color: var(--color-bg); outline: none;"
-                                    onmouseover="this.style.backgroundColor='#EDEDED'"
+                                    onmouseover="this.style.backgroundColor='var(--color-card-bg-hover)'"
                                     onmouseout="this.style.backgroundColor='var(--color-bg)'">
                                     Guardar
                                 </button>
@@ -392,7 +396,7 @@
                                     x-show="changed" x-cloak
                                     class="px-4 h-8 text-xs font-semibold rounded-full transition-all duration-200 self-end"
                                     style="color: var(--color-primary-2); background-color: var(--color-bg); outline: none;"
-                                    onmouseover="this.style.backgroundColor='#EDEDED'"
+                                    onmouseover="this.style.backgroundColor='var(--color-card-bg-hover)'"
                                     onmouseout="this.style.backgroundColor='var(--color-bg)'">
                                     Actualizar
                                 </button>
@@ -420,6 +424,274 @@
                 </div>
 
             </div>
+
+            {{-- ── Mobile: dock flotante (mismo "liquid glass" del visor de
+                 Documentos / mobile-bottom-nav) + hojas inferiores para lo que
+                 en escritorio vive en las columnas izquierda/derecha. La lista
+                 de documentos puede ser larga, así que en vez de píldoras (no
+                 caben todas) se abre como hoja con su propio scroll. ── --}}
+            @php
+                $rvGlass = 'border border-white/30 bg-linear-to-b from-[rgba(255,255,255,0.45)] to-[rgba(255,255,255,0.22)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4),0_20px_45px_-15px_rgba(0,0,0,0.18)] backdrop-blur-[20px] backdrop-saturate-[180%] dark:border-white/8 dark:from-[rgba(23,23,23,0.45)] dark:to-[rgba(23,23,23,0.22)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_20px_45px_-15px_rgba(0,0,0,0.5)]';
+            @endphp
+
+            <div class="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:hidden">
+                <nav class="viewer-dock {{ $rvGlass }}" aria-label="Documentos y revisión">
+                    <button type="button" @click="docsSheetOpen = true" class="viewer-dock-item">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="text-[10px] font-medium leading-none whitespace-nowrap">Documentos</span>
+                    </button>
+
+                    @if($quickReviewDoc || $viewingIndividualFile)
+                        <button type="button" @click="detailSheetOpen = true" class="viewer-dock-item">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                <path d="M9 9h1M9 12.5h6M9 16h6" stroke-linecap="round"/>
+                            </svg>
+                            <span class="text-[10px] font-medium leading-none whitespace-nowrap">Revisar</span>
+                        </button>
+                    @endif
+                </nav>
+            </div>
+
+            {{-- ── Hoja "Documentos": fondo + panel, mismo patrón de sheet
+                 (drag handle, header, lista con su propio scroll). ── --}}
+            <div x-show="docsSheetOpen" x-cloak x-transition.opacity
+                class="fixed inset-0 z-30 sm:hidden" style="background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"
+                @click="docsSheetOpen = false"></div>
+
+            <div x-show="docsSheetOpen" x-cloak
+                x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+                x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+                class="fixed inset-x-0 bottom-0 z-40 flex flex-col sm:hidden rounded-t-3xl overflow-hidden"
+                style="max-height: 80vh; background-color: var(--color-modal-bg); box-shadow: 0 -10px 40px rgba(0,0,0,0.3);">
+
+                <div class="w-10 h-1.5 rounded-full mx-auto mt-3 mb-1 flex-shrink-0" style="background-color: var(--color-border-hover);"></div>
+
+                <div class="flex items-center justify-between gap-3 px-4 py-3 flex-shrink-0">
+                    <h3 class="text-sm font-semibold" style="color: var(--color-primary-2);">Documentos</h3>
+                    <button type="button" @click="docsSheetOpen = false" class="review-icon-btn" style="background-color: transparent; color: var(--color-icon);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <div class="px-4 pb-3 flex-shrink-0">
+                    <div class="topbar-search-input-wrap">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.6725 16.6412L21 21"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"/>
+                        </svg>
+                        <input type="text" wire:model.live.debounce.300ms="reviewDocSearch"
+                            placeholder="Buscar documento..."
+                            class="topbar-search-input review-field">
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto px-3 pb-2 space-y-1">
+                    @if($individualFiles->count())
+                        <p class="px-3 pb-1 pt-1 text-xs font-semibold uppercase tracking-wide" style="color: var(--color-secondary);">Individuales</p>
+                        @foreach($individualFiles as $file)
+                            <button type="button"
+                                wire:click="viewIndividualFile({{ $file->id }})"
+                                @click="docsSheetOpen = false"
+                                class="review-nav-item {{ $viewingIndividualFileId === $file->id ? 'is-active' : '' }}">
+                                <span class="status-badge-dot flex-shrink-0" style="color: {{ $file->uploaded ? '#16A34A' : '#D1D5DB' }};"></span>
+                                <span class="truncate flex-1">{{ $file->name }}</span>
+                            </button>
+                        @endforeach
+                        <div style="height: 8px;"></div>
+                    @endif
+
+                    @forelse($studentDocs as $doc)
+                        @php
+                            $docColorMobile = $doc->status === 'revisado' ? '#16A34A' : ($doc->status === 'rechazado' ? '#DC2626' : '#D97706');
+                        @endphp
+                        <button type="button"
+                            wire:click="reviewDocFromStudent({{ $viewingStudent->id }}, {{ $doc->id }})"
+                            @click="docsSheetOpen = false"
+                            class="review-nav-item {{ $quickReviewDoc && $quickReviewDoc->id === $doc->id ? 'is-active' : '' }}">
+                            <span class="status-badge-dot flex-shrink-0" style="color: {{ $docColorMobile }};"></span>
+                            <span class="truncate flex-1">{{ $doc->file->name ?? $doc->name }}</span>
+                        </button>
+                    @empty
+                        @if(!$individualFiles->count())
+                            <div class="text-center px-3 py-10">
+                                <p class="text-xs" style="color: var(--color-secondary);">
+                                    @if($reviewDocSearch !== '')
+                                        No se encontraron documentos con "{{ $reviewDocSearch }}".
+                                    @else
+                                        Este estudiante todavía no ha subido documentos.
+                                    @endif
+                                </p>
+                            </div>
+                        @endif
+                    @endforelse
+                </div>
+
+                <div class="pt-2 flex-shrink-0" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); box-shadow: 0 -1px 3px rgba(0,0,0,0.04);">
+                    <div class="flex items-center gap-2.5 px-4 pt-2 py-1.5">
+                        <span class="status-badge-dot" style="color: #16A34A; width: 7px; height: 7px;"></span>
+                        <span class="text-sm font-semibold" style="color: var(--color-primary-2);">{{ $viewingStudent->approved_count ?? 0 }}</span>
+                        <span class="text-sm" style="color: var(--color-secondary);">Aprobados</span>
+                    </div>
+                    <div class="flex items-center gap-2.5 px-4 py-1.5">
+                        <span class="status-badge-dot" style="color: #D97706; width: 7px; height: 7px;"></span>
+                        <span class="text-sm font-semibold" style="color: var(--color-primary-2);">{{ $viewingStudent->pending_count ?? 0 }}</span>
+                        <span class="text-sm" style="color: var(--color-secondary);">Pendientes</span>
+                    </div>
+                    <div class="flex items-center gap-2.5 px-4 py-1.5">
+                        <span class="status-badge-dot" style="color: #DC2626; width: 7px; height: 7px;"></span>
+                        <span class="text-sm font-semibold" style="color: var(--color-primary-2);">{{ $viewingStudent->rejected_count ?? 0 }}</span>
+                        <span class="text-sm" style="color: var(--color-secondary);">Rechazados</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Hoja "Revisar": mismo contenido que la columna derecha de
+                 escritorio (observaciones, fecha límite, aprobar/rechazar, o
+                 el formulario de carga individual), en formato hoja. ── --}}
+            @if($quickReviewDoc || $viewingIndividualFile)
+                <div x-show="detailSheetOpen" x-cloak x-transition.opacity
+                    class="fixed inset-0 z-30 sm:hidden" style="background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"
+                    @click="detailSheetOpen = false"></div>
+
+                <div x-show="detailSheetOpen" x-cloak
+                    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+                    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+                    class="fixed inset-x-0 bottom-0 z-40 flex flex-col sm:hidden rounded-t-3xl overflow-hidden"
+                    style="max-height: 85vh; background-color: var(--color-modal-bg); box-shadow: 0 -10px 40px rgba(0,0,0,0.3);">
+
+                    <div class="w-10 h-1.5 rounded-full mx-auto mt-3 mb-1 flex-shrink-0" style="background-color: var(--color-border-hover);"></div>
+
+                    <div class="flex items-center justify-between gap-3 px-4 py-3 flex-shrink-0">
+                        <h3 class="text-sm font-semibold truncate" style="color: var(--color-primary-2);">
+                            {{ $viewingIndividualFile ? $viewingIndividualFile->name : ($quickReviewDoc->file->name ?? $quickReviewDoc->name) }}
+                        </h3>
+                        <button type="button" @click="detailSheetOpen = false" class="review-icon-btn flex-shrink-0" style="background-color: transparent; color: var(--color-icon);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto">
+                        @if($viewingIndividualFile)
+                            <div class="p-4">
+                                <p class="text-xs font-semibold mb-1 flex items-center gap-1.5" style="color: var(--color-primary-2);">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                    Subir Documento
+                                </p>
+                                <p class="text-xs mb-3" style="color: var(--color-secondary);">Solo el administrador puede subir este archivo.</p>
+
+                                @if($currentIndividualUpload)
+                                    <div class="mb-3 p-2.5 rounded-lg flex items-center justify-between gap-2" style="background-color: var(--color-bg);">
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium truncate" style="color: var(--color-primary-2);">{{ $currentIndividualUpload->name_file }}</p>
+                                            <p class="text-xs" style="color: var(--color-secondary);">{{ $currentIndividualUpload->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <button wire:click="deleteIndividualFile" wire:confirm="¿Eliminar este archivo?"
+                                            class="review-icon-btn flex-shrink-0" style="width: 28px; height: 28px; background-color: transparent; color: #DC2626;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                @endif
+
+                                <input type="file" wire:model="individualUploadFile" accept=".pdf,.doc,.docx"
+                                    class="w-full text-xs file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:cursor-pointer cursor-pointer"
+                                    style="color: var(--color-secondary);">
+
+                                @error('individualUploadFile')
+                                    <p class="mt-1.5 text-xs" style="color: #DC2626;">{{ $message }}</p>
+                                @enderror
+
+                                @if($individualUploadFile)
+                                    <button wire:click="uploadIndividualFile" wire:loading.attr="disabled" class="btn-primary w-full mt-3" style="height: 38px; font-size: 13px; outline: none;">
+                                        <span wire:loading.remove wire:target="uploadIndividualFile">Subir Archivo</span>
+                                        <span wire:loading wire:target="uploadIndividualFile">Subiendo...</span>
+                                    </button>
+                                @endif
+                            </div>
+                        @else
+                            <div class="p-4" x-data="{ original: @js($quickReviewDoc->comments ?? ''), changed: false }">
+                                <p class="text-xs font-semibold mb-1 flex items-center gap-1.5" style="color: var(--color-primary-2);">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                    </svg>
+                                    Observaciones
+                                </p>
+                                <p class="text-xs mb-2" style="color: var(--color-secondary);">Visible para el estudiante.</p>
+
+                                <textarea wire:model.defer="quickReviewComments"
+                                    placeholder="Escribe aquí..."
+                                    rows="4"
+                                    @input="changed = ($event.target.value !== original)"
+                                    class="review-field w-full px-3 py-2 rounded-lg text-xs resize-none"
+                                    style="color: var(--color-primary-2);">
+                                </textarea>
+
+                                @error('quickReviewComments')
+                                    <p class="mt-1.5 text-xs flex items-center gap-1.5" style="color: #ee6e6c;">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 20 20" fill="#ee6e6c">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.72-1.36 3.485 0l6.518 11.59c.75 1.335-.213 2.971-1.742 2.971H3.48c-1.529 0-2.492-1.636-1.742-2.971L8.257 3.1zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+
+                                <button wire:click="saveComments"
+                                    x-show="changed" x-cloak
+                                    class="mt-2 px-4 h-8 text-xs font-semibold rounded-full transition-all duration-200"
+                                    style="color: var(--color-primary-2); background-color: var(--color-bg); outline: none;">
+                                    Guardar
+                                </button>
+                            </div>
+
+                            @php
+                                $periodStartMobile = optional($quickReviewDoc->file->period)->start_date;
+                                $periodEndMobile   = optional($quickReviewDoc->file->period)->end_date;
+                                $currentDateValueMobile = $editingDates[$quickReviewDoc->id] ?? '';
+                            @endphp
+                            @if($quickReviewDoc->file->upload_mode !== 'admin_only')
+                                <div class="p-4" x-data="{ original: @js($currentDateValueMobile), changed: false }" @date-change="changed = ($event.detail !== original)">
+                                    <p class="text-xs font-semibold mb-2 flex items-center gap-1.5" style="color: var(--color-primary-2);">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--color-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        Fecha Límite Personalizada
+                                    </p>
+
+                                    <x-date-picker
+                                        wire-model="editingDates.{{ $quickReviewDoc->id }}"
+                                        :value="$currentDateValueMobile"
+                                        :min="$periodStartMobile ? \Carbon\Carbon::parse($periodStartMobile)->format('Y-m-d') : null"
+                                        :max="$periodEndMobile ? \Carbon\Carbon::parse($periodEndMobile)->format('Y-m-d') : null"
+                                        :overlay="true"
+                                        class="mb-2" />
+
+                                    <button wire:click="updateDocumentDate({{ $quickReviewDoc->id }})"
+                                        x-show="changed" x-cloak
+                                        class="px-4 h-8 text-xs font-semibold rounded-full transition-all duration-200"
+                                        style="color: var(--color-primary-2); background-color: var(--color-bg); outline: none;">
+                                        Actualizar
+                                    </button>
+                                </div>
+                            @endif
+
+                            <div class="p-4" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom));">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button wire:click="quickApproveDocument" @click="detailSheetOpen = false" class="btn-success" style="height: 40px; font-size: 13px; outline: none;">
+                                        Aprobar
+                                    </button>
+                                    <button wire:click="quickRejectDocument" class="btn-danger" style="height: 40px; font-size: 13px; outline: none;">
+                                        Rechazar
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
         @endif
     </div>
 </flux:modal>

@@ -1,60 +1,87 @@
 <section class="w-full">
-    <x-settings.layout subheading="Periodos, semestres, carreras, campus y documentos eliminados. Se conservan 30 días antes de borrarse por completo.">
-        <div class="space-y-6"
-             x-data="{
-                selected: [],
-                confirmingPurge: false,
-                toggle(key) {
-                    this.selected = this.selected.includes(key)
-                        ? this.selected.filter(k => k !== key)
-                        : [...this.selected, key];
-                },
-                cancelSelection() {
-                    this.selected = [];
-                    this.confirmingPurge = false;
-                },
-             }">
+    <x-settings.layout heading="Papelera" subheading="Periodos, semestres, carreras, campus y documentos eliminados. Se conservan 30 días antes de borrarse por completo.">
+        {{-- Mobile: mismas acciones (restaurar/eliminar) pero solo con
+             iconos, dentro de la topbar — reemplaza al título mientras hay
+             selección. Usa $store.trashSelection (ver sidebar.blade.php)
+             porque esta topbar vive fuera del árbol del componente. --}}
+        @push('topbar-mobile-meta')
+            <div x-show="$store.trashSelection.selected.length > 0" x-cloak class="flex items-center gap-2">
+                <template x-if="!$store.trashSelection.confirmingPurge">
+                    <div class="flex items-center gap-2">
+                        <span class="topbar-select-count" x-text="$store.trashSelection.selected.length"></span>
 
-            {{-- Barra de acciones masivas --}}
-            <div x-show="selected.length > 0" x-cloak
-                 class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl"
+                        <button type="button" @click="$store.trashSelection.cancel()" class="topbar-select-btn" aria-label="Cancelar selección" title="Cancelar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+
+                        <button type="button" @click="trashSelectionRestore()" class="topbar-select-btn" aria-label="Restaurar seleccionados" title="Restaurar">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M19.7285 10.9288C20.4413 13.5978 19.7507 16.5635 17.6569 18.6573C15.1798 21.1344 11.4826 21.6475 8.5 20.1966M18.364 8.05071L17.6569 7.3436C14.5327 4.21941 9.46736 4.21941 6.34316 7.3436C3.42964 10.2571 3.23318 14.8588 5.75376 18M18.364 8.05071H14.1213M18.364 8.05071V3.80807" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+
+                        <button type="button" @click="$store.trashSelection.confirmingPurge = true" class="topbar-select-btn topbar-select-btn--danger" aria-label="Eliminar seleccionados" title="Eliminar">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 7V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </template>
+
+                <template x-if="$store.trashSelection.confirmingPurge">
+                    <div class="flex items-center gap-2">
+                        <span class="topbar-select-count" style="color:#DC2626;">¿Eliminar?</span>
+
+                        <button type="button" @click="$store.trashSelection.confirmingPurge = false" class="topbar-select-btn" aria-label="Cancelar" title="No">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+
+                        <button type="button" @click="trashSelectionPurge()" class="topbar-select-btn topbar-select-btn--danger" aria-label="Confirmar eliminación" title="Sí, eliminar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        @endpush
+
+        <div class="space-y-6">
+
+            {{-- Barra de acciones masivas: solo escritorio (ver .trash-bulk-bar) --}}
+            <div x-show="$store.trashSelection.selected.length > 0" x-cloak
+                 class="trash-bulk-bar flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl"
                  style="background-color: var(--color-card-bg);">
 
-                <template x-if="!confirmingPurge">
+                <template x-if="!$store.trashSelection.confirmingPurge">
                     <p class="text-sm font-medium" style="color: var(--color-primary-2);">
-                        <span x-text="selected.length"></span> seleccionado(s)
+                        <span x-text="$store.trashSelection.selected.length"></span> seleccionado(s)
                     </p>
                 </template>
-                <template x-if="confirmingPurge">
+                <template x-if="$store.trashSelection.confirmingPurge">
                     <p class="text-sm font-medium" style="color: #DC2626;">
                         ¿Eliminar permanentemente? Esta acción no se puede deshacer.
                     </p>
                 </template>
 
-                <div class="flex items-center gap-3" x-show="!confirmingPurge">
-                    <button type="button" @click="cancelSelection()"
+                <div class="flex items-center gap-3" x-show="!$store.trashSelection.confirmingPurge">
+                    <button type="button" @click="$store.trashSelection.cancel()"
                             class="text-sm" style="color: var(--color-secondary);">
                         Cancelar
                     </button>
                     <button type="button"
-                            @click="$wire.call('restoreSelected', selected).then(() => selected = [])"
+                            @click="$wire.call('restoreSelected', $store.trashSelection.selected).then(() => $store.trashSelection.selected = [])"
                             class="btn-primary" style="height: 36px; padding: 0 16px; font-size: 13px;">
                         Restaurar
                     </button>
                     <button type="button"
-                            @click="confirmingPurge = true"
+                            @click="$store.trashSelection.confirmingPurge = true"
                             class="btn-danger" style="height: 36px; padding: 0 16px; font-size: 13px;">
                         Eliminar
                     </button>
                 </div>
 
-                <div class="flex items-center gap-3" x-show="confirmingPurge" x-cloak>
-                    <button type="button" @click="confirmingPurge = false"
+                <div class="flex items-center gap-3" x-show="$store.trashSelection.confirmingPurge" x-cloak>
+                    <button type="button" @click="$store.trashSelection.confirmingPurge = false"
                             class="text-sm" style="color: var(--color-secondary);">
                         No
                     </button>
                     <button type="button"
-                            @click="$wire.call('purgeSelected', selected).then(() => { selected = []; confirmingPurge = false; })"
+                            @click="$wire.call('purgeSelected', $store.trashSelection.selected).then(() => { $store.trashSelection.selected = []; $store.trashSelection.confirmingPurge = false; })"
                             class="btn-danger" style="height: 36px; padding: 0 16px; font-size: 13px;">
                         Sí, eliminar
                     </button>
@@ -67,11 +94,33 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 @endif
 
-                <div class="period-card group">
+                <div class="period-card trash-item-card group"
+                     x-data="{
+                        pressTimer: null,
+                        longPressed: false,
+                        startPress() {
+                            this.longPressed = false;
+                            this.pressTimer = setTimeout(() => {
+                                this.longPressed = true;
+                                $store.trashSelection.toggle('{{ $key }}');
+                            }, 500);
+                        },
+                        endPress(e) {
+                            clearTimeout(this.pressTimer);
+                            if (this.longPressed) { e.preventDefault(); return; }
+                            if ($store.trashSelection.selected.length > 0) {
+                                $store.trashSelection.toggle('{{ $key }}');
+                                e.preventDefault();
+                            }
+                        },
+                     }"
+                     @touchstart.passive="startPress()"
+                     @touchend="endPress($event)"
+                     @touchmove="clearTimeout(pressTimer)">
                     <button type="button"
-                            @click="toggle('{{ $key }}')"
+                            @click="$store.trashSelection.toggle('{{ $key }}')"
                             class="trash-select-checkbox opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                            :class="{ 'is-checked': selected.includes('{{ $key }}'), '!opacity-100': selected.length > 0 }">
+                            :class="{ 'is-checked': $store.trashSelection.selected.includes('{{ $key }}'), '!opacity-100': $store.trashSelection.selected.length > 0 }">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
                     </button>
 
@@ -106,7 +155,7 @@
                         </p>
                     @endif
 
-                    <div class="flex items-center justify-end gap-1" x-show="selected.length === 0">
+                    <div class="flex items-center justify-end gap-1" x-show="$store.trashSelection.selected.length === 0">
                         <button wire:click="restore('{{ $item['type'] }}', {{ $item['id'] }})"
                                 title="Restaurar"
                                 class="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0

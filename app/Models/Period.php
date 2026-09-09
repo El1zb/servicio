@@ -19,25 +19,25 @@ class Period extends Model
     ];
 
 
-    // 🔗 Periodo ↔ Semestres (muchos a muchos)
+    // Periodo ↔ Semestres (muchos a muchos)
     public function semesters()
     {
         return $this->belongsToMany(Semester::class);
     }
 
-    // 👨‍🎓 Estudiantes del periodo
+    // Estudiantes del periodo
     public function students()
     {
         return $this->hasMany(Student::class);
     }
 
-    // 📄 Documentos configurados para el periodo
+    // Documentos configurados para el periodo
     public function files()
     {
         return $this->hasMany(File::class);
     }
 
-    // 📤 Documentos subidos por los estudiantes del periodo
+    // Documentos subidos por los estudiantes del periodo
     public function documents()
     {
         return $this->hasManyThrough(Document::class, Student::class);

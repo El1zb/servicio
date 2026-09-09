@@ -1,5 +1,5 @@
 <section class="w-full">
-    <x-settings.layout subheading="Administra tu perfil, tu contraseña y la apariencia de tu cuenta.">
+    <x-settings.layout heading="General" subheading="Administra tu perfil, tu contraseña y la apariencia de tu cuenta.">
         <div class="divide-y divide-[var(--color-border)]">
 
             {{-- Perfil --}}

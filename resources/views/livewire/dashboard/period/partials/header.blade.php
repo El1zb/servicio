@@ -1,7 +1,9 @@
 {{-- Header: el nombre del periodo ya se muestra en el título compartido del
      topbar (pasado como :title al layout); aquí solo va el link de regreso
-     y el meta del periodo (fechas + estado). --}}
-<div class="flex flex-wrap items-center justify-between gap-4">
+     (desktop, en mobile el topbar ya trae su propio ícono, ver @push de
+     abajo) y el meta del periodo (fechas + estado), oculto en mobile —el
+     topbar móvil solo trae volver, nombre y buscador. --}}
+<div class="hidden lg:flex flex-wrap items-center justify-between gap-4">
     <a wire:navigate href="{{ route('periods') }}"
        class="inline-flex items-center gap-1.5 text-sm transition-colors duration-150"
        style="color: var(--color-secondary);"
@@ -24,3 +26,11 @@
         </span>
     </div>
 </div>
+
+{{-- Mobile: ícono de volver (sin bg) antes del título del topbar. --}}
+@push('topbar-mobile-back')
+    <a wire:navigate href="{{ route('periods') }}"
+       class="app-topbar-mobile-back-btn" aria-label="Volver a periodos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    </a>
+@endpush

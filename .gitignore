@@ -21,3 +21,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Claude Code (memoria de sesión, agentes, config local) — no es parte del proyecto
+/claude.md
+/CLAUDE.md
+/.claude/
+/.agents/
+/.claudeignore
+/skills-lock.json

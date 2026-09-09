@@ -12,6 +12,16 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('pdfjs-dist')) return 'pdf-viewer';
+                    if (id.includes('docx-preview')) return 'docx-viewer';
+                },
+            },
+        },
+    },
     server: {
         cors: true,
         host: true,

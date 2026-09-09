@@ -86,11 +86,13 @@
             <div>
                 @if($periodId)
                     @php($periodModel = \App\Models\Period::find($periodId))
-                    <button type="button" wire:click="confirmDelete({{ $periodId }})"
-                            @if($periodModel && $periodModel->is_active) disabled title="No puedes eliminar un periodo activo" @endif
-                            class="btn-danger">
-                        Eliminar
-                    </button>
+                    {{-- Solo se puede eliminar un periodo inactivo (ver deletePeriod()
+                         en ManagesPeriods); si no cumple, ni se muestra el botón. --}}
+                    @if($periodModel && ! $periodModel->is_active)
+                        <button type="button" wire:click="confirmDelete({{ $periodId }})" class="btn-danger">
+                            Eliminar
+                        </button>
+                    @endif
                 @endif
             </div>
 

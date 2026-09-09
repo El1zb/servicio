@@ -19,8 +19,6 @@ trait ManagesDocuments
     public         $documentExample      = null;
     public int     $maxSize              = 10240;
     public ?int    $editingDocumentId    = null;
-    public ?string $previewPath          = null;
-    public ?string $previewName          = null;
 
     public ?string $documentFirman         = null;
     public ?string $documentObservations   = null;
@@ -217,7 +215,6 @@ trait ManagesDocuments
 
         $file = $this->pendingUploadModeChangeFile;
 
-        // Actualizar campos
         $file->name          = $this->documentName;
         $file->limit_date    = $this->documentUploadMode !== 'admin_only' ? $this->documentDeadline : null;
         $file->max_size      = $this->maxSize;
@@ -226,12 +223,10 @@ trait ManagesDocuments
         $file->upload_mode   = $this->documentUploadMode;
         $file->is_individual = $this->isIndividual ?? false;
 
-        // Eliminar archivos previos
         $this->deleteFileFromStorage($file->file_path);
         $this->deleteFileFromStorage($file->example_path);
         $file->file_path = $file->name_file = $file->example_path = $file->example_name_file = null;
 
-        // Subir nuevos si corresponde
         if (! ($this->documentUploadMode === 'admin_only' && $this->isIndividual)) {
             if ($this->documentFile) {
                 $file->file_path = $this->documentFile->store('files', 'local');
@@ -281,20 +276,6 @@ trait ManagesDocuments
 
         $this->isDeleteDocumentModalOpen = false;
         $this->deleteDocumentId          = null;
-    }
-
-    // ========================= Vista Previa =========================
-
-    public function previewFile(string $path, string $name): void
-    {
-        $this->previewPath = $path;
-        $this->previewName = $name;
-    }
-
-    public function closePreview(): void
-    {
-        $this->previewPath = null;
-        $this->previewName = null;
     }
 
     // ========================= Manejo de archivos existentes =========================
