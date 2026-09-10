@@ -3,7 +3,6 @@
 namespace App\Livewire\Admin\Semesters\Concerns;
 
 use App\Models\Semester;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 trait ManagesSemesters
@@ -87,8 +86,6 @@ trait ManagesSemesters
             ['name' => $this->name, 'is_active' => $this->is_active]
         );
 
-        Cache::forget('catalog:semesters');
-
         $type   = $this->semesterId ? 'info' : 'success';
         $action = $this->semesterId ? 'actualizado' : 'creado';
 
@@ -124,8 +121,6 @@ trait ManagesSemesters
         }
 
         $semester->delete();
-
-        Cache::forget('catalog:semesters');
 
         $this->dispatch('notify', type: 'error', message: 'Semestre eliminado correctamente');
 

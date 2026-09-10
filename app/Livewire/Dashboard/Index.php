@@ -20,7 +20,7 @@ class Index extends Component
     {
         return view('livewire.dashboard.index', [
             'periods'   => $this->getPeriodsQuery(),
-            'semesters' => Semester::where('is_active', true)->get(),
+            'semesters' => Semester::cached()->where('is_active', true),
         ]);
     }
 }

@@ -9,7 +9,6 @@ use App\Models\Period;
 use App\Models\Campus;
 use App\Models\Career;
 use App\Models\Semester;
-use Illuminate\Support\Facades\Cache;
 
 class PeriodStudents extends Component
 {
@@ -54,14 +53,15 @@ class PeriodStudents extends Component
             'period'          => $this->period,
             'students'        => $this->getStudentsPaginated(),
             // Catálogos casi estáticos (solo cambian por CRUD de admin en
-            // Campuses/Careers/Semesters) — cacheados 1h en vez de traer la
-            // tabla completa en cada búsqueda/paginación/acción de esta
-            // pestaña, que es de las más usadas por el admin.
-            'campuses'        => Cache::remember('catalog:campuses', 3600, fn () => Campus::all()),
+            // Campuses/Careers/Semesters) — cacheados vía Model::cached()
+            // (CachesCatalog, invalidado solo cuando el modelo cambia) en
+            // vez de traer la tabla completa en cada búsqueda/paginación/
+            // acción de esta pestaña, que es de las más usadas por el admin.
+            'campuses'        => Campus::cached(),
             // Listas completas: para el formulario de edición (se puede
             // asignar cualquier carrera/semestre del sistema).
-            'careers'         => Cache::remember('catalog:careers', 3600, fn () => Career::all()),
-            'semesters'       => Cache::remember('catalog:semesters', 3600, fn () => Semester::all()),
+            'careers'         => Career::cached(),
+            'semesters'       => Semester::cached(),
             // Filtro de carrera: acotado a lo que de verdad tienen los
             // estudiantes de este periodo.
             'filterCareers'   => $this->getFilterCareers(),

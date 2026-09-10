@@ -4,7 +4,6 @@ namespace App\Livewire\Admin\Careers\Concerns;
 
 use App\Models\Campus;
 use App\Models\Career;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 trait ManagesCareers
@@ -95,8 +94,6 @@ trait ManagesCareers
 
         $career->campuses()->sync($this->allCampuses ? Campus::pluck('id') : $this->selectedCampusIds);
 
-        Cache::forget('catalog:careers');
-
         $type   = $this->careerId ? 'info' : 'success';
         $action = $this->careerId ? 'actualizada' : 'creada';
 
@@ -132,8 +129,6 @@ trait ManagesCareers
         }
 
         $career->delete();
-
-        Cache::forget('catalog:careers');
 
         $this->dispatch('notify', type: 'error', message: 'Carrera eliminada correctamente');
 
