@@ -37,6 +37,10 @@ RUN apt-get update && apt-get install -y \
         && apt-get install -y --no-install-recommends libreoffice-writer \
         && rm -rf /var/lib/apt/lists/*
 
+# opcache.enable_cli viene "Off" de fábrica en esta imagen — sin esto, cada
+# petición a "php artisan serve" recompila Laravel + vendor/ desde cero.
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
 COPY --from=vendor /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /app
