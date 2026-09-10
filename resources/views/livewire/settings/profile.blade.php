@@ -195,7 +195,9 @@
                 </div>
             </div>
 
-            {{-- Instalar aplicación: solo mobile, en escritorio no aplica. --}}
+            {{-- Instalar aplicación: solo mobile (en escritorio no aplica) y
+                 solo si todavía no está instalada — si ya lo está, la
+                 sección entera desaparece, no solo el botón. --}}
             <div class="flex flex-col lg:flex-row gap-6 py-8 lg:hidden"
                  x-data="{
                     state: 'unsupported',
@@ -204,7 +206,8 @@
                         if (await window.installPwa()) this.refresh();
                     },
                  }"
-                 x-init="refresh(); window.addEventListener('pwa-install-available', () => refresh())">
+                 x-init="refresh(); window.addEventListener('pwa-install-available', () => refresh())"
+                 x-show="state !== 'installed'" x-cloak>
                 <div class="lg:w-64 flex-shrink-0">
                     <h3 class="text-sm font-semibold" style="color: var(--color-primary-2);">Instalar aplicación</h3>
                     <p class="text-sm mt-1" style="color: var(--color-secondary);">
@@ -213,16 +216,12 @@
                 </div>
 
                 <div class="flex-1 max-w-lg">
-                    <button type="button" x-show="state !== 'installed'" x-cloak
-                            class="btn-primary inline-flex items-center gap-2" @click="install()">
+                    <button type="button" class="btn-primary inline-flex items-center gap-2" @click="install()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
                         </svg>
                         Instalar aplicación
                     </button>
-                    <p x-show="state === 'installed'" x-cloak class="text-sm" style="color: var(--color-secondary);">
-                        Ya está instalada en este dispositivo.
-                    </p>
                 </div>
             </div>
 
