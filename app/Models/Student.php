@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Cache;
 
 class Student extends Model
 {
@@ -69,9 +70,21 @@ class Student extends Model
     /**
      * Crea/reactiva los documentos del periodo actual del estudiante y
      * desactiva los que ya no apliquen. Corre al entrar a su panel.
+     *
+     * Se throttlea con caché: recorre TODOS los files del periodo con
+     * escrituras por cada uno, y el panel se visita mucho más seguido de lo
+     * que cambia la configuración de documentos de un periodo. La clave
+     * incluye period_id, así que un cambio de periodo se sincroniza al
+     * instante sin esperar el TTL.
      */
     public function syncPendingDocuments(): void
     {
+        $cacheKey = "student-docs-synced:{$this->id}:{$this->period_id}";
+
+        if (Cache::has($cacheKey)) {
+            return;
+        }
+
         Document::where('student_id', $this->id)
             ->whereHas('file', fn ($q) => $q->where('period_id', '!=', $this->period_id))
             ->update(['is_active' => false]);
@@ -108,5 +121,7 @@ class Student extends Model
             ->where('is_active', true)
             ->whereDoesntHave('file', fn ($q) => $q->where('period_id', $this->period_id))
             ->update(['is_active' => false]);
+
+        Cache::put($cacheKey, true, now()->addMinutes(5));
     }
 }

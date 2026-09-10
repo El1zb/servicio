@@ -52,6 +52,13 @@ class ProtectedFileController extends Controller
             $path = app(DocxToPdfConverter::class)->convert($path);
         }
 
-        return Storage::disk('local')->response($path);
+        // Cada path es único por versión del archivo (store()/storeAs()
+        // generan nombre nuevo por subida, y el PDF convertido de Word
+        // cachea por mtime) — así que es seguro cachear agresivamente en el
+        // navegador: reabrir el mismo documento en el visor no vuelve a
+        // pedirlo al server.
+        return Storage::disk('local')->response($path, null, [
+            'Cache-Control' => 'private, max-age=86400, immutable',
+        ]);
     }
 }
