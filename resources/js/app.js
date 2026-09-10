@@ -232,12 +232,7 @@ window.enablePushNotifications = async function () {
         return true;
     } catch (e) {
         console.error('enablePushNotifications error', e);
-        // TEMPORAL (diagnóstico): muestra el error real en vez del mensaje
-        // genérico, para identificar por qué falla en un dispositivo
-        // específico. Revertir a "No se pudieron activar las
-        // notificaciones. Revisa los permisos del navegador." una vez
-        // diagnosticado.
-        alert('Error al activar notificaciones: ' + (e.name || 'Error') + ' — ' + (e.message || 'sin detalle'));
+        alert('No se pudieron activar las notificaciones. Revisa los permisos del navegador.');
         return false;
     }
 };
