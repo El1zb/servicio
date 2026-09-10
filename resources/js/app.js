@@ -204,7 +204,12 @@ function urlBase64ToUint8Array(base64String) {
 
 window.enablePushNotifications = async function () {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        alert('Tu navegador no soporta notificaciones push.');
+        // navigator.standalone solo existe en iOS: ahí el Push API no
+        // existe en pestaña normal, solo dentro de la app ya instalada en
+        // pantalla de inicio (ver public/manifest.json).
+        alert(typeof navigator.standalone !== 'undefined'
+            ? 'Instala la app en tu pantalla de inicio para activar las notificaciones.'
+            : 'Tu navegador no soporta notificaciones push.');
         return false;
     }
 

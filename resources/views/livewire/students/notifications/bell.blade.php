@@ -10,21 +10,6 @@
         pushStatus: 'off',
         async initPush() { this.pushStatus = await window.pushSubscriptionStatus(); },
         async togglePush() {
-            // 'unsupported': navegador sin Push API en pestaña normal
-            // (Safari/Chrome en iOS fuera de la app instalada — ver
-            // pushSubscriptionStatus() en app.js). En vez de intentar y
-            // fallar con un error técnico, explica qué hacer como toast
-            // (mismo componente que el resto de avisos de la app).
-            // navigator.standalone solo existe en iOS.
-            if (this.pushStatus === 'unsupported') {
-                this.$dispatch('notify', {
-                    type: 'info',
-                    message: typeof navigator.standalone !== 'undefined'
-                        ? 'Instala la app en tu pantalla de inicio para activar las notificaciones.'
-                        : 'Las notificaciones no están disponibles en este navegador.',
-                });
-                return;
-            }
             if (this.pushStatus === 'on') {
                 if (await window.disablePushNotifications()) this.pushStatus = 'off';
             } else {
