@@ -201,6 +201,16 @@ window.renderDocxPreview = async function (url, container) {
  */
 let deferredInstallPrompt = null;
 
+// true si es un navegador de iOS DISTINTO de Safari (todos son WebKit por
+// dentro, pero cada uno agrega su propio token al user agent). En esos,
+// "Agregar a pantalla de inicio" normalmente solo deja un acceso directo
+// que sigue abriendo dentro de esa app, no una PWA real — hay que avisar
+// que abran el sitio en Safari específicamente.
+function isNonSafariIOSBrowser() {
+    const ua = navigator.userAgent;
+    return /iP(hone|od|ad)/.test(ua) && /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
@@ -226,7 +236,10 @@ window.installPwa = async function () {
         deferredInstallPrompt = null;
         return outcome === 'accepted';
     }
-    alert('Para instalar: toca el botón de compartir y luego "Agregar a pantalla de inicio".');
+
+    alert(isNonSafariIOSBrowser()
+        ? 'Para instalar en iPhone/iPad: abre este sitio en Safari (no en este navegador), toca el botón de compartir y elige "Agregar a pantalla de inicio".'
+        : 'Para instalar: toca el botón de compartir y luego "Agregar a pantalla de inicio".');
     return false;
 };
 
@@ -247,9 +260,13 @@ window.enablePushNotifications = async function () {
         // navigator.standalone solo existe en iOS: ahí el Push API no
         // existe en pestaña normal, solo dentro de la app ya instalada en
         // pantalla de inicio (ver public/manifest.json).
-        alert(typeof navigator.standalone !== 'undefined'
-            ? 'Instala la app en tu pantalla de inicio para activar las notificaciones.'
-            : 'Tu navegador no soporta notificaciones push.');
+        if (typeof navigator.standalone !== 'undefined') {
+            alert(isNonSafariIOSBrowser()
+                ? 'Para activar las notificaciones: abre este sitio en Safari (no en este navegador) e instálalo desde ahí en tu pantalla de inicio.'
+                : 'Instala la app en tu pantalla de inicio para activar las notificaciones.');
+        } else {
+            alert('Tu navegador no soporta notificaciones push.');
+        }
         return false;
     }
 
