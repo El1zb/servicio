@@ -87,14 +87,14 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="app-field">
                                 <label class="app-field-label">Teléfono <span style="color: #DC2626;">*</span></label>
-                                <input type="text" wire:model.live.debounce.500ms="phone" placeholder="Ej. 0000000000" class="app-input w-full"
+                                <input type="text" wire:model.live.debounce.500ms="phone" class="app-input w-full"
                                     maxlength="10"
                                     oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 @error('phone') <p class="app-field-error">{{ $message }}</p> @enderror
                             </div>
                             <div class="app-field">
                                 <label class="app-field-label">Correo Personal <span style="color: #DC2626;">*</span></label>
-                                <input type="email" wire:model.live.debounce.500ms="personal_email" placeholder="Ej. personal@ejemplo.com" class="app-input w-full"
+                                <input type="email" wire:model.live.debounce.500ms="personal_email" class="app-input w-full"
                                     oninput="this.value = this.value.toLowerCase()">
                                 @error('personal_email') <p class="app-field-error">{{ $message }}</p> @enderror
                             </div>
