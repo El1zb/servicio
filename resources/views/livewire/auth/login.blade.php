@@ -25,7 +25,6 @@
                 id="email"
                 type="email"
                 required
-                autofocus
                 autocomplete="email"
                 placeholder="correo@ejemplo.com"
                 class="app-input w-full"

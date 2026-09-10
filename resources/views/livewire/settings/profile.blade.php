@@ -22,7 +22,6 @@
                                 id="name"
                                 type="text"
                                 required
-                                autofocus
                                 autocomplete="name"
                                 class="app-input {{ $errors->has('name') ? 'has-error' : '' }}"
                             >
