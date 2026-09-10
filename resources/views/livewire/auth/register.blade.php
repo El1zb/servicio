@@ -25,7 +25,6 @@
                 id="name"
                 type="text"
                 required
-                autofocus
                 autocomplete="name"
                 placeholder="Nombre completo"
                 class="app-input w-full"
