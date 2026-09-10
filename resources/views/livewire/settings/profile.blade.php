@@ -195,8 +195,8 @@
                 </div>
             </div>
 
-            {{-- Instalar aplicación --}}
-            <div class="flex flex-col lg:flex-row gap-6 py-8"
+            {{-- Instalar aplicación: solo mobile, en escritorio no aplica. --}}
+            <div class="flex flex-col lg:flex-row gap-6 py-8 lg:hidden"
                  x-data="{
                     state: 'unsupported',
                     refresh() { this.state = window.pwaInstallState(); },
