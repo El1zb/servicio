@@ -191,6 +191,46 @@ window.renderDocxPreview = async function (url, container) {
 };
 
 /**
+ * Instalar como PWA (botón en Configuración > Perfil, debajo de
+ * Apariencia). Android/Chrome/desktop soportan el prompt nativo de
+ * instalación ("beforeinstallprompt" — hay que capturarlo apenas carga la
+ * página, antes de que el usuario entre a Configuración, porque el
+ * navegador solo lo dispara una vez). iOS no tiene ninguna API para esto:
+ * ahí solo se puede guiar al usuario a "Compartir > Agregar a pantalla de
+ * inicio" (ver public/manifest.json + apple-mobile-web-app-capable).
+ */
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    window.dispatchEvent(new Event('pwa-install-available'));
+});
+
+window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+});
+
+window.pwaInstallState = function () {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    if (isStandalone) return 'installed';
+    if (deferredInstallPrompt) return 'installable';
+    if (typeof navigator.standalone !== 'undefined') return 'ios';
+    return 'unsupported';
+};
+
+window.installPwa = async function () {
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        return outcome === 'accepted';
+    }
+    alert('Para instalar: toca el botón de compartir y luego "Agregar a pantalla de inicio".');
+    return false;
+};
+
+/**
  * Notificaciones push (switch en la campanita del estudiante, ver
  * livewire/students/notifications/bell.blade.php). APIs nativas del
  * navegador — nada que diferir con import() como el visor de PDF/Word.
