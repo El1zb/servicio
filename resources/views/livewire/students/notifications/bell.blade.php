@@ -38,9 +38,21 @@
         <div class="notif-dropdown-panel">
             <div class="notif-panel-header">
                 <span class="notif-panel-title">Notificaciones</span>
-                <button type="button" class="notif-switch" :class="{ 'is-on': pushStatus === 'on' }" @click="togglePush()" aria-label="Activar o desactivar notificaciones push">
+
+                {{-- pushStatus === 'unsupported': navegador sin Push API en
+                     pestaña normal (Safari/Chrome en iOS fuera de la app
+                     instalada — ver pushSubscriptionStatus() en app.js). En
+                     vez de un switch que solo fallaría al tocarlo, explica
+                     qué hacer. navigator.standalone solo existe en iOS. --}}
+                <button type="button" x-show="pushStatus !== 'unsupported'" x-cloak
+                        class="notif-switch" :class="{ 'is-on': pushStatus === 'on' }"
+                        @click="togglePush()" aria-label="Activar o desactivar notificaciones push">
                     <span class="notif-switch-thumb"></span>
                 </button>
+                <span x-show="pushStatus === 'unsupported'" x-cloak class="notif-unsupported-hint"
+                      x-text="typeof navigator.standalone !== 'undefined'
+                          ? 'Instala la app en tu pantalla de inicio para activarlas'
+                          : 'No disponibles en este navegador'"></span>
             </div>
 
             <div class="notif-panel-list">
