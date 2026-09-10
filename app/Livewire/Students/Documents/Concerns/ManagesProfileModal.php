@@ -220,7 +220,7 @@ trait ManagesProfileModal
             : collect();
 
         return [
-            'profileCampuses'         => Campus::where('is_active', true)->get(),
+            'profileCampuses'         => Campus::cached()->where('is_active', true),
             'profileCareers'          => $careers,
             'profilePeriods'          => $periods,
             'profileSemesters'        => $semesters,

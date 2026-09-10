@@ -83,7 +83,24 @@ trait ManagesRevision
             ->orderBy('name')
             ->paginate(20, ['*'], 'revisionPage');
 
-        $students->getCollection()->transform(fn ($s) => $this->decorateStudentRevisionCounters($s, $individualFileIds));
+        // Mismo total de archivos y mismo conteo de cargas individuales para
+        // todos los estudiantes de la página: se calculan una sola vez en
+        // vez de repetir la consulta por cada fila (N+1).
+        $totalFiles = File::where('period_id', $this->periodId)
+            ->where('upload_mode', '!=', 'admin_only')
+            ->count();
+
+        $individualUploadedCounts = $individualFileIds->isNotEmpty()
+            ? FileStudentUpload::whereIn('student_id', $students->getCollection()->pluck('id'))
+                ->whereIn('file_id', $individualFileIds)
+                ->selectRaw('student_id, count(*) as total')
+                ->groupBy('student_id')
+                ->pluck('total', 'student_id')
+            : collect();
+
+        $students->getCollection()->transform(
+            fn ($s) => $this->decorateStudentRevisionCounters($s, $individualFileIds, $totalFiles, $individualUploadedCounts)
+        );
 
         return $students;
     }
@@ -654,7 +671,12 @@ trait ManagesRevision
         };
     }
 
-    private function decorateStudentRevisionCounters(object $student, $individualFileIds = null): object
+    private function decorateStudentRevisionCounters(
+        object $student,
+        $individualFileIds = null,
+        ?int $totalFiles = null,
+        ?\Illuminate\Support\Collection $individualUploadedCounts = null
+    ): object
     {
         $periodDocs = $student->documents->filter(
             fn ($doc) => $doc->file
@@ -664,7 +686,7 @@ trait ManagesRevision
         );
 
         $student->delivered      = $periodDocs->count();
-        $student->total          = File::where('period_id', $this->periodId)
+        $student->total          = $totalFiles ?? File::where('period_id', $this->periodId)
                                        ->where('upload_mode', '!=', 'admin_only')
                                        ->count();
         $student->approved_count = $periodDocs->where('status', 'revisado')->count();
@@ -679,9 +701,11 @@ trait ManagesRevision
             ->pluck('id');
 
         if ($individualFileIds->isNotEmpty()) {
-            $uploaded = FileStudentUpload::where('student_id', $student->id)
-                ->whereIn('file_id', $individualFileIds)
-                ->count();
+            $uploaded = $individualUploadedCounts
+                ? (int) ($individualUploadedCounts->get($student->id) ?? 0)
+                : FileStudentUpload::where('student_id', $student->id)
+                    ->whereIn('file_id', $individualFileIds)
+                    ->count();
 
             $student->individual_total     = $individualFileIds->count();
             $student->individual_uploaded  = $uploaded;

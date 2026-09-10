@@ -54,7 +54,6 @@ trait ManagesStats
     protected function getPeriodsQuery(): LengthAwarePaginator
     {
         $query = $this->filteredPeriodsBaseQuery()
-            ->with(['semesters', 'students'])
             ->withCount([
                 'students',
                 'files',
