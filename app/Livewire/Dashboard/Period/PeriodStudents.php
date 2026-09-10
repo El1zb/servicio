@@ -52,11 +52,16 @@ class PeriodStudents extends Component
         return view('livewire.dashboard.period.partials.students-tab', [
             'period'          => $this->period,
             'students'        => $this->getStudentsPaginated(),
-            'campuses'        => Campus::all(),
+            // Catálogos casi estáticos (solo cambian por CRUD de admin en
+            // Campuses/Careers/Semesters) — cacheados vía Model::cached()
+            // (CachesCatalog, invalidado solo cuando el modelo cambia) en
+            // vez de traer la tabla completa en cada búsqueda/paginación/
+            // acción de esta pestaña, que es de las más usadas por el admin.
+            'campuses'        => Campus::cached(),
             // Listas completas: para el formulario de edición (se puede
             // asignar cualquier carrera/semestre del sistema).
-            'careers'         => Career::all(),
-            'semesters'       => Semester::all(),
+            'careers'         => Career::cached(),
+            'semesters'       => Semester::cached(),
             // Filtro de carrera: acotado a lo que de verdad tienen los
             // estudiantes de este periodo.
             'filterCareers'   => $this->getFilterCareers(),

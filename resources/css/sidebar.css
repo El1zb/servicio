@@ -1099,11 +1099,14 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 }
 
 /* El zoom en mobile es a pellizco (ver initPdfPinchZoom en app.js), nunca
-   zoom nativo de página — así el topbar y el dock no se mueven. pan-y deja
-   el scroll normal de una mano intacto y libera el gesto de dos dedos para
-   que lo capture JS en vez del navegador. */
+   zoom nativo de página — así el topbar y el dock no se mueven. pan-x pan-y
+   deja el scroll normal de una mano intacto EN AMBOS EJES (horizontal
+   también, necesario una vez que el zoom deja el documento más ancho que
+   la pantalla) y libera el gesto de dos dedos para que lo capture JS en
+   vez del navegador (pinch-zoom no está en la lista, así que el navegador
+   no lo reclama para sí). */
 .pdf-render-target {
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
 }
 
 /* Días del calendario personalizado (Fecha Límite Personalizada). */
@@ -1373,6 +1376,14 @@ html.sidebar-collapsed .sidebar-toggle-btn {
    oscuro que usa el modo claro. */
 :root.dark .app-input:focus {
     border-color: #FFFFFF;
+}
+
+/* auth-portal (login/register) siempre se ve claro, sin importar la
+   preferencia de tema guardada — pero @fluxAppearance igual puede dejar la
+   clase "dark" en <html>, y sin esto la regla de arriba pone el borde de
+   enfoque blanco, invisible sobre el fondo blanco de esta pantalla. */
+:root.dark .auth-portal .app-input:focus {
+    border-color: #33363B;
 }
 
 /* Selects de filtro (ej. Gestión de Estudiantes): ancho completo en móvil,

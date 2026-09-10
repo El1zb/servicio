@@ -220,7 +220,13 @@
     $topbarSearchHtml = trim((string) $__env->yieldPushContent('topbar-search'));
 @endphp
 
-@if($sectionTitle)
+{{-- El estudiante necesita ver/activar la campanita (push) desde antes de
+     tener perfil aprobado: justo ahí es cuando más importa, porque la
+     notificación de "perfil aprobado/rechazado" ocurre en ese momento. Sin
+     esto, este topbar (con la campanita adentro) desaparecía junto con el
+     título mientras $sectionTitle es null. Para admin no cambia nada: sus
+     rutas siempre traen $sectionTitle. --}}
+@if($sectionTitle || ! auth()->user()->hasRole('admin'))
 <header class="app-topbar-mobile lg:hidden" id="mobileTopbar">
     @php
         $isSettingsRoute = request()->routeIs('settings.*', 'admin.create-admin', 'admin.trash');

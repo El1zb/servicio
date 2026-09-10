@@ -53,8 +53,11 @@ trait ManagesStats
 
     protected function getPeriodsQuery(): LengthAwarePaginator
     {
+        // Sin with('semesters')/with('students'): period-cards.blade.php solo
+        // pinta los *_count de abajo, nunca las colecciones completas — antes
+        // se traían todos los alumnos y semestres de los 12 periodos de la
+        // página en cada carga/filtro, sin usarse.
         $query = $this->filteredPeriodsBaseQuery()
-            ->with(['semesters', 'students'])
             ->withCount([
                 'students',
                 'files',

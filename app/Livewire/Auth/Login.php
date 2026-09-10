@@ -43,10 +43,14 @@ class Login extends Component
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
+        // navigate: true evita la recarga completa del navegador (mismo
+        // wire:navigate que usa el resto de la app) — sin esto, login era
+        // el único punto de entrada que se sentía "pesado" al entrar.
         $this->redirect(
             auth()->user()->hasRole('admin')
                 ? route('dashboard', absolute: false)
-                : route('student-documents.index', absolute: false)
+                : route('student-documents.index', absolute: false),
+            navigate: true,
         );
     }
 

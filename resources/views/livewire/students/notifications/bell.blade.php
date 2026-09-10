@@ -38,7 +38,8 @@
         <div class="notif-dropdown-panel">
             <div class="notif-panel-header">
                 <span class="notif-panel-title">Notificaciones</span>
-                <button type="button" class="notif-switch" :class="{ 'is-on': pushStatus === 'on' }" @click="togglePush()" aria-label="Activar o desactivar notificaciones push">
+                <button type="button" class="notif-switch" :class="{ 'is-on': pushStatus === 'on' }"
+                        @click="togglePush()" aria-label="Activar o desactivar notificaciones push">
                     <span class="notif-switch-thumb"></span>
                 </button>
             </div>

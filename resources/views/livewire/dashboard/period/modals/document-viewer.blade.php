@@ -113,7 +113,7 @@
                                         wire:ignore
                                         x-data
                                         x-init="renderReviewPdf(@js($dvPdfUrl), $el); initPdfPinchZoom($el)"
-                                        class="pdf-render-target w-full h-full overflow-y-auto"
+                                        class="pdf-render-target w-full h-full overflow-y-auto overflow-x-auto"
                                         style="background-color: var(--color-contenedor-view); padding: 24px;">
                                     </div>
 
