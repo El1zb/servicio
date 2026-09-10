@@ -1099,11 +1099,14 @@ html.sidebar-collapsed .sidebar-toggle-btn {
 }
 
 /* El zoom en mobile es a pellizco (ver initPdfPinchZoom en app.js), nunca
-   zoom nativo de página — así el topbar y el dock no se mueven. pan-y deja
-   el scroll normal de una mano intacto y libera el gesto de dos dedos para
-   que lo capture JS en vez del navegador. */
+   zoom nativo de página — así el topbar y el dock no se mueven. pan-x pan-y
+   deja el scroll normal de una mano intacto EN AMBOS EJES (horizontal
+   también, necesario una vez que el zoom deja el documento más ancho que
+   la pantalla) y libera el gesto de dos dedos para que lo capture JS en
+   vez del navegador (pinch-zoom no está en la lista, así que el navegador
+   no lo reclama para sí). */
 .pdf-render-target {
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
 }
 
 /* Días del calendario personalizado (Fecha Límite Personalizada). */
