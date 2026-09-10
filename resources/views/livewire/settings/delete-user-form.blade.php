@@ -21,7 +21,7 @@
         class="w-[95vw] sm:w-[90vw] md:w-[460px] max-w-[95vw]"
         style="border-color: var(--color-border);"
     >
-        <form method="POST" wire:submit="deleteUser" class="flex flex-col" style="max-height: 90vh;">
+        <form method="POST" wire:submit="deleteUser" class="flex flex-col" style="max-height: 90dvh;">
 
             {{-- ── Header ── --}}
             <div class="px-6 py-5 flex-shrink-0" style="border-bottom: 1px solid var(--color-border);">

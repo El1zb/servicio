@@ -7,7 +7,7 @@
         class="w-[95vw] sm:w-[90vw] lg:w-[720px] max-w-[95vw]"
         style="border-color: var(--color-border);">
 
-        <div class="flex flex-col" style="max-height: 90vh;">
+        <div class="flex flex-col" style="max-height: 90dvh;">
 
             {{-- ── Header ── --}}
             <div class="flex items-center justify-between gap-4 px-6 py-5 flex-shrink-0"

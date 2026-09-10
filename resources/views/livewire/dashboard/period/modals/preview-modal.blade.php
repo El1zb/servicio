@@ -6,7 +6,7 @@
         :closable="false"
         class="w-[95vw] sm:w-[85vw] md:w-[75vw] lg:w-[860px] xl:w-[960px] max-w-[95vw]">
 
-        <div class="flex flex-col" style="height: 75vh; max-height: 85vh;">
+        <div class="flex flex-col" style="height: 75dvh; max-height: 85dvh;">
             @php
                 $ext = strtolower(pathinfo($previewPath, PATHINFO_EXTENSION));
                 // El .docx se sirve convertido a PDF (LibreOffice, ver

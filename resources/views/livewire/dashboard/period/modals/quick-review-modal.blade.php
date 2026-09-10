@@ -5,10 +5,10 @@
     :dismissible="false"
     :closable="false"
     class="!p-0 !max-w-none !rounded-none !shadow-none w-screen h-screen !m-0 overflow-hidden !outline-none"
-    style="outline: none; max-width: 100vw; max-height: 100vh; margin: 0; inset: 0;">
+    style="outline: none; max-width: 100vw; max-height: 100dvh; margin: 0; inset: 0;">
 
     <div class="flex flex-col"
-        style="height: 100vh; background-color: var(--color-contenedor-view);"
+        style="height: 100dvh; background-color: var(--color-contenedor-view);"
         x-data="{ docsSheetOpen: false, detailSheetOpen: false }"
         @keydown.window="
             const el = document.activeElement;
@@ -465,7 +465,7 @@
                 x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
                 x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
                 class="fixed inset-x-0 bottom-0 z-40 flex flex-col sm:hidden rounded-t-3xl overflow-hidden"
-                style="max-height: 80vh; background-color: var(--color-modal-bg); box-shadow: 0 -10px 40px rgba(0,0,0,0.3);">
+                style="max-height: 80dvh; background-color: var(--color-modal-bg); box-shadow: 0 -10px 40px rgba(0,0,0,0.3);">
 
                 <div class="w-10 h-1.5 rounded-full mx-auto mt-3 mb-1 flex-shrink-0" style="background-color: var(--color-border-hover);"></div>
 
@@ -560,7 +560,7 @@
                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
                     x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
                     class="fixed inset-x-0 bottom-0 z-40 flex flex-col sm:hidden rounded-t-3xl overflow-hidden"
-                    style="max-height: 85vh; background-color: var(--color-modal-bg); box-shadow: 0 -10px 40px rgba(0,0,0,0.3);">
+                    style="max-height: 85dvh; background-color: var(--color-modal-bg); box-shadow: 0 -10px 40px rgba(0,0,0,0.3);">
 
                     <div class="w-10 h-1.5 rounded-full mx-auto mt-3 mb-1 flex-shrink-0" style="background-color: var(--color-border-hover);"></div>
 
