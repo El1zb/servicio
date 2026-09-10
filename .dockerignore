@@ -8,5 +8,6 @@ storage/framework/cache
 storage/framework/sessions
 storage/framework/views
 public/build
+public/hot
 .phpunit.result.cache
 tests

@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Render termina el HTTPS en su proxy y reenvía la petición como HTTP
+        // plano + X-Forwarded-Proto — sin esto Laravel no confía en ese header
+        // y genera URLs de assets (asset()/Vite) en http://, que Render
+        // rechaza. El proxy de Render es el único que llega a este contenedor.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
