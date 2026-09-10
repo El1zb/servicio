@@ -1375,6 +1375,14 @@ html.sidebar-collapsed .sidebar-toggle-btn {
     border-color: #FFFFFF;
 }
 
+/* auth-portal (login/register) siempre se ve claro, sin importar la
+   preferencia de tema guardada — pero @fluxAppearance igual puede dejar la
+   clase "dark" en <html>, y sin esto la regla de arriba pone el borde de
+   enfoque blanco, invisible sobre el fondo blanco de esta pantalla. */
+:root.dark .auth-portal .app-input:focus {
+    border-color: #33363B;
+}
+
 /* Selects de filtro (ej. Gestión de Estudiantes): ancho completo en móvil,
    ancho fijo y sin encoger en escritorio para no pelear con el buscador
    por espacio. Compound selector para ganarle a .app-input sin !important. */
